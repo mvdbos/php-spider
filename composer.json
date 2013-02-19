@@ -2,7 +2,7 @@
     "name": "vdb/spider",
     "type": "application",
     "description": "A simple PHP Web Spider",
-    "keywords": ["spider"],
+    "keywords": ["spider, crawler"],
     "license": "MIT",
     "authors": [
         {
@@ -11,11 +11,16 @@
         }
     ],
     "require": {
-        "fabpot/goutte": "1.0.*@dev"
+        "fabpot/goutte": "1.0.*@dev",
+        "monolog/monolog": "1.4.*@dev",
+        "pimple/pimple": "dev-trigger",
+        "doctrine/cache": "dev-master"
     },
     "autoload": {
         "psr-0": {
-            "VDB": "src/"
+            "VDB": "src/",
+            "VDB\\Spider\\Tests": "tests/",
+            "Example": "example/lib/"
         }
     },
     "minimum-stability": "dev"

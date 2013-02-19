@@ -2,3 +2,5 @@
 composer.lock
 vendor
 TODO.md
+example/logs/*.log
+*.doctrinecache.php

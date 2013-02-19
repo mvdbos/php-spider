@@ -1,0 +1,22 @@
+tools:                
+    php_mess_detector:
+        enabled: false
+        filter:               
+            paths: [src/*, tests/*]
+    php_cs_fixer: 
+        filter:               
+            paths: [src/*, tests/*]
+        enabled: true        
+        config:               
+            level: all
+    php_analyzer:
+        enabled: true        
+        filter:               
+            paths: [src/*, tests/*]
+    php_code_sniffer:     
+        filter:               
+            paths: [src/*, tests/*]
+        enabled: true
+        config:               
+            standard: PSR2 
+    sensiolabs_security_checker: true
