@@ -1,0 +1,10 @@
+{
+    "require": {
+        "fabpot/goutte": "1.0.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "VDB": "src/"
+        }
+    }
+}
