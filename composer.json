@@ -1,4 +1,15 @@
 {
+    "name": "vdb/spider",
+    "type": "application",
+    "description": "A simple PHP Web Spider",
+    "keywords": ["spider"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthijs van den Bos",
+            "email": "matthijs@vandenbos.org"
+        }
+    ],
     "require": {
         "fabpot/goutte": "1.0.*@dev"
     },
@@ -6,5 +17,6 @@
         "psr-0": {
             "VDB": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }

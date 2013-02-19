@@ -2,7 +2,7 @@
 use VDB\Spider\Processor;
 use Symfony\Component\DomCrawler\Crawler;
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 class SkipReplyFormsCondition implements VDB\Spider\SkipCondition
 {
