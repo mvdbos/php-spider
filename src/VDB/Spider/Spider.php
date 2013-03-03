@@ -76,6 +76,9 @@ class Spider
     /** @var int the current crawl depth */
     private $currentDepth = 0;
 
+    /** @var URI the parent of the node we are currently visiting */
+    private $previousURI;
+
     /**
      * @param \Pimple $container
      */
@@ -278,6 +281,9 @@ class Spider
      * Recursive function that crawls each provided URI
      * It applies all processors and listeners set on the Spider
      *
+     * This is a depth first algorithm as explained here:
+     *  https://en.wikipedia.org/wiki/Depth-first_search#Example
+     *
      * @param URI $currentURI
      */
     private function doCrawl(URI $currentURI)
@@ -315,6 +321,11 @@ class Spider
                 // Decorate the link to make it filterable
                 $uri = new FilterableURI($uri);
 
+                // Always skip the node we just visited before the current Document
+                if (null !== $this->previousURI && $uri->recompose() === $this->previousURI->recompose()) {
+                    continue;
+                }
+
                 $this->dispatch(
                     SpiderEvents::SPIDER_CRAWL_FILTER_PREFETCH,
                     new GenericEvent($this, array('uri' => $uri))
@@ -324,6 +335,7 @@ class Spider
                     $this->addToFiltered($uri);
                 } else {
                     // The URI was not matched by any filter, recurse
+                    $this->previousURI = $currentURI;
                     $this->currentDepth++;
                     $this->doCrawl($uri);
                 }
@@ -385,7 +397,7 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
             $document = $this->requestHandler->request($uri);
-
+            $document->depthFound = $this->currentDepth;
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $document;
         } catch (\Exception $e) {

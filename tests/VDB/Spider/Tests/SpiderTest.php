@@ -2,6 +2,7 @@
 namespace VDB\Spider;
 
 use VDB\Spider\Tests\TestCase;
+use VDB\Spider\Tests\Fixtures\TitleExtractorProcessor;
 use VDB\URI\GenericURI;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
@@ -35,6 +36,10 @@ class SpiderTest extends TestCase
     protected $link4;
     /** @var GenericURI */
     protected $link5;
+    /** @var GenericURI */
+    protected $link6;
+    /** @var GenericURI */
+    protected $link7;
 
     /** @var Crawler */
     protected $crawler1;
@@ -46,6 +51,10 @@ class SpiderTest extends TestCase
     protected $crawler4;
     /** @var Crawler */
     protected $crawler5;
+    /** @var Crawler */
+    protected $crawler6;
+    /** @var Crawler */
+    protected $crawler7;
 
     /** @var string */
     protected $href1;
@@ -53,6 +62,11 @@ class SpiderTest extends TestCase
     protected $href3;
     protected $href4;
     protected $href5;
+    protected $href6;
+    protected $href7;
+
+    /** @var TitleExtractorProcessor */
+    protected $titleExtractorProcessor;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -65,32 +79,42 @@ class SpiderTest extends TestCase
 
         $this->requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandler');
 
-        $this->href1 = 'http://php-spider.org/1';
-        $this->href2 = 'http://php-spider.org/2';
-        $this->href3 = 'http://php-spider.org/3';
-        $this->href4 = 'http://php-spider.org/4';
-        $this->href5 = 'http://php-spider.org/5';
+        $this->href1 = 'http://php-spider.org/A';
+        $this->href2 = 'http://php-spider.org/B';
+        $this->href3 = 'http://php-spider.org/C';
+        $this->href4 = 'http://php-spider.org/D';
+        $this->href5 = 'http://php-spider.org/E';
+        $this->href6 = 'http://php-spider.org/F';
+        $this->href7 = 'http://php-spider.org/G';
 
         $this->link1 = new GenericURI($this->href1);
         $this->link2 = new GenericURI($this->href2);
         $this->link3 = new GenericURI($this->href3);
         $this->link4 = new GenericURI($this->href4);
         $this->link5 = new GenericURI($this->href5);
-        
-        $html1 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocument1.html');
+        $this->link6 = new GenericURI($this->href6);
+        $this->link7 = new GenericURI($this->href7);
+
+        $html1 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentA.html');
         $this->crawler1 = new Crawler($html1, $this->href1);
 
-        $html2 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocument2.html');
+        $html2 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentB.html');
         $this->crawler2 = new Crawler($html2, $this->href2);
 
-        $html3 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocument3.html');
+        $html3 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentC.html');
         $this->crawler3 = new Crawler($html3, $this->href3);
 
-        $html4 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocument4.html');
+        $html4 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentD.html');
         $this->crawler4 = new Crawler($html4, $this->href4);
 
-        $html5 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocument5.html');
+        $html5 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentE.html');
         $this->crawler5 = new Crawler($html5, $this->href5);
+
+        $html6 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentF.html');
+        $this->crawler6 = new Crawler($html6, $this->href6);
+
+        $html7 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentG.html');
+        $this->crawler7 = new Crawler($html7, $this->href7);
 
         $this->requestHandler
             ->expects($this->any())
@@ -100,6 +124,8 @@ class SpiderTest extends TestCase
         $this->spider->setRequestHandler($this->requestHandler);
         $this->spider->addDiscoverer(new XPathExpressionDiscoverer('//a'));
 
+        $this->titleExtractorProcessor = new TitleExtractorProcessor();
+        $this->spider->addProcessor($this->titleExtractorProcessor);
     }
 
     /**
@@ -120,37 +146,58 @@ class SpiderTest extends TestCase
                 return $this->getDocument($this->link4, $this->crawler4);
             case $this->link5->recompose():
                 return $this->getDocument($this->link5, $this->crawler5);
+            case $this->link6->recompose():
+                return $this->getDocument($this->link6, $this->crawler6);
+            case $this->link7->recompose():
+                return $this->getDocument($this->link7, $this->crawler7);
         }
     }
 
 
     /**
      * @covers VDB\Spider\Spider::crawl
+     *
+     * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
-    public function testCrawlAlreadyVisitedFilter()
+    public function testCrawlDepthFirstDefaultBehaviour()
     {
-        $this->spider->addPreFetchFilter(new AlreadyVisitedFilter('http://php-spider.org/1'));
+        $this->spider->setMaxDepth(1000);
+        $this->spider->setMaxQueueSize(15);
 
-        $report = $this->spider->crawl('http://php-spider.org/1');
-
-        $this->assertCount(1, $report['filtered']);
-        $this->assertCount(5, $report['queued']);
-        $this->assertCount(0, $report['failed']);
-        $this->assertEquals('Already Visited', $report['filtered']['http://php-spider.org/1']);
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+        $this->assertEquals('ABDFEABDFEABDFE', $this->titleExtractorProcessor->titles);
     }
 
     /**
      * @covers VDB\Spider\Spider::crawl
+     *
+     * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
+     */
+    public function testCrawlDepthFirstWithAlreadyVisitedFilter()
+    {
+        $this->spider->addPreFetchFilter(new AlreadyVisitedFilter('http://php-spider.org/A'));
+        $this->spider->setMaxDepth(1000);
+        $this->spider->setMaxQueueSize(40);
+
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+
+        $this->assertEquals('ABDFECG', $this->titleExtractorProcessor->titles);
+    }
+
+    /**
+     * @covers VDB\Spider\Spider::crawl
+     *
+     * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
     public function testCrawlMaxDepthOne()
     {
         $this->spider->setMaxDepth(1);
 
-        $report = $this->spider->crawl('http://php-spider.org/1');
-
-        $this->assertCount(0, $report['filtered']);
-        $this->assertCount(4, $report['queued']);
-        $this->assertCount(0, $report['failed']);
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+        $this->assertEquals('ABCE', $this->titleExtractorProcessor->titles);
     }
 
     /**
@@ -158,14 +205,12 @@ class SpiderTest extends TestCase
      */
     public function testCrawlMaxQueueSize()
     {
-        $this->spider->setMaxDepth(40);
-        $this->spider->setMaxQueueSize(10);
+        $this->spider->setMaxDepth(1000);
+        $this->spider->setMaxQueueSize(3);
 
-        $report = $this->spider->crawl('http://php-spider.org/1');
-
-        $this->assertCount(0, $report['filtered'], 'Filtered count');
-        $this->assertCount(10, $report['queued'], 'Queued count');
-        $this->assertCount(1, $report['failed'], 'Failed count');
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+        $this->assertEquals('ABD', $this->titleExtractorProcessor->titles);
     }
 
 
@@ -186,16 +231,5 @@ class SpiderTest extends TestCase
         $this->assertCount(0, $report['filtered'], 'Filtered count');
         $this->assertCount(0, $report['queued'], 'Queued count');
         $this->assertCount(1, $report['failed'], 'Failed count');
-    }
-
-
-    /**
-     * @covers VDB\Spider\Spider::process
-     */
-    public function testProcess()
-    {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
     }
 }

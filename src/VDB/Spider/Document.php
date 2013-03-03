@@ -26,6 +26,9 @@ class Document implements Filterable
     /** @var Crawler */
     protected $crawler;
 
+    /** @var int */
+    public $depthFound;
+
     /**
      * @param URI $uri
      * @param \Symfony\Component\BrowserKit\Response $response

@@ -89,13 +89,13 @@ $container['guzzle.plugin.cache.request'] = $container->share(
 $spider = new VDB\Spider\Spider($container);
 
 $politenessPolicyEventListener = new PolitenessPolicyListener(500);
-$spider->getDispatcher()->addListener(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array($politenessPolicyEventListener, 'onCrawlPreRequest'));
+//$spider->getDispatcher()->addListener(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array($politenessPolicyEventListener, 'onCrawlPreRequest'));
 
 // Voorbeeld 0: Hele blog.vandenbos.org site
 //HttpURI::$allowedSchemes[] = 'mailto';
 
-//$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 4;
-//$spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
+$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 4;
+$spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 //$spider->addDiscoverer(new CssSelectorDiscoverer('a'));
 
 //$seed = 'http://example.com'; $allowSubDomains = true; $maxDepth = 10;
@@ -131,8 +131,8 @@ $spider->getDispatcher()->addListener(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, ar
 //$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@id='page']/div[@id='content']/div[@class='column column-4']//a"));
 
 // ### Voorbeeld 3:  Alleen alle links naar detailpagina's van pagina 1 Tour Nieuws van Golf.nl en geen pagineerlinks, niet dieper dan eerste detailpagina.
-$seed = 'http://www.dmoz.org/'; $allowSubDomains = true; $maxDepth = 3;
-$spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
+//$seed = 'http://www.dmoz.org/'; $allowSubDomains = true; $maxDepth = 3;
+//$spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
 //$seed = 'http://www.nu.nl/feeds/rss/algemeen.rss'; $allowSubDomains = false; $maxDepth = 1;
 //$spider->addDiscoverer(new XPathExpressionDiscoverer("//item/link"));
@@ -170,9 +170,9 @@ $spider->addPreFetchFilter(new UriWithHashFragmentFilter());
 $report = $spider->crawl($seed);
 $processed = $spider->process();
 
-echo "\n\nPROCESSED\n";
-asort($processed);
-echo "\n - ".implode("\n - ", $processed);
+//echo "\n\nPROCESSED\n";
+//asort($processed);
+//echo "\n - ".implode("\n - ", $processed);
 
 /**
  * Reporting
@@ -188,10 +188,10 @@ $timer = $container['guzzle.plugin.timer.request'];
 
 //echo "\n\nENQUEUED\n";
 //print_r($enqueued);
-echo "\n\nFILTERED\n";
-print_r($filtered);
-echo "\n\nFAILED\n";
-print_r($failed);
+//echo "\n\nFILTERED\n";
+//print_r($filtered);
+//echo "\n\nFAILED\n";
+//print_r($failed);
 
 echo "\n  COUNT ENQUEUED:  " . count($enqueued);
 echo "\n  COUNT SKIPPED:   " . count($filtered);
