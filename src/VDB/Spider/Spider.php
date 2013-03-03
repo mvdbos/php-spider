@@ -74,10 +74,13 @@ class Spider
     private $currentQueueSize = 0;
 
     /** @var int the current crawl depth */
-    private $currentDepth = 0;
+    private $currentDepth = array();
 
     /** @var URI the parent of the node we are currently visiting */
     private $previousURI;
+
+    /** @var array  */
+    private $traversalQueue = array();
 
     /**
      * @param \Pimple $container
@@ -99,7 +102,9 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_START);
 
         try {
-            $this->doCrawl($this->seed);
+            array_push($this->traversalQueue, $this->seed);
+            $this->currentDepth[$this->seed->recompose()] = 0;
+            $this->doCrawl();
         } catch (QueueException $e) {
             // do nothing, this is the only way to break the recursion
         }
@@ -109,7 +114,7 @@ class Spider
         $processed = array();
         foreach ($this->processQueue as $document) {
             /** @var $document Document */
-            $processed[] = $document->getUri()->recompose();
+            $processed[] = "(d=".$document->depthFound.")" . $document->getUri()->recompose();
         }
 
         return array(
@@ -286,38 +291,46 @@ class Spider
      *
      * @param URI $currentURI
      */
-    private function doCrawl(URI $currentURI)
+    private function doCrawl()
     {
-        // Fetch the document
-        if (!$document = $this->fetchDocument($currentURI)) {
-            return;
-        }
+        while (count($this->traversalQueue)) {
+            // get next item
+            /** @var $currentURI URI  */
+            $currentURI = array_pop($this->traversalQueue);
 
-        $this->dispatch(
-            SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH,
-            new GenericEvent($this, array('document' => $document))
-        );
+            // Fetch the document
+            if (!$document = $this->fetchDocument($currentURI)) {
+                continue;
+            }
 
-        if ($this->matchesPostfetchFilter($document)) {
-            $this->addToFiltered($document);
-            return;
-        }
+            $this->dispatch(
+                SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH,
+                new GenericEvent($this, array('document' => $document))
+            );
 
-        // The document was not filtered, so we add it to the processing queue
-        $this->dispatch(
-            SpiderEvents::SPIDER_CRAWL_PRE_ENQUEUE,
-            new GenericEvent($this, array('document' => $document))
-        );
+            if ($this->matchesPostfetchFilter($document)) {
+                $this->addToFiltered($document);
+                continue;
+            }
 
-        $this->addToProcessQueue($document);
+            // The document was not filtered, so we add it to the processing queue
+            $this->dispatch(
+                SpiderEvents::SPIDER_CRAWL_PRE_ENQUEUE,
+                new GenericEvent($this, array('document' => $document))
+            );
 
-        // only crawl more links if we are not yet at maxDepth
-        if ($this->currentDepth < $this->maxDepth) {
+            $this->addToProcessQueue($document);
+
+            $nextLevel = $this->currentDepth[$currentURI->recompose()] + 1;
+            if ($nextLevel > $this->maxDepth) {
+                continue;
+            }
 
             // Once the document is enqueued, apply the discoverers to look for more links to follow
             $discoveredURIs = $this->executeDiscoverers($document);
 
             foreach ($discoveredURIs as $uri) {
+
                 // Decorate the link to make it filterable
                 $uri = new FilterableURI($uri);
 
@@ -336,12 +349,11 @@ class Spider
                 } else {
                     // The URI was not matched by any filter, recurse
                     $this->previousURI = $currentURI;
-                    $this->currentDepth++;
-                    $this->doCrawl($uri);
+                    $this->currentDepth[$uri->recompose()] = $nextLevel;
+                    array_push($this->traversalQueue, $uri);
                 }
             }
         }
-        $this->currentDepth--;
     }
 
     /**
@@ -397,7 +409,7 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
             $document = $this->requestHandler->request($uri);
-            $document->depthFound = $this->currentDepth;
+            $document->depthFound = $this->currentDepth[$uri->recompose()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $document;
         } catch (\Exception $e) {

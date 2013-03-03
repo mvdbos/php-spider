@@ -94,7 +94,7 @@ $politenessPolicyEventListener = new PolitenessPolicyListener(500);
 // Voorbeeld 0: Hele blog.vandenbos.org site
 //HttpURI::$allowedSchemes[] = 'mailto';
 
-$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 4;
+$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 2;
 $spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 //$spider->addDiscoverer(new CssSelectorDiscoverer('a'));
 
@@ -186,12 +186,12 @@ $failed   = $report['failed'];
 /** @var $timer TimerPlugin */
 $timer = $container['guzzle.plugin.timer.request'];
 
-//echo "\n\nENQUEUED\n";
-//print_r($enqueued);
-//echo "\n\nFILTERED\n";
-//print_r($filtered);
-//echo "\n\nFAILED\n";
-//print_r($failed);
+echo "\n\nENQUEUED\n";
+print_r($enqueued);
+echo "\n\nFILTERED\n";
+print_r($filtered);
+echo "\n\nFAILED\n";
+print_r($failed);
 
 echo "\n  COUNT ENQUEUED:  " . count($enqueued);
 echo "\n  COUNT SKIPPED:   " . count($filtered);
