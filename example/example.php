@@ -1,5 +1,6 @@
 <?php
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
+use VDB\Spider\Spider;
 use VDB\URI\HttpURI;
 use VDB\Spider\Discoverer\RssXPathExpressionDiscoverer;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
@@ -86,7 +87,7 @@ $container['guzzle.plugin.cache.request'] = $container->share(
 //HttpURI::$allowedSchemes[] = 'https';
 //HttpURI::$allowedSchemes[] = 'mailto';
 
-$spider = new VDB\Spider\Spider($container);
+$spider = new Spider($container);
 
 $politenessPolicyEventListener = new PolitenessPolicyListener(500);
 //$spider->getDispatcher()->addListener(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array($politenessPolicyEventListener, 'onCrawlPreRequest'));
@@ -94,6 +95,8 @@ $politenessPolicyEventListener = new PolitenessPolicyListener(500);
 // Voorbeeld 0: Hele blog.vandenbos.org site
 //HttpURI::$allowedSchemes[] = 'mailto';
 
+$spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
+//$spider->setTraversalAlgorithm(Spider::ALGORITHM_DEPTH_FIRST);
 $seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 2;
 $spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 //$spider->addDiscoverer(new CssSelectorDiscoverer('a'));
@@ -131,7 +134,7 @@ $spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 //$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@id='page']/div[@id='content']/div[@class='column column-4']//a"));
 
 // ### Voorbeeld 3:  Alleen alle links naar detailpagina's van pagina 1 Tour Nieuws van Golf.nl en geen pagineerlinks, niet dieper dan eerste detailpagina.
-//$seed = 'http://www.dmoz.org/'; $allowSubDomains = true; $maxDepth = 3;
+//$seed = 'http://www.dmoz.org/'; $allowSubDomains = false; $maxDepth = 1;
 //$spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
 //$seed = 'http://www.nu.nl/feeds/rss/algemeen.rss'; $allowSubDomains = false; $maxDepth = 1;
@@ -154,7 +157,6 @@ $guzzleClient->setUserAgent('Googlebot');
 
 
 // Add some default PreFetchFilter. The more you have of these, the less HTTP requests and work for the processors
-$spider->addPreFetchFilter(new AlreadyVisitedFilter($seed)); // ALWAYS use this, you know why...
 $spider->addPreFetchFilter(new AllowedSchemeFilter(array('http')));
 $spider->addPreFetchFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
 $spider->addPreFetchFilter(new UriWithHashFragmentFilter());

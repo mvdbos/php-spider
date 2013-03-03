@@ -28,6 +28,10 @@ use Exception;
  */
 class Spider
 {
+    const ALGORITHM_DEPTH_FIRST = 0;
+    const ALGORITHM_BREADTH_FIRST = 1;
+
+
     /** @var RequestHandler */
     private $requestHandler;
 
@@ -67,20 +71,27 @@ class Spider
     /** @var int The maximum depth for the crawl */
     private $maxDepth = 3;
 
-    /** @var int The maximum size of the process queue for this spider */
+    /** @var int the current crawl depth */
+    private $currentDepth = array();
+
+    /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     private $maxQueueSize = 0;
 
     /** @var int the amount of times a Document was enqueued */
     private $currentQueueSize = 0;
 
-    /** @var int the current crawl depth */
-    private $currentDepth = array();
+    /** @var array the list of already visited URIs with the depth they were discovered on as value */
+    private $visitedURIs = array();
 
-    /** @var URI the parent of the node we are currently visiting */
-    private $previousURI;
-
-    /** @var array  */
+    /** @var array the list of URIs to process */
     private $traversalQueue = array();
+
+    /**
+     * @var int
+     * The algorithm to use. Choose from the class constants
+     * Defaults to ALGORITHM_DEPTH_FIRST
+     */
+    private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
     /**
      * @param \Pimple $container
@@ -103,7 +114,7 @@ class Spider
 
         try {
             array_push($this->traversalQueue, $this->seed);
-            $this->currentDepth[$this->seed->recompose()] = 0;
+            $this->visitedURIs[$this->seed->recompose()] = 0;
             $this->doCrawl();
         } catch (QueueException $e) {
             // do nothing, this is the only way to break the recursion
@@ -196,6 +207,22 @@ class Spider
     }
 
     /**
+     * @param int $traversalAlgorithm Choose from the class constants
+     */
+    public function setTraversalAlgorithm($traversalAlgorithm)
+    {
+        $this->traversalAlgorithm = $traversalAlgorithm;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTraversalAlgorithm()
+    {
+        return $this->traversalAlgorithm;
+    }
+
+    /**
      * @param int $maxQueueSize
      */
     public function setMaxQueueSize($maxQueueSize)
@@ -282,21 +309,40 @@ class Spider
         return false;
     }
 
+    private function getNextURIFromQueue()
+    {
+        if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
+            return array_pop($this->traversalQueue);
+        } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
+            return array_shift($this->traversalQueue);
+        } else {
+            throw new \LogicException('No search algorith set');
+        }
+    }
+
+
     /**
-     * Recursive function that crawls each provided URI
+     * Function that crawls each provided URI
      * It applies all processors and listeners set on the Spider
      *
-     * This is a depth first algorithm as explained here:
+     * This is a either depth first algorithm as explained here:
      *  https://en.wikipedia.org/wiki/Depth-first_search#Example
+     * Note that because we don't do it recursive, but iteratively,
+     * results will be in a different order from the example, because
+     * we always take the right-most child first, whereas a recursive
+     * variant would always take the left-most child first
+     *
+     * or
+     *
+     * a breadth first algorithm
      *
      * @param URI $currentURI
      */
     private function doCrawl()
     {
         while (count($this->traversalQueue)) {
-            // get next item
             /** @var $currentURI URI  */
-            $currentURI = array_pop($this->traversalQueue);
+            $currentURI = $this->getNextURIFromQueue();
 
             // Fetch the document
             if (!$document = $this->fetchDocument($currentURI)) {
@@ -321,7 +367,7 @@ class Spider
 
             $this->addToProcessQueue($document);
 
-            $nextLevel = $this->currentDepth[$currentURI->recompose()] + 1;
+            $nextLevel = $this->visitedURIs[$currentURI->recompose()] + 1;
             if ($nextLevel > $this->maxDepth) {
                 continue;
             }
@@ -330,12 +376,13 @@ class Spider
             $discoveredURIs = $this->executeDiscoverers($document);
 
             foreach ($discoveredURIs as $uri) {
-
                 // Decorate the link to make it filterable
                 $uri = new FilterableURI($uri);
 
-                // Always skip the node we just visited before the current Document
-                if (null !== $this->previousURI && $uri->recompose() === $this->previousURI->recompose()) {
+                // Always skip nodes we already visited
+                if (array_key_exists($uri->recompose(), $this->visitedURIs)) {
+                    $uri->setFiltered(true, 'Already visited');
+                    $this->addToFiltered($uri);
                     continue;
                 }
 
@@ -347,9 +394,8 @@ class Spider
                 if ($this->matchesPrefetchFilter($uri)) {
                     $this->addToFiltered($uri);
                 } else {
-                    // The URI was not matched by any filter, recurse
-                    $this->previousURI = $currentURI;
-                    $this->currentDepth[$uri->recompose()] = $nextLevel;
+                    // The URI was not matched by any filter, mark as visited and add to queue
+                    $this->visitedURIs[$uri->recompose()] = $nextLevel;
                     array_push($this->traversalQueue, $uri);
                 }
             }
@@ -409,7 +455,7 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
             $document = $this->requestHandler->request($uri);
-            $document->depthFound = $this->currentDepth[$uri->recompose()];
+            $document->depthFound = $this->visitedURIs[$uri->recompose()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $document;
         } catch (\Exception $e) {

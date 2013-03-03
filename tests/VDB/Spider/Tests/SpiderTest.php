@@ -153,39 +153,36 @@ class SpiderTest extends TestCase
         }
     }
 
-
     /**
      * @covers VDB\Spider\Spider::crawl
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
-    public function testCrawlDepthFirstDefaultBehaviour()
+    public function testCrawlDFSDefaultBehaviour()
     {
         $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(15);
-
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
-        $this->assertEquals('ABDFEABDFEABDFE', $this->titleExtractorProcessor->titles);
-    }
-
-    /**
-     * @covers VDB\Spider\Spider::crawl
-     *
-     * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
-     */
-    public function testCrawlDepthFirstWithAlreadyVisitedFilter()
-    {
-        $this->spider->addPreFetchFilter(new AlreadyVisitedFilter('http://php-spider.org/A'));
-        $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(40);
+        $this->spider->setMaxQueueSize(100);
 
         $report = $this->spider->crawl('http://php-spider.org/A');
         $this->spider->process();
 
-        var_dump($report);
+        $this->assertEquals('AEFCGBD', $this->titleExtractorProcessor->titles);
+    }
 
-        $this->assertEquals('ABDFECG', $this->titleExtractorProcessor->titles);
+    /**
+     * @covers VDB\Spider\Spider::crawl
+     *
+     */
+    public function testCrawlBFSDefaultBehaviour()
+    {
+        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
+        $this->spider->setMaxDepth(1000);
+        $this->spider->setMaxQueueSize(100);
+
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+
+        $this->assertEquals('ABCEDFG', $this->titleExtractorProcessor->titles);
     }
 
     /**
@@ -193,9 +190,19 @@ class SpiderTest extends TestCase
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
-    public function testCrawlMaxDepthOne()
+    public function testCrawlDFSMaxDepthOne()
     {
         $this->spider->setMaxDepth(1);
+
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+        $this->assertEquals('AECB', $this->titleExtractorProcessor->titles);
+    }
+
+    public function testCrawlBFSMaxDepthOne()
+    {
+        $this->spider->setMaxDepth(1);
+        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
 
         $this->spider->crawl('http://php-spider.org/A');
         $this->spider->process();
@@ -205,16 +212,26 @@ class SpiderTest extends TestCase
     /**
      * @covers VDB\Spider\Spider::crawl
      */
-    public function testCrawlMaxQueueSize()
+    public function testCrawlDFSMaxQueueSize()
     {
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(3);
 
         $this->spider->crawl('http://php-spider.org/A');
         $this->spider->process();
-        $this->assertEquals('ABD', $this->titleExtractorProcessor->titles);
+        $this->assertEquals('AEF', $this->titleExtractorProcessor->titles);
     }
 
+    public function testCrawlBFSMaxQueueSize()
+    {
+        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
+        $this->spider->setMaxDepth(1000);
+        $this->spider->setMaxQueueSize(3);
+
+        $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->process();
+        $this->assertEquals('ABC', $this->titleExtractorProcessor->titles);
+    }
 
     /**
      * @covers VDB\Spider\Spider::crawl

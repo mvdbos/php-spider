@@ -4,3 +4,4 @@ vendor
 TODO.md
 example/logs/*.log
 *.doctrinecache.php
+.DS_Store
