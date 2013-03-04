@@ -40,12 +40,21 @@ Execute crawl
 ```php
 $report = $spider->crawl();
 ```
-And finally, we could get some info about the crawl
+When crawling is done, we could get some info about the crawl
 ```php
 echo "\nENQUEUED: " . count($report['queued']);
 echo "\n - ".implode("\n - ", $report['queued']);
 echo "\nSKIPPED:   " . count($report['filtered']);
 echo "\nFAILED:    " . count($report['failed']) . "\n";
+```
+Finally we could start some processing on the downloaded resources
+```php
+foreach ($report['queued'] as $resource) {
+    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    // do something with the data
+    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+}
 ```
 Contributing
 ------------
