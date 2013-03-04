@@ -58,7 +58,3 @@ TODO
 - [ ] build: support scaling: multiple parallel threads / workers. For requests? or for spiders themselves? or both?
 - [ ] build: support authentication
 - [ ] build: Phar compilation support
-
-
-
-
