@@ -16,18 +16,18 @@ $spider->setMaxDepth(1);
 $spider->setMaxQueueSize(10);
 
 // Execute crawl
-$report = $spider->crawl();
+$result = $spider->crawl();
 
 // Report
-echo "\n\nENQUEUED for processing: " . count($report['queued']);
-echo "\n - ".implode("\n - ", $report['queued']);
-echo "\n\nSKIPPED:   " . count($report['filtered']);
-echo "\n".var_export($report['filtered'], true);
-echo "\n\nFAILED:    " . count($report['failed']) ;
-echo "\n".var_export($report['failed'], true) . "\n\n";
+echo "\n\nENQUEUED for processing: " . count($result['queued']);
+echo "\n - ".implode("\n - ", $result['queued']);
+echo "\n\nSKIPPED:   " . count($result['filtered']);
+echo "\n".var_export($result['filtered'], true);
+echo "\n\nFAILED:    " . count($result['failed']) ;
+echo "\n".var_export($result['failed'], true) . "\n\n";
 
 // Finally we could start some processing on the downloaded resources
-foreach ($report['queued'] as $resource) {
+foreach ($result['queued'] as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();
     $contentLength = $resource->getResponse()->getHeader('Content-Length');
     // do something with the data
