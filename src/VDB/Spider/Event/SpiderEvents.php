@@ -21,7 +21,7 @@ final class SpiderEvents
     const SPIDER_CRAWL_FILTER_PREFETCH = 'spider.crawl.filter.prefetch';
 
     /**
-     * The spider.crawl.filter.postfetch event fires when the Document is already fetched and is not yet filtered
+     * The spider.crawl.filter.postfetch event fires when the Resource is already fetched and is not yet filtered
      *
      * The event listener receives an
      * VDB\Spider\Subscriber\CrawlFilterPostFetchEvent instance.
@@ -42,13 +42,13 @@ final class SpiderEvents
     const SPIDER_CRAWL_POST_REQUEST = 'spider.crawl.post_request';
 
     /**
-     * The spider.crawl.pre_enqueue event fires when the Document is ready to be enqueued
+     * The spider.crawl.pre_enqueue event fires when the Resource is ready to be enqueued
      *
      * The event listener receives an
      * VDB\Spider\Subscriber\CrawlPreEnqueueEvent instance.
      *
-     * The event contains an instance of the Document being enqueued.
-     * An example use case for this event would be to change the Documents queue priority based on certain rules
+     * The event contains an instance of the Resource being enqueued.
+     * An example use case for this event would be to change the Resources queue priority based on certain rules
      *
      * Note: any listener for this event could stop propagation when its filter matches the event information
      * This means you can't assume your listener will be called

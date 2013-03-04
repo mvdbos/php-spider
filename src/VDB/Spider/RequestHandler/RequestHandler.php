@@ -4,7 +4,7 @@ namespace VDB\Spider\RequestHandler;
 
 use Symfony\Component\DomCrawler\Link;
 use VDB\URI\URI;
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 
 /**
  *
@@ -13,7 +13,7 @@ interface RequestHandler
 {
     /**
      * @param \Symfony\Component\DomCrawler\Link $Link
-     * @return Document
+     * @return Resource
      */
     public function request(URI $uri);
 }

@@ -17,7 +17,7 @@ use VDB\Spider\Tests\TestCase;
 use Symfony\Component\BrowserKit\Response;
 use DOMDocument;
 use DOMElement;
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 use VDB\URI\GenericURI;
 use VDB\Spider\Spider;
 
@@ -32,8 +32,8 @@ abstract class DiscovererTestCase extends TestCase
     /** @var Spider */
     protected $spider;
 
-    /** @var Document */
-    protected $spiderDocument;
+    /** @var Resource */
+    protected $spiderResource;
 
     /** @var GenericURI */
     protected $uri;
@@ -54,9 +54,9 @@ abstract class DiscovererTestCase extends TestCase
 
         $this->spider = new Spider('http://php-spider.org');
 
-        // Setup Spider\Document
+        // Setup Spider\Resource
         $crawler = new Crawler($this->domDocument, 'http://php-spider.org');
-        $this->spiderDocument = new Document(
+        $this->spiderResource = new Resource(
             $this->uri,
             new Response(200),
             $crawler

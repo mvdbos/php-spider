@@ -5,7 +5,7 @@ use VDB\Spider\Discoverer;
 use VDB\URI\Exception\UriSyntaxException;
 use VDB\Spider\Spider;
 use VDB\URI\GenericURI;
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 use VDB\URI\URI;
 
 /**
@@ -26,10 +26,10 @@ class CssSelectorDiscoverer implements Discoverer
     }
 
     /**
-     * @param \VDB\Spider\Document $document
+     * @param \VDB\Spider\Resource $document
      * @return URI[]
      */
-    public function discover(Spider $spider, Document $document)
+    public function discover(Spider $spider, Resource $document)
     {
         $crawler = $document->getCrawler()->filter($this->cssSelector);
         $uris = array();

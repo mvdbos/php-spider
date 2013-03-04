@@ -1,7 +1,7 @@
 <?php
 namespace Example\PostFetchSelectionPolicyFilter;
 
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 use VDB\Spider\Filter\PostFetchFilter;
 
 /**
@@ -9,7 +9,7 @@ use VDB\Spider\Filter\PostFetchFilter;
  */
 class PottyWordsFilter implements PostFetchFilter
 {
-    public function match(Document $document)
+    public function match(Resource $document)
     {
         return false;
     }

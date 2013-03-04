@@ -1,24 +1,24 @@
 <?php
 namespace VDB\Spider\Tests;
 
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 use VDB\URI\GenericURI;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\BrowserKit\Response;
 
 /**
  */
-class DocumentTest extends TestCase
+class ResourceTest extends TestCase
 {
     /**
-     * @var Document
+     * @var Resource
      */
     protected $document;
 
     protected function setUp()
     {
-        $html = file_get_contents(__DIR__ . '/Fixtures/DocumentTestHTMLDocument.html');
-        $this->document = new Document(
+        $html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
+        $this->document = new Resource(
             new GenericURI('/domains/special', 'http://example.org'),
             new Response(),
             new Crawler($html, 'http://example.org')
@@ -26,7 +26,7 @@ class DocumentTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Document::getCrawler
+     * @covers VDB\Spider\Resource::getCrawler
      */
     public function testGetCrawler()
     {
@@ -34,7 +34,7 @@ class DocumentTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Document::getLink
+     * @covers VDB\Spider\Resource::getLink
      */
     public function testGetLink()
     {
@@ -43,7 +43,7 @@ class DocumentTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Document::getResponse
+     * @covers VDB\Spider\Resource::getResponse
      */
     public function testGetResponse()
     {
@@ -51,9 +51,9 @@ class DocumentTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Document::setFiltered
-     * @covers VDB\Spider\Document::isFiltered
-     * @covers VDB\Spider\Document::getFilterReason
+     * @covers VDB\Spider\Resource::setFiltered
+     * @covers VDB\Spider\Resource::isFiltered
+     * @covers VDB\Spider\Resource::getFilterReason
      */
     public function testSetFiltered()
     {
@@ -63,7 +63,7 @@ class DocumentTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Document::getIdentifier
+     * @covers VDB\Spider\Resource::getIdentifier
      */
     public function testGetIdentifier()
     {
