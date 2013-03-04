@@ -12,6 +12,7 @@ class UriWithQueryStringFilter implements PreFetchFilter
     public function match(FilterableURI $uri)
     {
         if (null !== $uri->getQuery()) {
+            $uri->setFiltered(true, 'URI with query string');
             return true;
         }
         return false;

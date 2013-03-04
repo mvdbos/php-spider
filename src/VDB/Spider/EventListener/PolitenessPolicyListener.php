@@ -15,6 +15,8 @@ class PolitenessPolicyListener
     /** @var int the delay in microseconds between requests to the same domain */
     private $requestDelay;
 
+    public $totalDelay = 0;
+
     /**
      * @param int $requestDelay the delay in milliseconds between requests to the same domain
      */
@@ -31,6 +33,7 @@ class PolitenessPolicyListener
         $currentHostname = $event->getArgument('uri')->getHost();
 
         if ($currentHostname === $this->previousHostname) {
+            $this->totalDelay = $this->totalDelay + $this->requestDelay;
             usleep($this->requestDelay);
 
         }

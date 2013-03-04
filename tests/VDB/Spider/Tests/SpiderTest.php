@@ -6,7 +6,6 @@ use VDB\Spider\Tests\Fixtures\TitleExtractorProcessor;
 use VDB\URI\GenericURI;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
-use VDB\Spider\Filter\Prefetch\AlreadyVisitedFilter;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use \PHPUnit_Framework_MockObject_MockObject;
 
@@ -27,43 +26,43 @@ class SpiderTest extends TestCase
     protected $requestHandler;
 
     /** @var GenericURI */
-    protected $link1;
+    protected $linkA;
     /** @var GenericURI */
-    protected $link2;
+    protected $linkB;
     /** @var GenericURI */
-    protected $link3;
+    protected $linkC;
     /** @var GenericURI */
-    protected $link4;
+    protected $linkD;
     /** @var GenericURI */
-    protected $link5;
+    protected $linkE;
     /** @var GenericURI */
-    protected $link6;
+    protected $linkF;
     /** @var GenericURI */
-    protected $link7;
+    protected $linkG;
 
     /** @var Crawler */
-    protected $crawler1;
+    protected $crawlerA;
     /** @var Crawler */
-    protected $crawler2;
+    protected $crawlerB;
     /** @var Crawler */
-    protected $crawler3;
+    protected $crawlerC;
     /** @var Crawler */
-    protected $crawler4;
+    protected $crawlerD;
     /** @var Crawler */
-    protected $crawler5;
+    protected $crawlerE;
     /** @var Crawler */
-    protected $crawler6;
+    protected $crawlerF;
     /** @var Crawler */
-    protected $crawler7;
+    protected $crawlerG;
 
     /** @var string */
-    protected $href1;
-    protected $href2;
-    protected $href3;
-    protected $href4;
-    protected $href5;
-    protected $href6;
-    protected $href7;
+    protected $hrefA;
+    protected $hrefB;
+    protected $hrefC;
+    protected $hrefD;
+    protected $hrefE;
+    protected $hrefF;
+    protected $hrefG;
 
     /** @var TitleExtractorProcessor */
     protected $titleExtractorProcessor;
@@ -74,47 +73,46 @@ class SpiderTest extends TestCase
      */
     protected function setUp()
     {
-        $container = new Pimple();
-        $this->spider = new Spider($container);
+        $this->spider = new Spider('http://php-spider.org/A');
 
         $this->requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandler');
 
-        $this->href1 = 'http://php-spider.org/A';
-        $this->href2 = 'http://php-spider.org/B';
-        $this->href3 = 'http://php-spider.org/C';
-        $this->href4 = 'http://php-spider.org/D';
-        $this->href5 = 'http://php-spider.org/E';
-        $this->href6 = 'http://php-spider.org/F';
-        $this->href7 = 'http://php-spider.org/G';
+        $this->hrefA = 'http://php-spider.org/A';
+        $this->hrefB = 'http://php-spider.org/B';
+        $this->hrefC = 'http://php-spider.org/C';
+        $this->hrefD = 'http://php-spider.org/D';
+        $this->hrefE = 'http://php-spider.org/E';
+        $this->hrefF = 'http://php-spider.org/F';
+        $this->hrefG = 'http://php-spider.org/G';
 
-        $this->link1 = new GenericURI($this->href1);
-        $this->link2 = new GenericURI($this->href2);
-        $this->link3 = new GenericURI($this->href3);
-        $this->link4 = new GenericURI($this->href4);
-        $this->link5 = new GenericURI($this->href5);
-        $this->link6 = new GenericURI($this->href6);
-        $this->link7 = new GenericURI($this->href7);
+        $this->linkA = new GenericURI($this->hrefA);
+        $this->linkB = new GenericURI($this->hrefB);
+        $this->linkC = new GenericURI($this->hrefC);
+        $this->linkD = new GenericURI($this->hrefD);
+        $this->linkE = new GenericURI($this->hrefE);
+        $this->linkF = new GenericURI($this->hrefF);
+        $this->linkG = new GenericURI($this->hrefG);
 
-        $html1 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentA.html');
-        $this->crawler1 = new Crawler($html1, $this->href1);
+        $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentA.html');
+        $this->crawlerA = new Crawler($htmlA, $this->hrefA);
 
-        $html2 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentB.html');
-        $this->crawler2 = new Crawler($html2, $this->href2);
+        $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentB.html');
+        $this->crawlerB = new Crawler($htmlB, $this->hrefB);
 
-        $html3 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentC.html');
-        $this->crawler3 = new Crawler($html3, $this->href3);
+        $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentC.html');
+        $this->crawlerC = new Crawler($htmlC, $this->hrefC);
 
-        $html4 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentD.html');
-        $this->crawler4 = new Crawler($html4, $this->href4);
+        $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentD.html');
+        $this->crawlerD = new Crawler($htmlD, $this->hrefD);
 
-        $html5 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentE.html');
-        $this->crawler5 = new Crawler($html5, $this->href5);
+        $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentE.html');
+        $this->crawlerE = new Crawler($htmlE, $this->hrefE);
 
-        $html6 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentF.html');
-        $this->crawler6 = new Crawler($html6, $this->href6);
+        $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentF.html');
+        $this->crawlerF = new Crawler($htmlF, $this->hrefF);
 
-        $html7 = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentG.html');
-        $this->crawler7 = new Crawler($html7, $this->href7);
+        $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentG.html');
+        $this->crawlerG = new Crawler($htmlG, $this->hrefG);
 
         $this->requestHandler
             ->expects($this->any())
@@ -123,9 +121,6 @@ class SpiderTest extends TestCase
 
         $this->spider->setRequestHandler($this->requestHandler);
         $this->spider->addDiscoverer(new XPathExpressionDiscoverer('//a'));
-
-        $this->titleExtractorProcessor = new TitleExtractorProcessor();
-        $this->spider->addProcessor($this->titleExtractorProcessor);
     }
 
     /**
@@ -136,20 +131,20 @@ class SpiderTest extends TestCase
         $link = func_get_arg(0);
 
         switch ($link->recompose()) {
-            case $this->link1->recompose():
-                return $this->getDocument($this->link1, $this->crawler1);
-            case $this->link2->recompose():
-                return $this->getDocument($this->link2, $this->crawler2);
-            case $this->link3->recompose():
-                return $this->getDocument($this->link3, $this->crawler3);
-            case $this->link4->recompose():
-                return $this->getDocument($this->link4, $this->crawler4);
-            case $this->link5->recompose():
-                return $this->getDocument($this->link5, $this->crawler5);
-            case $this->link6->recompose():
-                return $this->getDocument($this->link6, $this->crawler6);
-            case $this->link7->recompose():
-                return $this->getDocument($this->link7, $this->crawler7);
+            case $this->linkA->recompose():
+                return $this->getDocument($this->linkA, $this->crawlerA);
+            case $this->linkB->recompose():
+                return $this->getDocument($this->linkB, $this->crawlerB);
+            case $this->linkC->recompose():
+                return $this->getDocument($this->linkC, $this->crawlerC);
+            case $this->linkD->recompose():
+                return $this->getDocument($this->linkD, $this->crawlerD);
+            case $this->linkE->recompose():
+                return $this->getDocument($this->linkE, $this->crawlerE);
+            case $this->linkF->recompose():
+                return $this->getDocument($this->linkF, $this->crawlerF);
+            case $this->linkG->recompose():
+                return $this->getDocument($this->linkG, $this->crawlerG);
         }
     }
 
@@ -163,10 +158,21 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(100);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
+        $report = $this->spider->crawl();
 
-        $this->assertEquals('AEFCGBD', $this->titleExtractorProcessor->titles);
+        $expected = array(
+            $this->hrefA,
+            $this->hrefE,
+            $this->hrefF,
+            $this->hrefC,
+            $this->hrefG,
+            $this->hrefB,
+            $this->hrefD
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     /**
@@ -179,10 +185,21 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(100);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
+        $report = $this->spider->crawl();
 
-        $this->assertEquals('ABCEDFG', $this->titleExtractorProcessor->titles);
+        $expected = array(
+            $this->hrefA,
+            $this->hrefB,
+            $this->hrefC,
+            $this->hrefE,
+            $this->hrefD,
+            $this->hrefF,
+            $this->hrefG
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     /**
@@ -194,9 +211,18 @@ class SpiderTest extends TestCase
     {
         $this->spider->setMaxDepth(1);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
-        $this->assertEquals('AECB', $this->titleExtractorProcessor->titles);
+        $report = $this->spider->crawl();
+
+        $expected = array(
+            $this->hrefA,
+            $this->hrefE,
+            $this->hrefC,
+            $this->hrefB,
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     public function testCrawlBFSMaxDepthOne()
@@ -204,9 +230,18 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1);
         $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
-        $this->assertEquals('ABCE', $this->titleExtractorProcessor->titles);
+        $report = $this->spider->crawl();
+
+        $expected = array(
+            $this->hrefA,
+            $this->hrefB,
+            $this->hrefC,
+            $this->hrefE,
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     /**
@@ -217,9 +252,17 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(3);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
-        $this->assertEquals('AEF', $this->titleExtractorProcessor->titles);
+        $report = $this->spider->crawl();
+
+        $expected = array(
+            $this->hrefA,
+            $this->hrefE,
+            $this->hrefF,
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     public function testCrawlBFSMaxQueueSize()
@@ -228,9 +271,17 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(3);
 
-        $this->spider->crawl('http://php-spider.org/A');
-        $this->spider->process();
-        $this->assertEquals('ABC', $this->titleExtractorProcessor->titles);
+        $report = $this->spider->crawl();
+
+        $expected = array(
+            $this->hrefA,
+            $this->hrefB,
+            $this->hrefC,
+        );
+
+        foreach ($report['queued'] as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri);
+        }
     }
 
     /**
@@ -245,7 +296,7 @@ class SpiderTest extends TestCase
                 $this->throwException(new Exception('Failed mock request!'))
             );
 
-        $report = $this->spider->crawl('http://php-spider.org/1');
+        $report = $this->spider->crawl();
 
         $this->assertCount(0, $report['filtered'], 'Filtered count');
         $this->assertCount(0, $report['queued'], 'Queued count');

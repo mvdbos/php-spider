@@ -1,7 +1,6 @@
 <?php
 namespace VDB\Spider;
 
-use VDB\Spider\Processor;
 use VDB\URI\HttpURI;
 use VDB\URI\URI;
 use VDB\Spider\Exception\QueueException;
@@ -11,16 +10,11 @@ use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient;
-
 use Guzzle\Http\Url;
-
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\GenericEvent;
-
-use Pimple;
-
 use Exception;
 
 /**
@@ -31,12 +25,8 @@ class Spider
     const ALGORITHM_DEPTH_FIRST = 0;
     const ALGORITHM_BREADTH_FIRST = 1;
 
-
     /** @var RequestHandler */
     private $requestHandler;
-
-    /** @var Processor[] */
-    private $processors = array();
 
     /** @var Discoverer[] */
     private $discoverers = array();
@@ -62,17 +52,11 @@ class Spider
     /** @var array all URIs enqueued for processing */
     protected $processQueue = array();
 
-    /** @var Pimple The DIC */
-    private $container;
-
     /** @var EventDispatcherInterface */
     private $dispatcher;
 
     /** @var int The maximum depth for the crawl */
     private $maxDepth = 3;
-
-    /** @var int the current crawl depth */
-    private $currentDepth = array();
 
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     private $maxQueueSize = 0;
@@ -86,84 +70,46 @@ class Spider
     /** @var array the list of URIs to process */
     private $traversalQueue = array();
 
-    /**
-     * @var int
-     * The algorithm to use. Choose from the class constants
-     * Defaults to ALGORITHM_DEPTH_FIRST
-     */
+    /** @var int The traversal algorithm to use. Choose from the class constants */
     private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
     /**
-     * @param \Pimple $container
+     * @param string $seed the URI to start crawling
      */
-    public function __construct(Pimple $container)
+    public function __construct($seed)
     {
-        $this->container = $container;
+        $this->setSeed($seed);
     }
 
     /**
      * Starts crawling the URI provided on instantiation
      *
-     * @param $uri
      * @return array
      */
-    public function crawl($uri)
+    public function crawl()
     {
-        $this->setSeed($uri);
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_START);
 
         try {
-            array_push($this->traversalQueue, $this->seed);
-            $this->visitedURIs[$this->seed->recompose()] = 0;
             $this->doCrawl();
         } catch (QueueException $e) {
-            // do nothing, this is the only way to break the recursion
+            // do nothing, we got here because we reached max queue size.
         }
 
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_END);
 
-        $processed = array();
+        $enqueued = array();
         foreach ($this->processQueue as $document) {
             /** @var $document Document */
-            $processed[] = "(d=".$document->depthFound.")" . $document->getUri()->recompose();
+            $enqueued[] = $document;
         }
 
         return array(
-            'spiderId'      => hash('md5', $uri.microtime()),
+            'spiderId'      => hash('md5', $this->seed->recompose() . microtime()),
             'filtered'      => $this->filtered,
             'failed'        => $this->failed,
-            'queued'        => $processed
+            'queued'        => $enqueued
         );
-    }
-
-    /**
-     * Start processing all collected Documents
-     *
-     * @return array an array of all processed URIs
-     */
-    public function process()
-    {
-        $this->dispatch(SpiderEvents::SPIDER_PROCESS_START);
-        foreach ($this->processQueue as $document) {
-            /** @var $document Document */
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_PROCESS_DOCUMENT);
-            foreach ($this->processors as $processor) {
-                $processor->execute($document);
-            }
-            $this->addToProcessed($document->getUri()->recompose());
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_PROCESS_DOCUMENT);
-        }
-        $this->dispatch(SpiderEvents::SPIDER_PROCESS_END);
-
-        return $this->processed;
-    }
-
-    /**
-     * @param Processor $processor
-     */
-    public function addProcessor(Processor $processor)
-    {
-        array_push($this->processors, $processor);
     }
 
     /**
@@ -259,7 +205,7 @@ class Spider
     }
 
     /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $EventDispatcher
+     * @param EventDispatcherInterface $EventDispatcher
      * @return Spider
      */
     public function setDispatcher(EventDispatcherInterface $eventDispatcher)
@@ -270,7 +216,7 @@ class Spider
     }
 
     /**
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     * @return EventDispatcherInterface
      */
     public function getDispatcher()
     {
@@ -409,15 +355,12 @@ class Spider
     protected function addToProcessQueue(Document $document)
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
-            $this->addToFailed(
-                $document->getUri()->recompose(),
-                'Maximum Queue Size of ' . $this->maxQueueSize . ' reached'
-            );
+            $document->setFiltered(true, 'Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
+            $this->addToFiltered($document);
             throw new QueueException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
         }
 
         $this->currentQueueSize++;
-
         $this->processQueue[] = $document;
     }
 
@@ -453,7 +396,7 @@ class Spider
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
-            $document = $this->requestHandler->request($uri);
+            $document = $this->getRequestHandler()->request($uri);
             $document->depthFound = $this->visitedURIs[$uri->recompose()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $document;
@@ -482,11 +425,11 @@ class Spider
      * @param Filterable $GenericURI
      * @param string $reason
      */
-    private function addToFiltered(Filterable $uri)
+    private function addToFiltered(Filterable $item)
     {
         // we might encounter the URI twice, don't overwrite the original reason for filtering
-        if (!array_key_exists($uri->getIdentifier(), $this->filtered)) {
-            $this->filtered[$uri->getIdentifier()] = $uri->getFilterReason();
+        if (!array_key_exists($item->getIdentifier(), $this->filtered)) {
+            $this->filtered[$item->getIdentifier()] = $item->getFilterReason();
         }
     }
 
@@ -537,5 +480,8 @@ class Spider
     private function setSeed($uri)
     {
         $this->seed = new HttpURI($uri);
+
+        array_push($this->traversalQueue, $this->seed);
+        $this->visitedURIs[$this->seed->recompose()] = 0;
     }
 }

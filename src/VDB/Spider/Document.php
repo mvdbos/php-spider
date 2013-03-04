@@ -100,4 +100,9 @@ class Document implements Filterable
     {
         return $this->getUri()->recompose();
     }
+
+    public function __toString()
+    {
+        return $this->getIdentifier();
+    }
 }

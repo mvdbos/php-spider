@@ -52,7 +52,7 @@ abstract class DiscovererTestCase extends TestCase
 
         $this->uri = new GenericURI($this->domAnchor->getAttribute('href'));
 
-        $this->spider = new Spider(new Pimple());
+        $this->spider = new Spider('http://php-spider.org');
 
         // Setup Spider\Document
         $crawler = new Crawler($this->domDocument, 'http://php-spider.org');
