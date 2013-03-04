@@ -47,7 +47,7 @@ echo "\n - ".implode("\n - ", $report['queued']);
 echo "\nSKIPPED:   " . count($report['filtered']);
 echo "\nFAILED:    " . count($report['failed']) . "\n";
 ```
-CONTRIBUTING
+Contributing
 ------------
 Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request. 
 The Symfony documentation contains an excellent guide for how to do that properly here: [Submitting a Patch](http://symfony.com/doc/current/contributing/code/patches.html#step-1-setup-your-environment).
@@ -58,6 +58,6 @@ There a few requirements for a Pull Request to be accepted:
 
 > Note: An easy way to check if your code conforms to PHP-Spider is by running [Scrutinizer](https://scrutinizer-ci.com/) on your local code. You can do it simply by downloading [scrutinizer.phar](https://scrutinizer-ci.com/scrutinizer.phar) and running it on your PHP-Spider repository like so: `php scrutinizer.phar run /path/to/php-spider`
 
-LICENSE
+License
 -------
 PHP-Spider is licensed under the MIT license.
