@@ -56,6 +56,15 @@ foreach ($result['queued'] as $resource) {
     echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
 }
 ```
+Finally we could start some processing on the downloaded resources
+```php
+foreach ($result['queued'] as $resource) {
+    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    // do something with the data
+    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+}
+```
 Contributing
 ------------
 Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request. 
