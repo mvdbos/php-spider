@@ -36,10 +36,10 @@
 <ul>
 <li>supports two traversal algorithms: breadth-first and depth-first</li>
 <li>supports depth limiting and queue size limiting</li>
-<li>supports adding custom discovery logic, based on XPath, CSS selectors, or custom logic</li>
-<li>comes with a useful set of prebuilt filters</li>
-<li>supports custom filters, both prefetch and postfetch</li>
-<li>supports custom request handling</li>
+<li>supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP</li>
+<li>comes with a useful set of prebuilt URI filters, such as Domain limiting</li>
+<li>supports custom filters, both prefetch (URI) and postfetch (Resource content)</li>
+<li>supports custom request handling logic</li>
 <li>dispatches useful events, allowing developers to add even more custom behavior</li>
 <li>supports a politeness policy</li>
 <li>will soon come with many default discoverers: RSS, Atom, RDF, etc.</li>
@@ -82,27 +82,19 @@ some logging, caching and filters, see <a href="https://github.com/matthijsvande
 <span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">FAILED:    "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$report</span><span class="p">[</span><span class="s1">'failed'</span><span class="p">])</span> <span class="o">.</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
 </pre></div>
 
-<h2>TODO</h2>
+<h2>CONTRIBUTING</h2>
 
-<h3>MUST HAVE</h3>
+<p>Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request. 
+The Symfony documentation contains an excellent guide for how to do that properly here: <a href="http://symfony.com/doc/current/contributing/code/patches.html#step-1-setup-your-environment">Submitting a Patch</a>.</p>
 
-<ul>
-<li>[ ] refactor: Make the processqueue an injectable interface with some default adapters for file, memcache. etc.</li>
-<li>[ ] refactor: make the returned report an injectable interface with some default adapters for file, memcache. Also contains info about where to find the process queue</li>
-<li>[ ] refactor: make the spider accept an array of seeds</li>
-<li>[ ] build: support robots.txt.</li>
-<li>[ ] build: ranking policy listener. This can listen to the SPIDER_CRAWL_POST_DISCOVER event. We need to refactor $discoveredLinks to an object to let the listener change it. Question: Do we want to do that without copying the array because of memory usage?</li>
-<li>[ ] build: a re-visit policy that states when to check for changes to the pages (</li>
-<li>[ ] check: when calculating maxdepth, are redirects counted?</li>
-</ul><h3>SHOULD HAVE</h3>
+<p>There a few requirements for a Pull Request to be accepted:</p>
 
 <ul>
-<li>[ ] design: Support RDF, RSS Atom, Twitter feeds</li>
-<li>[ ] decide: maybe make it possible to set a minimum depth for a discoverer.  Use case: index pages where detail pages have other markup structure</li>
-<li>[ ] build: support scaling: multiple parallel threads / workers. For requests? or for spiders themselves? or both?</li>
-<li>[ ] build: support authentication</li>
-<li>[ ] build: Phar compilation support</li>
-</ul>
+<li>Follow the coding standards: PHP-Spider follows the coding standards defined in the <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md">PSR-0</a>, <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md">PSR-1</a> and <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md">PSR-2</a> Coding Style Guides;</li>
+<li>Prove that the code works with unit tests;</li>
+</ul><blockquote>
+<p>Note: An easy way to check if your code conforms to PHP-Spider is by running <a href="https://scrutinizer-ci.com/">Scrutinizer</a> on your local code. You can do it simply by downloading <a href="https://scrutinizer-ci.com/scrutinizer.phar">scrutinizer.phar</a> and running it on your PHP-Spider repository like so: <code>php scrutinizer.phar run /path/to/php-spider</code></p>
+</blockquote>
       </section>
     </div>
 
