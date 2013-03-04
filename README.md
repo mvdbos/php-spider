@@ -57,3 +57,7 @@ There a few requirements for a Pull Request to be accepted:
 - Prove that the code works with unit tests;
 
 > Note: An easy way to check if your code conforms to PHP-Spider is by running [Scrutinizer](https://scrutinizer-ci.com/) on your local code. You can do it simply by downloading [scrutinizer.phar](https://scrutinizer-ci.com/scrutinizer.phar) and running it on your PHP-Spider repository like so: `php scrutinizer.phar run /path/to/php-spider`
+
+LICENSE
+-------
+PHP-Spider is licensed under the MIT license.
