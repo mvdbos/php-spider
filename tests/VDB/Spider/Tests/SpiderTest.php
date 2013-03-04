@@ -163,7 +163,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(100);
 
-        $report = $this->spider->crawl('http://php-spider.org/A');
+        $this->spider->crawl('http://php-spider.org/A');
         $this->spider->process();
 
         $this->assertEquals('AEFCGBD', $this->titleExtractorProcessor->titles);

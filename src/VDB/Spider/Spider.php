@@ -299,7 +299,7 @@ class Spider
      * @param URI $uri
      * @return bool
      */
-    private function matchesPrefetchFilter(URI $uri)
+    private function matchesPrefetchFilter(FilterableURI $uri)
     {
         foreach ($this->preFetchFilter as $filter) {
             if ($filter->match($uri)) {

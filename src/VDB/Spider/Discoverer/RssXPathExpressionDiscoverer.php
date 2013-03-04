@@ -6,6 +6,7 @@ use VDB\Spider\Spider;
 use VDB\URI\GenericURI;
 use VDB\Spider\Document;
 use VDB\URI\URI;
+use VDB\URI\Exception\UriSyntaxException;
 
 /**
  * @author Matthijs van den Bos
