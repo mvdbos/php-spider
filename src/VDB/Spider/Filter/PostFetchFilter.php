@@ -2,7 +2,7 @@
 
 namespace VDB\Spider\Filter;
 
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 
 /**
  * @author matthijs
@@ -11,8 +11,8 @@ use VDB\Spider\Document;
 interface PostFetchFilter
 {
     /**
-     * @param Document
+     * @param Resource
      * @return boolean
      */
-    public function match(Document $document);
+    public function match(Resource $document);
 }

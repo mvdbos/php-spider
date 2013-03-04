@@ -1,5 +1,6 @@
 <?php
 use VDB\Spider\Spider;
+use VDB\Spider\Resource;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 
 require_once __DIR__  . '/../vendor/autoload.php';
@@ -18,9 +19,17 @@ $spider->setMaxQueueSize(10);
 $report = $spider->crawl();
 
 // Report
-echo "\n\nENQUEUED: " . count($report['queued']);
+echo "\n\nENQUEUED for processing: " . count($report['queued']);
 echo "\n - ".implode("\n - ", $report['queued']);
 echo "\n\nSKIPPED:   " . count($report['filtered']);
 echo "\n".var_export($report['filtered'], true);
 echo "\n\nFAILED:    " . count($report['failed']) ;
-echo "\n".var_export($report['failed'], true);
+echo "\n".var_export($report['failed'], true) . "\n\n";
+
+// Finally we could start some processing on the downloaded resources
+foreach ($report['queued'] as $resource) {
+    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    // do something with the data
+    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+}

@@ -9,7 +9,7 @@ use Symfony\Component\BrowserKit\Response;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class Document implements Filterable
+class Resource implements Filterable
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;

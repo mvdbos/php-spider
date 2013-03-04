@@ -4,7 +4,7 @@ namespace VDB\Spider\RequestHandler;
 use VDB\Spider\RequestHandler\RequestHandler;
 use Goutte\Client;
 use VDB\URI\URI;
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 
 use Symfony\Component\DomCrawler\Link;
 use Symfony\Component\BrowserKit\Client as AbstractBrowserKitClient;
@@ -45,12 +45,12 @@ class RequestHandlerBrowserKitClient implements RequestHandler
 
     /**
      * @param \Symfony\Component\DomCrawler\Link $Link
-     * @return Document
+     * @return Resource
      */
     public function request(URI $uri)
     {
         $crawler = $this->getClient()->request('GET', $uri->recompose());
         $response = $this->getClient()->getResponse();
-        return new Document($uri, $response, $crawler);
+        return new Resource($uri, $response, $crawler);
     }
 }

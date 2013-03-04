@@ -73,7 +73,7 @@ echo "\n" . var_export($report['filtered'], true);
 echo "\n\nFAILED:    " . count($report['failed']);
 echo "\n" . var_export($report['failed'], true);
 
-// With the information from some of plugins and listeners, we can echo some metrics
+// With the information from some of plugins and listeners, we can determine some metrics
 $peakMem = round(memory_get_peak_usage(true) / 1024 / 1024, 2);
 $totalTime = round(microtime(true) - $start, 2);
 $totalDelay = round($politenessPolicyEventListener->totalDelay / 1000 / 1000, 2);
@@ -82,4 +82,12 @@ echo "\n  PEAK MEM USAGE:       " . $peakMem . 'MB';
 echo "\n  TOTAL TIME:           " . $totalTime . 's';
 echo "\n  REQUEST TIME:         " . $timerPlugin->getTotal() . 's';
 echo "\n  POLITENESS WAIT TIME: " . $totalDelay . 's';
-echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's';
+echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's' . "\n\n";
+
+// Finally we could start some processing on the downloaded resources
+foreach ($report['queued'] as $resource) {
+    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    // do something with the data
+    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+}

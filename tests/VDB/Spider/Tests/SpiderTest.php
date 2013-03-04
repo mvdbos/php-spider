@@ -93,25 +93,25 @@ class SpiderTest extends TestCase
         $this->linkF = new GenericURI($this->hrefF);
         $this->linkG = new GenericURI($this->hrefG);
 
-        $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentA.html');
+        $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->crawlerA = new Crawler($htmlA, $this->hrefA);
 
-        $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentB.html');
+        $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceB.html');
         $this->crawlerB = new Crawler($htmlB, $this->hrefB);
 
-        $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentC.html');
+        $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceC.html');
         $this->crawlerC = new Crawler($htmlC, $this->hrefC);
 
-        $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentD.html');
+        $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceD.html');
         $this->crawlerD = new Crawler($htmlD, $this->hrefD);
 
-        $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentE.html');
+        $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceE.html');
         $this->crawlerE = new Crawler($htmlE, $this->hrefE);
 
-        $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentF.html');
+        $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceF.html');
         $this->crawlerF = new Crawler($htmlF, $this->hrefF);
 
-        $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLDocumentG.html');
+        $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
         $this->crawlerG = new Crawler($htmlG, $this->hrefG);
 
         $this->requestHandler
@@ -124,7 +124,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @return Document
+     * @return Resource
      */
     public function doTestRequest()
     {
@@ -132,19 +132,19 @@ class SpiderTest extends TestCase
 
         switch ($link->recompose()) {
             case $this->linkA->recompose():
-                return $this->getDocument($this->linkA, $this->crawlerA);
+                return $this->getResource($this->linkA, $this->crawlerA);
             case $this->linkB->recompose():
-                return $this->getDocument($this->linkB, $this->crawlerB);
+                return $this->getResource($this->linkB, $this->crawlerB);
             case $this->linkC->recompose():
-                return $this->getDocument($this->linkC, $this->crawlerC);
+                return $this->getResource($this->linkC, $this->crawlerC);
             case $this->linkD->recompose():
-                return $this->getDocument($this->linkD, $this->crawlerD);
+                return $this->getResource($this->linkD, $this->crawlerD);
             case $this->linkE->recompose():
-                return $this->getDocument($this->linkE, $this->crawlerE);
+                return $this->getResource($this->linkE, $this->crawlerE);
             case $this->linkF->recompose():
-                return $this->getDocument($this->linkF, $this->crawlerF);
+                return $this->getResource($this->linkF, $this->crawlerF);
             case $this->linkG->recompose():
-                return $this->getDocument($this->linkG, $this->crawlerG);
+                return $this->getResource($this->linkG, $this->crawlerG);
         }
     }
 

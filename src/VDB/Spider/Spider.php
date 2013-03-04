@@ -61,7 +61,7 @@ class Spider
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     private $maxQueueSize = 0;
 
-    /** @var int the amount of times a Document was enqueued */
+    /** @var int the amount of times a Resource was enqueued */
     private $currentQueueSize = 0;
 
     /** @var array the list of already visited URIs with the depth they were discovered on as value */
@@ -100,7 +100,7 @@ class Spider
 
         $enqueued = array();
         foreach ($this->processQueue as $document) {
-            /** @var $document Document */
+            /** @var $document Resource */
             $enqueued[] = $document;
         }
 
@@ -228,10 +228,10 @@ class Spider
     }
 
     /**
-     * @param Document $document
+     * @param Resource $document
      * @return bool
      */
-    private function matchesPostfetchFilter(Document $document)
+    private function matchesPostfetchFilter(Resource $document)
     {
         foreach ($this->postFetchFilter as $filter) {
             if ($filter->match($document)) {
@@ -290,7 +290,7 @@ class Spider
             $currentURI = $this->getNextURIFromQueue();
 
             // Fetch the document
-            if (!$document = $this->fetchDocument($currentURI)) {
+            if (!$document = $this->fetchResource($currentURI)) {
                 continue;
             }
 
@@ -348,11 +348,11 @@ class Spider
     }
 
     /**
-     * Add a Document to the processing queue
+     * Add a Resource to the processing queue
      *
-     * @param Document $document
+     * @param Resource $document
      */
-    protected function addToProcessQueue(Document $document)
+    protected function addToProcessQueue(Resource $document)
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
             $document->setFiltered(true, 'Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
@@ -365,10 +365,10 @@ class Spider
     }
 
     /**
-     * @param Document $document
+     * @param Resource $document
      * @return URI[]
      */
-    protected function executeDiscoverers(Document $document)
+    protected function executeDiscoverers(Resource $document)
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_DISCOVER);
 
@@ -390,9 +390,9 @@ class Spider
 
     /**
      * @param URI $uri
-     * @return Document|false
+     * @return Resource|false
      */
-    protected function fetchDocument(URI $uri)
+    protected function fetchResource(URI $uri)
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {

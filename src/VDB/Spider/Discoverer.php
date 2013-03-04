@@ -11,8 +11,8 @@ use Symfony\Component\DomCrawler\Link;
 interface Discoverer
 {
     /**
-     * @param Document $document
+     * @param Resource $document
      * @return Link[] An array of Link instances
      */
-    public function discover(Spider $spider, Document $document);
+    public function discover(Spider $spider, Resource $document);
 }

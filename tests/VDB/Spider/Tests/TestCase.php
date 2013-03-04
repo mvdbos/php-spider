@@ -14,7 +14,7 @@ namespace VDB\Spider\Tests;
 use VDB\URI\GenericURI;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
-use VDB\Spider\Document;
+use VDB\Spider\Resource;
 
 /**
  *
@@ -24,13 +24,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @param GenericURI $uri
      * @param \Symfony\Component\DomCrawler\Crawler $crawler
-     * @return \VDB\Spider\Document
+     * @return Resource
      */
-    protected function getDocument(GenericURI $uri, Crawler $crawler = null)
+    protected function getResource(GenericURI $uri, Crawler $crawler = null)
     {
         if (is_null($crawler)) {
             $crawler = new Crawler(null, $uri->recompose());
         }
-        return new Document($uri, new Response(), $crawler);
+        return new Resource($uri, new Response(), $crawler);
     }
 }
