@@ -1,14 +1,25 @@
 [![Build Status](https://travis-ci.org/matthijsvandenbos/php-spider.png?branch=master)](https://travis-ci.org/matthijsvandenbos/php-spider)
 
-README
+PHP-Spider
 ======
-A configurable and extensible PHP web spider
+A configurable and extensible PHP web spider.
+
+The PHP-Spider:
+- supports two traversal algorithms: breadth-first and depth-first
+- depth limiting and queue size limiting
+- supports adding custom discovery logic
+- supports custom filters, both prefetch and postfetch
+- supports custom request handling
+- dispatches useful events, allowing developers to add even more custom behavior
+- supports a politeness policy
+- will soon come with many default discoverers: RSS, Atom, RDF, etc.
+- will soon support many different queueing and persistence mechanisms (file, memcache, redis)
+- will eventually support distributed spidering with a central queue
 
 Usage
 -----
-
-This is a very simple example. This code can be found in `example/example_simple.php`. For a more complete example with
-some logging, caching and filters, see `example/example_complex.php`. That file contains a more real-world example.
+This is a very simple example. This code can be found in [example/example_simple.php](https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php). For a more complete example with
+some logging, caching and filters, see [example/example_complex.php](https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_complex.php). That file contains a more real-world example.
 
 First create the spider
 ```php
