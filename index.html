@@ -31,14 +31,24 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>Welcome to PHP-Spider</h1>
+        <h1>PHP-Spider Features</h1>
 
-<p>A configurable and extensible PHP web spider. Full documentation will follow when all major refactoring is done. Until then, see below for a quickstart, or <code>example/example_complex.php</code> for a more thorough example.</p>
+<ul>
+<li>supports two traversal algorithms: breadth-first and depth-first</li>
+<li>supports depth limiting and queue size limiting</li>
+<li>supports adding custom discovery logic, based on XPath, CSS selectors, or custom logic</li>
+<li>comes with a useful set of prebuilt filters</li>
+<li>supports custom filters, both prefetch and postfetch</li>
+<li>supports custom request handling</li>
+<li>dispatches useful events, allowing developers to add even more custom behavior</li>
+<li>supports a politeness policy</li>
+<li>will soon come with many default discoverers: RSS, Atom, RDF, etc.</li>
+<li>will soon support multiple queueing and persistence mechanisms (file, memcache, redis)</li>
+<li>will eventually support distributed spidering with a central queue</li>
+</ul><h2>Usage</h2>
 
-<h2>Usage</h2>
-
-<p>This is a very simple example. This code can be found in <code>example/example_simple.php</code>. For a more complete example with
-some logging, caching and filters, see <code>example/example_complex.php</code>. That file contains a more real-world example.</p>
+<p>This is a very simple example. This code can be found in <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php">example/example_simple.php</a>. For a more complete example with
+some logging, caching and filters, see <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_complex.php">example/example_complex.php</a>. That file contains a more real-world example.</p>
 
 <p>First create the spider</p>
 
