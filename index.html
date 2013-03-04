@@ -31,15 +31,14 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to PHP-Spider.</h3>
+        <h1>Welcome to PHP-Spider</h1>
 
-<p>Soon, you can find the complete documentation for the PHP-Spider here.
-For now, you'll have to make do with the simple example below.</p>
+<p>A configurable and extensible PHP web spider. Full documentation will follow when all major refactoring is done. Until then, see below for a quickstart, or <code>example/example_complex.php</code> for a more thorough example.</p>
 
 <h2>Usage</h2>
 
 <p>This is a very simple example. This code can be found in <code>example/example_simple.php</code>. For a more complete example with
-some logging, caching and more filters, see <code>example/example_complex.php</code>.</p>
+some logging, caching and filters, see <code>example/example_complex.php</code>. That file contains a more real-world example.</p>
 
 <p>First create the spider</p>
 
@@ -49,7 +48,7 @@ some logging, caching and more filters, see <code>example/example_complex.php</c
 <span class="nv">$spider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Spider</span><span class="p">(</span><span class="s1">'http://www.dmoz.org'</span><span class="p">);</span>
 </pre></div>
 
-<p>Add a URI discoverer. Without it, PHP-Spider does nothing. In this case, we want all anchor tags from a certain div</p>
+<p>Add a URI discoverer. Without it, the spider does nothing. In this case, we want all <code>&lt;a&gt;</code> nodes from a certain <code>&lt;div&gt;</code></p>
 
 <div class="highlight"><pre><span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">addDiscoverer</span><span class="p">(</span><span class="k">new</span> <span class="nx">XPathExpressionDiscoverer</span><span class="p">(</span><span class="s2">"//div[@id='catalogs']//a"</span><span class="p">));</span>
 </pre></div>
@@ -65,7 +64,7 @@ some logging, caching and more filters, see <code>example/example_complex.php</c
 <div class="highlight"><pre><span class="nv">$report</span> <span class="o">=</span> <span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">crawl</span><span class="p">();</span>
 </pre></div>
 
-<p>And finally, we could echo some info about the crawl</p>
+<p>And finally, we could get some info about the crawl</p>
 
 <div class="highlight"><pre><span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">ENQUEUED: "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$report</span><span class="p">[</span><span class="s1">'queued'</span><span class="p">]);</span>
 <span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span><span class="o">.</span><span class="nb">implode</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span><span class="p">,</span> <span class="nv">$report</span><span class="p">[</span><span class="s1">'queued'</span><span class="p">]);</span>
@@ -84,24 +83,16 @@ some logging, caching and more filters, see <code>example/example_complex.php</c
 <li>[ ] build: support robots.txt.</li>
 <li>[ ] build: ranking policy listener. This can listen to the SPIDER_CRAWL_POST_DISCOVER event. We need to refactor $discoveredLinks to an object to let the listener change it. Question: Do we want to do that without copying the array because of memory usage?</li>
 <li>[ ] build: a re-visit policy that states when to check for changes to the pages (</li>
-<li>[ ] decide: Have ALL filters, discoverers, processors, etc. add and find metadata about an URI to a centralized store? YES, namespace with some kind of job id</li>
-<li>[ ] build: Phar compilation support</li>
 <li>[ ] check: when calculating maxdepth, are redirects counted?</li>
 </ul><h3>SHOULD HAVE</h3>
 
 <ul>
 <li>[ ] design: Support RDF, RSS Atom, Twitter feeds</li>
-<li>[ ] decide: maybe make it possible to set a minimum depth for a discoverer. Use case: RSS feed (e.g. nu.nl) , that also contains <a> tags in the content. We only want to discover //a once we are beyond the rss XML. So in that case a minimum depth of 1; Other good use cases are index pages where detail pages have other markup structure</a>
-</li>
+<li>[ ] decide: maybe make it possible to set a minimum depth for a discoverer.  Use case: index pages where detail pages have other markup structure</li>
 <li>[ ] build: support scaling: multiple parallel threads / workers. For requests? or for spiders themselves? or both?</li>
 <li>[ ] build: support authentication</li>
-</ul><h3>Authors and Contributors</h3>
-
-<p>Matthijs van den Bos (<a href="https://github.com/matthijsvandenbos" class="user-mention">@matthijsvandenbos</a>)</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with the PHP-Spider? Find me on twitter (@matthijsvandenb).</p>
+<li>[ ] build: Phar compilation support</li>
+</ul>
       </section>
     </div>
 
