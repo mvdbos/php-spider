@@ -4,14 +4,14 @@ PHP-Spider Features
 ======
 - supports two traversal algorithms: breadth-first and depth-first
 - supports depth limiting and queue size limiting
-- supports adding custom discovery logic, based on XPath, CSS selectors, or completely custom logic
+- supports adding custom discovery logic, based on XPath, CSS selectors, or custom logic
 - comes with a useful set of prebuilt filters
 - supports custom filters, both prefetch and postfetch
 - supports custom request handling
 - dispatches useful events, allowing developers to add even more custom behavior
 - supports a politeness policy
 - will soon come with many default discoverers: RSS, Atom, RDF, etc.
-- will soon support many different queueing and persistence mechanisms (file, memcache, redis)
+- will soon support multiple queueing and persistence mechanisms (file, memcache, redis)
 - will eventually support distributed spidering with a central queue
 
 Usage
