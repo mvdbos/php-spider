@@ -1,12 +1,9 @@
 [![Build Status](https://travis-ci.org/matthijsvandenbos/php-spider.png?branch=master)](https://travis-ci.org/matthijsvandenbos/php-spider)
 
-PHP-Spider
+PHP-Spider Features
 ======
-A configurable and extensible PHP web spider.
-
-The PHP-Spider:
 - supports two traversal algorithms: breadth-first and depth-first
-- depth limiting and queue size limiting
+- supports depth limiting and queue size limiting
 - supports adding custom discovery logic, based on XPath, CSS selectors, or completely custom logic
 - comes with a useful set of prebuilt filters
 - supports custom filters, both prefetch and postfetch
