@@ -19,7 +19,8 @@ class RestrictToBaseUriFilter implements PreFetchFilter
      */
     public function __construct($seed)
     {
-        $this->seed = new HttpURI($seed);    }
+        $this->seed = new HttpURI($seed);
+    }
 
     public function match(FilterableURI $uri)
     {

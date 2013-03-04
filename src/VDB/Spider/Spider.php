@@ -316,10 +316,9 @@ class Spider
         } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
             return array_shift($this->traversalQueue);
         } else {
-            throw new \LogicException('No search algorith set');
+            throw new \LogicException('No search algorithm set');
         }
     }
-
 
     /**
      * Function that crawls each provided URI

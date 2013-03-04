@@ -97,7 +97,7 @@ $politenessPolicyEventListener = new PolitenessPolicyListener(500);
 
 $spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
 //$spider->setTraversalAlgorithm(Spider::ALGORITHM_DEPTH_FIRST);
-$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 2;
+$seed = 'http://blog.vandenbos.org/'; $allowSubDomains = false; $maxDepth = 10;
 $spider->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 //$spider->addDiscoverer(new CssSelectorDiscoverer('a'));
 

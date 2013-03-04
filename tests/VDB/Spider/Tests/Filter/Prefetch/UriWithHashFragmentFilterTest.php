@@ -30,15 +30,9 @@ class UriWithHashFragmentFilterTest extends TestCase
         $currentUri = 'http://php-spider.org';
         $uri1 = new FilterableURI('#', $currentUri);
         $uri2 = new FilterableURI('#foo', $currentUri);
-        $uri3 = new FilterableURI(
-            'http://php-spider.org/foo#bar', $currentUri
-        );
-        $uri4 = new FilterableURI(
-            'http://php-spider.org/foo/#bar', $currentUri
-        );
-        $uri5 = new FilterableURI(
-            'http://php-spider.org#/foo/bar', $currentUri
-        );
+        $uri3 = new FilterableURI('http://php-spider.org/foo#bar', $currentUri);
+        $uri4 = new FilterableURI('http://php-spider.org/foo/#bar', $currentUri);
+        $uri5 = new FilterableURI('http://php-spider.org#/foo/bar', $currentUri);
 
         $this->assertTrue($filter->match($uri1), '# filtered');
         $this->assertTrue($filter->match($uri2), '#foo');

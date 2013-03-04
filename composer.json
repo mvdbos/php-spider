@@ -14,11 +14,12 @@
         "fabpot/goutte": "1.0.*@dev",
         "monolog/monolog": "1.4.*@dev",
         "pimple/pimple": "dev-trigger",
-        "doctrine/cache": "dev-master"
+        "doctrine/cache": "dev-master",
+        "vdb/uri": "dev-master"
     },
     "autoload": {
         "psr-0": {
-            "VDB": "src/",
+            "VDB\\Spider": "src/",
             "VDB\\Spider\\Tests": "tests/",
             "Example": "example/lib/"
         }

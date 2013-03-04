@@ -30,15 +30,9 @@ class UriWithQueryStringFilterTest extends TestCase
         $currentUri = 'http://php-spider.org';
         $uri1 = new FilterableURI('?', $currentUri);
         $uri2 = new FilterableURI('?foo=2', $currentUri);
-        $uri3 = new FilterableURI(
-            'http://php-spider.org/foo?bar=baz', $currentUri
-        );
-        $uri4 = new FilterableURI(
-            'http://php-spider.org/foo/?bar=baz', $currentUri
-        );
-        $uri5 = new FilterableURI(
-            'http://php-spider.org?/foo/bar', $currentUri
-        );
+        $uri3 = new FilterableURI('http://php-spider.org/foo?bar=baz', $currentUri);
+        $uri4 = new FilterableURI('http://php-spider.org/foo/?bar=baz', $currentUri);
+        $uri5 = new FilterableURI('http://php-spider.org?/foo/bar', $currentUri);
 
         $this->assertTrue($filter->match($uri1), '->match(\'?\')');
         $this->assertTrue($filter->match($uri2));
