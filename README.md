@@ -4,10 +4,10 @@ PHP-Spider Features
 ======
 - supports two traversal algorithms: breadth-first and depth-first
 - supports depth limiting and queue size limiting
-- supports adding custom discovery logic, based on XPath, CSS selectors, or custom logic
-- comes with a useful set of prebuilt filters
-- supports custom filters, both prefetch and postfetch
-- supports custom request handling
+- supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP
+- comes with a useful set of prebuilt URI filters, such as Domain limiting
+- supports custom filters, both prefetch (URI) and postfetch (Resource content)
+- supports custom request handling logic
 - dispatches useful events, allowing developers to add even more custom behavior
 - supports a politeness policy
 - will soon come with many default discoverers: RSS, Atom, RDF, etc.
@@ -57,23 +57,3 @@ There a few requirements for a Pull Request to be accepted:
 - Prove that the code works with unit tests;
 
 > Note: An easy way to check if your code conforms to PHP-Spider is by running [Scrutinizer](https://scrutinizer-ci.com/) on your local code. You can do it simply by downloading [scrutinizer.phar](https://scrutinizer-ci.com/scrutinizer.phar) and running it on your PHP-Spider repository like so: `php scrutinizer.phar run /path/to/php-spider`
-
-TODO
-----
-### MUST HAVE
-
-- refactor: Make the processqueue an injectable interface with some default adapters for file, memcache. etc.
-- refactor: make the returned report an injectable interface with some default adapters for file, memcache. Also contains info about where to find the process queue
-- refactor: make the spider accept an array of seeds
-- build: support robots.txt.
-- build: ranking policy listener. This can listen to the SPIDER_CRAWL_POST_DISCOVER event. We need to refactor $discoveredLinks to an object to let the listener change it. Question: Do we want to do that without copying the array because of memory usage?
-- build: a re-visit policy that states when to check for changes to the pages (
-- check: when calculating maxdepth, are redirects counted?
-
-### SHOULD HAVE
-
-- design: Support RDF, RSS Atom, Twitter feeds with default implementations
-- decide: maybe make it possible to set a minimum depth for a discoverer.  Use case: index pages where detail pages have other markup structure
-- build: support scaling: multiple parallel threads / workers. For requests? or for spiders themselves? or both?
-- build: support authentication
-- build: Phar compilation support
