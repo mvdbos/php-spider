@@ -1,7 +1,7 @@
 {
     "name": "vdb/php-spider",
     "type": "application",
-    "description": "A simple PHP Web Spider",
+    "description": "A configurable and extensible PHP web spider",
     "homepage": "http://php-spider.org",
     "keywords": ["spider", "crawler", "scraper"],
     "license": "MIT",
