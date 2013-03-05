@@ -49,6 +49,6 @@ class FilterableURI extends GenericURI implements Filterable
      */
     public function getIdentifier()
     {
-        return $this->recompose();
+        return $this->toString();
     }
 }

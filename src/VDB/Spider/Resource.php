@@ -98,7 +98,7 @@ class Resource implements Filterable
      */
     public function getIdentifier()
     {
-        return $this->getUri()->recompose();
+        return $this->getUri()->toString();
     }
 
     public function __toString()

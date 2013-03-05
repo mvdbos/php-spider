@@ -130,20 +130,20 @@ class SpiderTest extends TestCase
     {
         $link = func_get_arg(0);
 
-        switch ($link->recompose()) {
-            case $this->linkA->recompose():
+        switch ($link->toString()) {
+            case $this->linkA->toString():
                 return $this->getResource($this->linkA, $this->crawlerA);
-            case $this->linkB->recompose():
+            case $this->linkB->toString():
                 return $this->getResource($this->linkB, $this->crawlerB);
-            case $this->linkC->recompose():
+            case $this->linkC->toString():
                 return $this->getResource($this->linkC, $this->crawlerC);
-            case $this->linkD->recompose():
+            case $this->linkD->toString():
                 return $this->getResource($this->linkD, $this->crawlerD);
-            case $this->linkE->recompose():
+            case $this->linkE->toString():
                 return $this->getResource($this->linkE, $this->crawlerE);
-            case $this->linkF->recompose():
+            case $this->linkF->toString():
                 return $this->getResource($this->linkF, $this->crawlerF);
-            case $this->linkG->recompose():
+            case $this->linkG->toString():
                 return $this->getResource($this->linkG, $this->crawlerG);
         }
     }

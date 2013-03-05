@@ -34,7 +34,7 @@ class XPathExpressionDiscoverer implements Discoverer
         $uris = array();
         foreach ($crawler as $node) {
             try {
-                $uris[] = new GenericURI($node->getAttribute('href'), $document->getUri()->recompose());
+                $uris[] = new GenericURI($node->getAttribute('href'), $document->getUri()->toString());
             } catch (UriSyntaxException $e) {
                 $spider->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
             }

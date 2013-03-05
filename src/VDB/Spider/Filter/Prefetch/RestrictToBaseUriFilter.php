@@ -27,7 +27,7 @@ class RestrictToBaseUriFilter implements PreFetchFilter
         /*
          * if the URI does not contain the seed, it is not allowed
          */
-        if (false === stripos($uri->recompose(), $this->seed->recompose())) {
+        if (false === stripos($uri->toString(), $this->seed->toString())) {
             $uri->setFiltered(true, 'Doesn\'t match base URI');
             return true;
         }

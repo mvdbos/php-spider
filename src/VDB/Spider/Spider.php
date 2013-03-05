@@ -105,7 +105,7 @@ class Spider
         }
 
         return array(
-            'spiderId'      => hash('md5', $this->seed->recompose() . microtime()),
+            'spiderId'      => hash('md5', $this->seed->toString() . microtime()),
             'filtered'      => $this->filtered,
             'failed'        => $this->failed,
             'queued'        => $enqueued
@@ -312,7 +312,7 @@ class Spider
 
             $this->addToProcessQueue($document);
 
-            $nextLevel = $this->visitedURIs[$currentURI->recompose()] + 1;
+            $nextLevel = $this->visitedURIs[$currentURI->toString()] + 1;
             if ($nextLevel > $this->maxDepth) {
                 continue;
             }
@@ -321,11 +321,14 @@ class Spider
             $discoveredURIs = $this->executeDiscoverers($document);
 
             foreach ($discoveredURIs as $uri) {
+                // normalize the URI
+                $uri->normalize();
+
                 // Decorate the link to make it filterable
                 $uri = new FilterableURI($uri);
 
                 // Always skip nodes we already visited
-                if (array_key_exists($uri->recompose(), $this->visitedURIs)) {
+                if (array_key_exists($uri->toString(), $this->visitedURIs)) {
                     $uri->setFiltered(true, 'Already visited');
                     $this->addToFiltered($uri);
                     continue;
@@ -340,7 +343,7 @@ class Spider
                     $this->addToFiltered($uri);
                 } else {
                     // The URI was not matched by any filter, mark as visited and add to queue
-                    $this->visitedURIs[$uri->recompose()] = $nextLevel;
+                    $this->visitedURIs[$uri->toString()] = $nextLevel;
                     array_push($this->traversalQueue, $uri);
                 }
             }
@@ -397,11 +400,11 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
             $document = $this->getRequestHandler()->request($uri);
-            $document->depthFound = $this->visitedURIs[$uri->recompose()];
+            $document->depthFound = $this->visitedURIs[$uri->toString()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $document;
         } catch (\Exception $e) {
-            $this->addToFailed($uri->recompose(), $e->getMessage());
+            $this->addToFailed($uri->toString(), $e->getMessage());
 
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST);
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
@@ -460,7 +463,7 @@ class Spider
         $tmp = array();
         /** @var URI $uri */
         foreach ($discoveredGenericURIs as $k => $uri) {
-            $tmp[$k] = $uri->recompose();
+            $tmp[$k] = $uri->toString();
         }
 
         // Find duplicates in temporary array
@@ -482,6 +485,6 @@ class Spider
         $this->seed = new HttpURI($uri);
 
         array_push($this->traversalQueue, $this->seed);
-        $this->visitedURIs[$this->seed->recompose()] = 0;
+        $this->visitedURIs[$this->seed->normalize()->toString()] = 0;
     }
 }

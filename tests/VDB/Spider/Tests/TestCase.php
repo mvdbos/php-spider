@@ -29,7 +29,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function getResource(GenericURI $uri, Crawler $crawler = null)
     {
         if (is_null($crawler)) {
-            $crawler = new Crawler(null, $uri->recompose());
+            $crawler = new Crawler(null, $uri->toString());
         }
         return new Resource($uri, new Response(), $crawler);
     }

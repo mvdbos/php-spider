@@ -28,6 +28,6 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
         $uri = $uris[0];
 
         $this->assertInstanceOf('VDB\\URI\\GenericURI', $uri);
-        $this->assertEquals($this->uri->recompose(), $uri->recompose());
+        $this->assertEquals($this->uri->toString(), $uri->toString());
     }
 }

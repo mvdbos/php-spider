@@ -49,7 +49,7 @@ class RequestHandlerBrowserKitClient implements RequestHandler
      */
     public function request(URI $uri)
     {
-        $crawler = $this->getClient()->request('GET', $uri->recompose());
+        $crawler = $this->getClient()->request('GET', $uri->toString());
         $response = $this->getClient()->getResponse();
         return new Resource($uri, $response, $crawler);
     }

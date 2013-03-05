@@ -39,7 +39,7 @@ class ResourceTest extends TestCase
     public function testGetLink()
     {
         $this->assertInstanceOf('VDB\\URI\GenericURI', $this->document->getUri());
-        $this->assertEquals('http://example.org/domains/special', $this->document->getUri()->recompose());
+        $this->assertEquals('http://example.org/domains/special', $this->document->getUri()->toString());
     }
 
     /**
