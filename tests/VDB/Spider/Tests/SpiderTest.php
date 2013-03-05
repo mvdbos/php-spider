@@ -2,14 +2,11 @@
 namespace VDB\Spider;
 
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Tests\Fixtures\TitleExtractorProcessor;
 use VDB\URI\GenericURI;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use \PHPUnit_Framework_MockObject_MockObject;
-
-use Pimple;
 
 /**
  */

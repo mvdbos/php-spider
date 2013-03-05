@@ -1,5 +1,5 @@
 {
-    "name": "vdb/spider",
+    "name": "vdb/php-spider",
     "type": "application",
     "description": "A simple PHP Web Spider",
     "homepage": "http://php-spider.org",

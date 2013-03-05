@@ -12,7 +12,6 @@
 namespace VDB\Spider\Tests\Discoverer;
 
 use Symfony\Component\DomCrawler\Crawler;
-use Pimple;
 use VDB\Spider\Tests\TestCase;
 use Symfony\Component\BrowserKit\Response;
 use DOMDocument;
