@@ -71,7 +71,7 @@ Support
 -------
 For things like reporting bugs and requesting features it is best to create an [issue](https://github.com/matthijsvandenbos/php-spider/issues) here on GitHub. It is even better to accompany it with a Pull Request. ;-)
 
-If you have other questions, or need some tips, you can send a tweet to @phpspider or send an email to support@php-spider.org.
+If you have other questions, or need some tips, you can send a tweet to [@phpspider](https://twitter.com/phpspider) or send an email to support@php-spider.org.
 
 License
 -------
