@@ -2,6 +2,7 @@
 namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Discoverer;
+use VDB\URI\Exception\UriSyntaxException;
 use VDB\Spider\Spider;
 use VDB\URI\GenericURI;
 use VDB\Spider\Resource;

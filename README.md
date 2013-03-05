@@ -67,6 +67,12 @@ There a few requirements for a Pull Request to be accepted:
 
 > Note: An easy way to check if your code conforms to PHP-Spider is by running [Scrutinizer](https://scrutinizer-ci.com/) on your local code. You can do it simply by downloading [scrutinizer.phar](https://scrutinizer-ci.com/scrutinizer.phar) and running it on your PHP-Spider repository like so: `php scrutinizer.phar run /path/to/php-spider`
 
+Support
+-------
+For things like reporting bugs and requesting features it is best to create an [issue](https://github.com/matthijsvandenbos/php-spider/issues) here on GitHub. It is even better to accompany it with a Pull Request. ;-)
+
+If you have other questions, or need some tips, you can send a tweet to @phpspider or send an email to support@php-spider.org.
+
 License
 -------
 PHP-Spider is licensed under the MIT license.
