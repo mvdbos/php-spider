@@ -2,7 +2,8 @@
     "name": "vdb/spider",
     "type": "application",
     "description": "A simple PHP Web Spider",
-    "keywords": ["spider, crawler"],
+    "homepage": "http://php-spider.org",
+    "keywords": ["spider", "crawler", "scraper"],
     "license": "MIT",
     "authors": [
         {
@@ -10,18 +11,23 @@
             "email": "matthijs@vandenbos.org"
         }
     ],
+    "support": {
+        "email": "support@php-spider.org",
+        "issues": "https://github.com/matthijsvandenbos/php-spider/issues",
+        "source": "https://github.com/matthijsvandenbos/php-spider"
+    },
     "require": {
         "fabpot/goutte": "1.0.*@dev",
-        "monolog/monolog": "1.4.*@dev",
-        "pimple/pimple": "dev-trigger",
-        "doctrine/cache": "dev-master",
         "vdb/uri": "dev-master"
+    },
+    "require-dev": {
+        "monolog/monolog": "1.4.*@dev",
+        "doctrine/cache": "dev-master"
     },
     "autoload": {
         "psr-0": {
             "VDB\\Spider": "src/",
-            "VDB\\Spider\\Tests": "tests/",
-            "Example": "example/lib/"
+            "VDB\\Spider\\Tests": "tests/"
         }
     },
     "minimum-stability": "dev"

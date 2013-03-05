@@ -14,6 +14,14 @@ $start = microtime(true);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$loader = new \Composer\Autoload\ClassLoader();
+
+// register classes with namespaces
+$loader->add('Example', __DIR__ . '/lib');
+
+// activate the autoloader
+$loader->register();
+
 $adapter = new MonologLogAdapter(
     new Logger('spider', array(
         new RotatingFileHandler(__DIR__ . '/logs/guzzle-request.log')

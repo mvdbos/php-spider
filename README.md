@@ -14,6 +14,11 @@ PHP-Spider Features
 - will soon support multiple queueing and persistence mechanisms (file, memcache, redis)
 - will eventually support distributed spidering with a central queue
 
+Installation
+------------
+The easiest way to install PHP-Spider is with [composer](http://getcomposer.org/).  Find it on http://packagist.org under the name `vdb/php-spider`.
+> Note: if you want to run the examples or unit tests, you need to do `composer install --dev`, so that all dependencies for the examples also get installed.
+
 Usage
 -----
 This is a very simple example. This code can be found in [example/example_simple.php](https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php). For a more complete example with
