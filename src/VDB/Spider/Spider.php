@@ -41,9 +41,6 @@ class Spider
     /** @var array all failed URIs, with exception information */
     private $failed = array();
 
-    /** @var array all processed URIs */
-    private $processed = array();
-
     /** @var PreFetchFilter[] */
     private $preFetchFilter = array();
 
@@ -442,14 +439,6 @@ class Spider
     public function addToFailed($uri, $reason)
     {
         $this->failed[$uri] = $reason;
-    }
-
-    /**
-     * @param string $uri
-     */
-    private function addToProcessed($uri)
-    {
-        $this->processed[] = $uri;
     }
 
     /**
