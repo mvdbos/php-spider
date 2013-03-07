@@ -14,6 +14,7 @@ use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient;
+use VDB\Spider\URI\FilterableURI;
 use VDB\URI\HttpURI;
 use VDB\URI\URI;
 

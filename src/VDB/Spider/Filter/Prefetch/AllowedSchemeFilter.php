@@ -1,8 +1,8 @@
 <?php
 namespace VDB\Spider\Filter\Prefetch;
 
-use VDB\Spider\FilterableURI;
 use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\URI\FilterableURI;
 
 /**
  * @author matthijs

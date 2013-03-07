@@ -1,8 +1,8 @@
 <?php
-namespace VDB\Spider;
+namespace VDB\Spider\Tests\URI;
 
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\FilterableURI;
+use VDB\Spider\URI\FilterableURI;
 
 /**
  *

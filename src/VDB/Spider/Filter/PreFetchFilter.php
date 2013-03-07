@@ -2,7 +2,7 @@
 
 namespace VDB\Spider\Filter;
 
-use VDB\Spider\FilterableURI;
+use VDB\Spider\URI\FilterableURI;
 
 /**
  * @author matthijs

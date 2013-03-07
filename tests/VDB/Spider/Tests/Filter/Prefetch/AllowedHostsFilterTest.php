@@ -12,9 +12,9 @@
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
-use VDB\Spider\FilterableURI;
-use VDB\URI\GenericURI;
 use VDB\Spider\Tests\TestCase;
+use VDB\Spider\URI\FilterableURI;
+use VDB\URI\GenericURI;
 
 /**
  *

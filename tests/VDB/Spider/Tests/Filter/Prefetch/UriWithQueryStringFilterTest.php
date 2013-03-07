@@ -11,9 +11,9 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
-use VDB\Spider\Tests\TestCase;
-use VDB\Spider\FilterableURI;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
+use VDB\Spider\Tests\TestCase;
+use VDB\Spider\URI\FilterableURI;
 
 /**
  *

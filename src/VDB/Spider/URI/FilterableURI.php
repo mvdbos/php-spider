@@ -1,6 +1,7 @@
 <?php
-namespace VDB\Spider;
+namespace VDB\Spider\URI;
 
+use VDB\Spider\Filterable;
 use VDB\URI\GenericURI;
 
 /**

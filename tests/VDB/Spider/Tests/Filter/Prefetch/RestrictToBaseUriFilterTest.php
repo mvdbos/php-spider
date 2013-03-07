@@ -12,8 +12,8 @@
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter;
-use VDB\Spider\FilterableURI;
 use VDB\Spider\Tests\TestCase;
+use VDB\Spider\URI\FilterableURI;
 
 /**
  *
