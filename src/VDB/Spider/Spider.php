@@ -1,21 +1,21 @@
 <?php
 namespace VDB\Spider;
 
-use VDB\URI\HttpURI;
-use VDB\URI\URI;
-use VDB\Spider\Exception\QueueException;
+use Exception;
+use Guzzle\Http\Url;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer;
 use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\Exception\QueueException;
 use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient;
-use Guzzle\Http\Url;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\GenericEvent;
-use Exception;
+use VDB\URI\HttpURI;
+use VDB\URI\URI;
 
 /**
  *
@@ -99,16 +99,16 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_END);
 
         $enqueued = array();
-        foreach ($this->processQueue as $document) {
-            /** @var $document Resource */
-            $enqueued[] = $document;
+        foreach ($this->processQueue as $resource) {
+            /** @var $resource Resource */
+            $enqueued[] = $resource;
         }
 
         return array(
-            'spiderId'      => hash('md5', $this->seed->toString() . microtime()),
-            'filtered'      => $this->filtered,
-            'failed'        => $this->failed,
-            'queued'        => $enqueued
+            'spiderId' => hash('md5', $this->seed->toString() . microtime()),
+            'filtered' => $this->filtered,
+            'failed' => $this->failed,
+            'queued' => $enqueued
         );
     }
 
@@ -198,20 +198,18 @@ class Spider
     public function getRequestHandler()
     {
         if (!$this->requestHandler) {
-            $this->requestHandler = new \VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient();
+            $this->requestHandler = new RequestHandlerBrowserKitClient();
         }
-
         return $this->requestHandler;
     }
 
     /**
-     * @param EventDispatcherInterface $EventDispatcher
-     * @return Spider
+     * @param EventDispatcherInterface $eventDispatcher
+     * @return $this
      */
     public function setDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->dispatcher = $eventDispatcher;
-
         return $this;
     }
 
@@ -223,18 +221,17 @@ class Spider
         if (!$this->dispatcher) {
             $this->dispatcher = new EventDispatcher();
         }
-
         return $this->dispatcher;
     }
 
     /**
-     * @param Resource $document
+     * @param Resource $resource
      * @return bool
      */
-    private function matchesPostfetchFilter(Resource $document)
+    private function matchesPostfetchFilter(Resource $resource)
     {
         foreach ($this->postFetchFilter as $filter) {
-            if ($filter->match($document)) {
+            if ($filter->match($resource)) {
                 return true;
             }
         }
@@ -282,35 +279,36 @@ class Spider
      * a breadth first algorithm
      *
      * @param URI $currentURI
+     * @return void
      */
     private function doCrawl()
     {
         while (count($this->traversalQueue)) {
-            /** @var $currentURI URI  */
+            /** @var $currentURI URI */
             $currentURI = $this->getNextURIFromQueue();
 
             // Fetch the document
-            if (!$document = $this->fetchResource($currentURI)) {
+            if (!$resource = $this->fetchResource($currentURI)) {
                 continue;
             }
 
             $this->dispatch(
                 SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH,
-                new GenericEvent($this, array('document' => $document))
+                new GenericEvent($this, array('document' => $resource))
             );
 
-            if ($this->matchesPostfetchFilter($document)) {
-                $this->addToFiltered($document);
+            if ($this->matchesPostfetchFilter($resource)) {
+                $this->addToFiltered($resource);
                 continue;
             }
 
             // The document was not filtered, so we add it to the processing queue
             $this->dispatch(
                 SpiderEvents::SPIDER_CRAWL_PRE_ENQUEUE,
-                new GenericEvent($this, array('document' => $document))
+                new GenericEvent($this, array('document' => $resource))
             );
 
-            $this->addToProcessQueue($document);
+            $this->addToProcessQueue($resource);
 
             $nextLevel = $this->visitedURIs[$currentURI->toString()] + 1;
             if ($nextLevel > $this->maxDepth) {
@@ -318,7 +316,7 @@ class Spider
             }
 
             // Once the document is enqueued, apply the discoverers to look for more links to follow
-            $discoveredURIs = $this->executeDiscoverers($document);
+            $discoveredURIs = $this->executeDiscoverers($resource);
 
             foreach ($discoveredURIs as $uri) {
                 // normalize the URI
@@ -353,32 +351,33 @@ class Spider
     /**
      * Add a Resource to the processing queue
      *
-     * @param Resource $document
+     * @param Resource $resource
+     * @return void
      */
-    protected function addToProcessQueue(Resource $document)
+    protected function addToProcessQueue(Resource $resource)
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
-            $document->setFiltered(true, 'Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
-            $this->addToFiltered($document);
+            $resource->setFiltered(true, 'Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
+            $this->addToFiltered($resource);
             throw new QueueException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
         }
 
         $this->currentQueueSize++;
-        $this->processQueue[] = $document;
+        $this->processQueue[] = $resource;
     }
 
     /**
-     * @param Resource $document
+     * @param Resource $resource
      * @return URI[]
      */
-    protected function executeDiscoverers(Resource $document)
+    protected function executeDiscoverers(Resource $resource)
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_DISCOVER);
 
         $discoveredGenericURIs = array();
 
         foreach ($this->discoverers as $discoverer) {
-            $discoveredGenericURIs = array_merge($discoveredGenericURIs, $discoverer->discover($this, $document));
+            $discoveredGenericURIs = array_merge($discoveredGenericURIs, $discoverer->discover($this, $resource));
         }
 
         $this->deduplicateGenericURIs($discoveredGenericURIs);
@@ -393,16 +392,16 @@ class Spider
 
     /**
      * @param URI $uri
-     * @return Resource|false
+     * @return bool|Resource
      */
     protected function fetchResource(URI $uri)
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
-            $document = $this->getRequestHandler()->request($uri);
-            $document->depthFound = $this->visitedURIs[$uri->toString()];
+            $resource = $this->getRequestHandler()->request($uri);
+            $resource->depthFound = $this->visitedURIs[$uri->toString()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
-            return $document;
+            return $resource;
         } catch (\Exception $e) {
             $this->addToFailed($uri->toString(), $e->getMessage());
 
@@ -425,8 +424,7 @@ class Spider
     }
 
     /**
-     * @param Filterable $GenericURI
-     * @param string $reason
+     * @param Filterable $item
      */
     private function addToFiltered(Filterable $item)
     {
@@ -447,7 +445,6 @@ class Spider
 
     /**
      * @param string $uri
-     * @param string $reason
      */
     private function addToProcessed($uri)
     {
@@ -455,14 +452,14 @@ class Spider
     }
 
     /**
-     * @param URI[] $discoveredGenericURIs
+     * @param URI[] $discoveredURIs
      */
-    private function deduplicateGenericURIs(array &$discoveredGenericURIs)
+    private function deduplicateGenericURIs(array &$discoveredURIs)
     {
         // make sure there are no duplicates in the list
         $tmp = array();
         /** @var URI $uri */
-        foreach ($discoveredGenericURIs as $k => $uri) {
+        foreach ($discoveredURIs as $k => $uri) {
             $tmp[$k] = $uri->toString();
         }
 
@@ -470,9 +467,9 @@ class Spider
         $tmp = array_unique($tmp);
 
         // Remove the duplicates from original array
-        foreach ($discoveredGenericURIs as $k => $uri) {
+        foreach ($discoveredURIs as $k => $uri) {
             if (!array_key_exists($k, $tmp)) {
-                unset($discoveredGenericURIs[$k]);
+                unset($discoveredURIs[$k]);
             }
         }
     }
