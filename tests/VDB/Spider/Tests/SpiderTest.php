@@ -1,12 +1,12 @@
 <?php
 namespace VDB\Spider;
 
-use VDB\Spider\Tests\TestCase;
-use VDB\URI\GenericURI;
 use Exception;
+use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
-use \PHPUnit_Framework_MockObject_MockObject;
+use VDB\Spider\Tests\TestCase;
+use VDB\URI\GenericURI;
 
 /**
  */
@@ -60,9 +60,6 @@ class SpiderTest extends TestCase
     protected $hrefE;
     protected $hrefF;
     protected $hrefG;
-
-    /** @var TitleExtractorProcessor */
-    protected $titleExtractorProcessor;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -155,7 +152,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(100);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -167,8 +164,10 @@ class SpiderTest extends TestCase
             $this->hrefD
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -182,7 +181,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(100);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -194,8 +193,10 @@ class SpiderTest extends TestCase
             $this->hrefG
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -208,7 +209,7 @@ class SpiderTest extends TestCase
     {
         $this->spider->setMaxDepth(1);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -217,8 +218,10 @@ class SpiderTest extends TestCase
             $this->hrefB,
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -227,7 +230,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1);
         $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -236,8 +239,10 @@ class SpiderTest extends TestCase
             $this->hrefE,
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -249,7 +254,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(3);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -257,8 +262,10 @@ class SpiderTest extends TestCase
             $this->hrefF,
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -268,7 +275,7 @@ class SpiderTest extends TestCase
         $this->spider->setMaxDepth(1000);
         $this->spider->setMaxQueueSize(3);
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
 
         $expected = array(
             $this->hrefA,
@@ -276,8 +283,10 @@ class SpiderTest extends TestCase
             $this->hrefC,
         );
 
-        foreach ($report['queued'] as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri);
+        $stats = $this->spider->getStatsHandler();
+
+        foreach ($stats->getQueued() as $index => $uri) {
+            $this->assertEquals($expected[$index], $uri->toString());
         }
     }
 
@@ -293,10 +302,11 @@ class SpiderTest extends TestCase
                 $this->throwException(new Exception('Failed mock request!'))
             );
 
-        $report = $this->spider->crawl();
+        $this->spider->crawl();
+        $stats = $this->spider->getStatsHandler();
 
-        $this->assertCount(0, $report['filtered'], 'Filtered count');
-        $this->assertCount(0, $report['queued'], 'Queued count');
-        $this->assertCount(1, $report['failed'], 'Failed count');
+        $this->assertCount(0, $stats->getFiltered(), 'Filtered count');
+        $this->assertCount(0, $stats->getQueued(), 'Queued count');
+        $this->assertCount(1, $stats->getFailed(), 'Failed count');
     }
 }

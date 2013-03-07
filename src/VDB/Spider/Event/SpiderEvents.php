@@ -57,17 +57,9 @@ final class SpiderEvents
      */
     const SPIDER_CRAWL_PRE_ENQUEUE = 'spider.crawl.pre_enqueue';
 
-    const SPIDER_CRAWL_PRE_PROCESS_DOCUMENT = 'spider.crawl.pre_process.document';
-
-    const SPIDER_CRAWL_POST_PROCESS_DOCUMENT = 'spider.crawl.post_process.document';
-
     const SPIDER_CRAWL_START = 'spider.crawl.start';
 
     const SPIDER_CRAWL_END = 'spider.crawl.end';
-
-    const SPIDER_PROCESS_START = 'spider.process.start';
-
-    const SPIDER_PROCESS_END = 'spider.process.end';
 
     const SPIDER_CRAWL_ERROR_REQUEST = 'spider.error.request';
 }

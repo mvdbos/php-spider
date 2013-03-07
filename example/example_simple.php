@@ -1,9 +1,9 @@
 <?php
-use VDB\Spider\Spider;
-use VDB\Spider\Resource;
-use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 
-require_once __DIR__  . '/../vendor/autoload.php';
+use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Spider;
+
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Create Spider
 $spider = new Spider('http://www.dmoz.org');
@@ -16,20 +16,24 @@ $spider->setMaxDepth(1);
 $spider->setMaxQueueSize(10);
 
 // Execute crawl
-$result = $spider->crawl();
+$spider->crawl();
 
 // Report
-echo "\n\nENQUEUED for processing: " . count($result['queued']);
-echo "\n - ".implode("\n - ", $result['queued']);
-echo "\n\nSKIPPED:   " . count($result['filtered']);
-echo "\n".var_export($result['filtered'], true);
-echo "\n\nFAILED:    " . count($result['failed']) ;
-echo "\n".var_export($result['failed'], true) . "\n\n";
+$stats = $spider->getStatsHandler();
+$spiderId = $stats->getSpiderId();
+$queued = $stats->getQueued();
+$filtered = $stats->getFiltered();
+$failed = $stats->getFailed();
 
-// Finally we could start some processing on the downloaded resources
-foreach ($result['queued'] as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length');
-    // do something with the data
-    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
-}
+echo "\nSPIDER ID: " . $spiderId;
+echo "\n  ENQUEUED:  " . count($queued);
+echo "\n  SKIPPED:   " . count($filtered);
+echo "\n  FAILED:    " . count($failed);
+
+//// Finally we could start some processing on the downloaded resources
+//foreach ($queued as $uri) {
+//    $title = $resource->getCrawler()->filterXpath('//title')->text();
+//    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+//    // do something with the data
+//    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+//}

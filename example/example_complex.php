@@ -1,14 +1,14 @@
 <?php
-use VDB\Spider\Spider;
-use VDB\Spider\EventListener\PolitenessPolicyListener;
-use VDB\Spider\Event\SpiderEvents;
+
+use Symfony\Component\EventDispatcher\Event;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\EventListener\PolitenessPolicyListener;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
-
-use Symfony\Component\EventDispatcher\Event;
+use VDB\Spider\Spider;
 
 require_once('example_complex_bootstrap.php');
 
@@ -46,6 +46,7 @@ $spider->getDispatcher()->addListener(
 );
 
 // Let's add a CLI progress meter for fun
+echo "\nCrawling";
 $spider->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_ENQUEUE,
     function (Event $event) {
@@ -60,18 +61,23 @@ $guzzleClient->addSubscriber($timerPlugin);
 $guzzleClient->addSubscriber($cachePlugin);
 
 // Set the user agent
-$guzzleClient->setUserAgent('Googlebot');
+$guzzleClient->setUserAgent('PHP-Spider');
 
 // Execute the crawl
 $result = $spider->crawl();
 
-// Let't echo a report
-echo "\n\nENQUEUED: " . count($result['queued']);
-echo "\n - " . implode("\n - ", $result['queued']);
-echo "\n\nSKIPPED:   " . count($result['filtered']);
-echo "\n" . var_export($result['filtered'], true);
-echo "\n\nFAILED:    " . count($result['failed']);
-echo "\n" . var_export($result['failed'], true);
+// Report
+$stats = $spider->getStatsHandler();
+$spiderId = $stats->getSpiderId();
+$queued = $stats->getQueued();
+$filtered = $stats->getFiltered();
+$failed = $stats->getFailed();
+
+echo "\n\nSPIDER ID: " . $spiderId;
+echo "\n  ENQUEUED:  " . count($queued);
+echo "\n  SKIPPED:   " . count($filtered);
+echo "\n  FAILED:    " . count($failed);
+
 
 // With the information from some of plugins and listeners, we can determine some metrics
 $peakMem = round(memory_get_peak_usage(true) / 1024 / 1024, 2);
@@ -82,12 +88,12 @@ echo "\n  PEAK MEM USAGE:       " . $peakMem . 'MB';
 echo "\n  TOTAL TIME:           " . $totalTime . 's';
 echo "\n  REQUEST TIME:         " . $timerPlugin->getTotal() . 's';
 echo "\n  POLITENESS WAIT TIME: " . $totalDelay . 's';
-echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's' . "\n\n";
+echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's' . "\n";
 
-// Finally we could start some processing on the downloaded resources
-foreach ($result['queued'] as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length');
-    // do something with the data
-    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
-}
+//// Finally we could start some processing on the downloaded resources
+//foreach ($result['queued'] as $resource) {
+//    $title = $resource->getCrawler()->filterXpath('//title')->text();
+//    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+//    // do something with the data
+//    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+//}

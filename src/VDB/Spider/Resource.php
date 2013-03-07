@@ -1,9 +1,9 @@
 <?php
 namespace VDB\Spider;
 
-use VDB\URI\URI;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\DomCrawler\Crawler;
+use VDB\URI\URI;
 
 /**
  * @author Matthijs van den Bos
@@ -42,7 +42,7 @@ class Resource implements Filterable
     }
 
     /**
-     * @return \Symfony\Component\DomCrawler\Crawler
+     * @return Crawler
      */
     public function getCrawler()
     {

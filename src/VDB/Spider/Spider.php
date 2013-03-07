@@ -14,6 +14,7 @@ use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient;
+use VDB\Spider\StatsHandler;
 use VDB\Spider\URI\FilterableURI;
 use VDB\URI\HttpURI;
 use VDB\URI\URI;
@@ -29,29 +30,26 @@ class Spider
     /** @var RequestHandler */
     private $requestHandler;
 
-    /** @var Discoverer[] */
-    private $discoverers = array();
-
-    /** @var URI The URI of the site to spider */
-    private $seed = array();
-
-    /** @var array all filtered URIs, with the reason as value */
-    private $filtered = array();
-
-    /** @var array all failed URIs, with exception information */
-    private $failed = array();
-
-    /** @var PreFetchFilter[] */
-    private $preFetchFilter = array();
-
-    /** @var PostFetchFilter[] */
-    private $postFetchFilter = array();
-
-    /** @var array all URIs enqueued for processing */
-    protected $processQueue = array();
+    /** @var StatsHandler */
+    private $statsHandler;
 
     /** @var EventDispatcherInterface */
     private $dispatcher;
+
+    /** @var Discoverer[] */
+    private $discoverers = array();
+
+    /** @var PreFetchFilter[] */
+    private $preFetchFilters = array();
+
+    /** @var PostFetchFilter[] */
+    private $postFetchFilters = array();
+
+    /** @var Resource[] all Resources enqueued for processing */
+    protected $processQueue = array();
+
+    /** @var URI The URI of the site to spider */
+    private $seed = array();
 
     /** @var int The maximum depth for the crawl */
     private $maxDepth = 3;
@@ -65,7 +63,7 @@ class Spider
     /** @var array the list of already visited URIs with the depth they were discovered on as value */
     private $visitedURIs = array();
 
-    /** @var array the list of URIs to process */
+    /** @var URI[] the list of URIs to process */
     private $traversalQueue = array();
 
     /** @var int The traversal algorithm to use. Choose from the class constants */
@@ -87,6 +85,7 @@ class Spider
     public function crawl()
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_START);
+        $this->getStatsHandler()->setSpiderId(md5($this->seed->toString() . microtime(true)));
 
         try {
             $this->doCrawl();
@@ -95,19 +94,6 @@ class Spider
         }
 
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_END);
-
-        $enqueued = array();
-        foreach ($this->processQueue as $resource) {
-            /** @var $resource Resource */
-            $enqueued[] = $resource;
-        }
-
-        return array(
-            'spiderId' => hash('md5', $this->seed->toString() . microtime()),
-            'filtered' => $this->filtered,
-            'failed' => $this->failed,
-            'queued' => $enqueued
-        );
     }
 
     /**
@@ -123,7 +109,7 @@ class Spider
      */
     public function addPreFetchFilter(PreFetchFilter $filter)
     {
-        $this->preFetchFilter[] = $filter;
+        $this->preFetchFilters[] = $filter;
     }
 
     /**
@@ -131,7 +117,7 @@ class Spider
      */
     public function addPostFetchFilter(PostFetchFilter $filter)
     {
-        $this->postFetchFilter[] = $filter;
+        $this->postFetchFilters[] = $filter;
     }
 
     /**
@@ -198,6 +184,7 @@ class Spider
         if (!$this->requestHandler) {
             $this->requestHandler = new RequestHandlerBrowserKitClient();
         }
+
         return $this->requestHandler;
     }
 
@@ -208,6 +195,7 @@ class Spider
     public function setDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->dispatcher = $eventDispatcher;
+
         return $this;
     }
 
@@ -223,12 +211,32 @@ class Spider
     }
 
     /**
+     * @param \VDB\Spider\StatsHandler $statsHandler
+     */
+    public function setStatsHandler($statsHandler)
+    {
+        $this->statsHandler = $statsHandler;
+    }
+
+    /**
+     * @return \VDB\Spider\StatsHandler
+     */
+    public function getStatsHandler()
+    {
+        if (!$this->statsHandler) {
+            $this->statsHandler = new StatsHandler();
+        }
+
+        return $this->statsHandler;
+    }
+
+    /**
      * @param Resource $resource
      * @return bool
      */
     private function matchesPostfetchFilter(Resource $resource)
     {
-        foreach ($this->postFetchFilter as $filter) {
+        foreach ($this->postFetchFilters as $filter) {
             if ($filter->match($resource)) {
                 return true;
             }
@@ -242,7 +250,7 @@ class Spider
      */
     private function matchesPrefetchFilter(FilterableURI $uri)
     {
-        foreach ($this->preFetchFilter as $filter) {
+        foreach ($this->preFetchFilters as $filter) {
             if ($filter->match($uri)) {
                 return true;
             }
@@ -296,7 +304,7 @@ class Spider
             );
 
             if ($this->matchesPostfetchFilter($resource)) {
-                $this->addToFiltered($resource);
+                $this->getStatsHandler()->addToFiltered($resource);
                 continue;
             }
 
@@ -326,7 +334,7 @@ class Spider
                 // Always skip nodes we already visited
                 if (array_key_exists($uri->toString(), $this->visitedURIs)) {
                     $uri->setFiltered(true, 'Already visited');
-                    $this->addToFiltered($uri);
+                    $this->getStatsHandler()->addToFiltered($uri);
                     continue;
                 }
 
@@ -336,7 +344,7 @@ class Spider
                 );
 
                 if ($this->matchesPrefetchFilter($uri)) {
-                    $this->addToFiltered($uri);
+                    $this->getStatsHandler()->addToFiltered($uri);
                 } else {
                     // The URI was not matched by any filter, mark as visited and add to queue
                     $this->visitedURIs[$uri->toString()] = $nextLevel;
@@ -356,12 +364,13 @@ class Spider
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
             $resource->setFiltered(true, 'Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
-            $this->addToFiltered($resource);
+            $this->getStatsHandler()->addToFiltered($resource);
             throw new QueueException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
         }
 
         $this->currentQueueSize++;
         $this->processQueue[] = $resource;
+        $this->getStatsHandler()->addToQueued($resource->getUri());
     }
 
     /**
@@ -372,20 +381,20 @@ class Spider
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_DISCOVER);
 
-        $discoveredGenericURIs = array();
+        $discoveredURIs = array();
 
         foreach ($this->discoverers as $discoverer) {
-            $discoveredGenericURIs = array_merge($discoveredGenericURIs, $discoverer->discover($this, $resource));
+            $discoveredURIs = array_merge($discoveredURIs, $discoverer->discover($this, $resource));
         }
 
-        $this->deduplicateGenericURIs($discoveredGenericURIs);
+        $this->deduplicateURIs($discoveredURIs);
 
         $this->dispatch(
             SpiderEvents::SPIDER_CRAWL_POST_DISCOVER,
-            new GenericEvent($this, array('uris' => $discoveredGenericURIs))
+            new GenericEvent($this, array('uris' => $discoveredURIs))
         );
 
-        return $discoveredGenericURIs;
+        return $discoveredURIs;
     }
 
     /**
@@ -401,7 +410,7 @@ class Spider
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $resource;
         } catch (\Exception $e) {
-            $this->addToFailed($uri->toString(), $e->getMessage());
+            $this->getStatsHandler()->addToFailed($uri->toString(), $e->getMessage());
 
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST);
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
@@ -422,29 +431,9 @@ class Spider
     }
 
     /**
-     * @param Filterable $item
-     */
-    private function addToFiltered(Filterable $item)
-    {
-        // we might encounter the URI twice, don't overwrite the original reason for filtering
-        if (!array_key_exists($item->getIdentifier(), $this->filtered)) {
-            $this->filtered[$item->getIdentifier()] = $item->getFilterReason();
-        }
-    }
-
-    /**
-     * @param string $uri
-     * @param string $reason
-     */
-    public function addToFailed($uri, $reason)
-    {
-        $this->failed[$uri] = $reason;
-    }
-
-    /**
      * @param URI[] $discoveredURIs
      */
-    private function deduplicateGenericURIs(array &$discoveredURIs)
+    private function deduplicateURIs(array &$discoveredURIs)
     {
         // make sure there are no duplicates in the list
         $tmp = array();
@@ -470,7 +459,6 @@ class Spider
     private function setSeed($uri)
     {
         $this->seed = new HttpURI($uri);
-
         array_push($this->traversalQueue, $this->seed);
         $this->visitedURIs[$this->seed->normalize()->toString()] = 0;
     }
