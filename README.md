@@ -41,25 +41,26 @@ Set some sane options for this example. In this case, we only get the first 10 i
 $spider->setMaxDepth(1);
 $spider->setMaxQueueSize(10);
 ```
-Execute crawl
+Execute the crawl
 ```php
-$result = $spider->crawl();
+$spider->crawl();
 ```
 When crawling is done, we could get some info about the crawl
 ```php
-echo "\nENQUEUED: " . count($result['queued']);
-echo "\n - ".implode("\n - ", $result['queued']);
-echo "\nSKIPPED:   " . count($result['filtered']);
-echo "\nFAILED:    " . count($result['failed']) . "\n";
+$stats = $spider->getStatsHandler();
+echo "\nSPIDER ID: " . $stats->getSpiderId();
+echo "\n  ENQUEUED:  " . count($stats->getQueued());
+echo "\n  SKIPPED:   " . count($stats->getFiltered());
+echo "\n  FAILED:    " . count($stats->getFailed());
 ```
-Finally we could start some processing on the downloaded resources
+Finally we could do some processing on the downloaded resources
+In this example, we will echo the title of all resources
 ```php
-foreach ($result['queued'] as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length');
-    // do something with the data
-    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+echo "\n\nDOWNLOADED RESOURCES: ";
+foreach ($spider->getPersistenceHandler() as $resource) {
+    echo "\n - " . $resource->getCrawler()->filterXpath('//title')->text();
 }
+
 ```
 Contributing
 ------------

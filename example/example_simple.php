@@ -20,22 +20,14 @@ $spider->crawl();
 
 // Report
 $stats = $spider->getStatsHandler();
-$spiderId = $stats->getSpiderId();
-$queued = $stats->getQueued();
-$filtered = $stats->getFiltered();
-$failed = $stats->getFailed();
+echo "\nSPIDER ID: " . $stats->getSpiderId();
+echo "\n  ENQUEUED:  " . count($stats->getQueued());
+echo "\n  SKIPPED:   " . count($stats->getFiltered());
+echo "\n  FAILED:    " . count($stats->getFailed());
 
-echo "\nSPIDER ID: " . $spiderId;
-echo "\n  ENQUEUED:  " . count($queued);
-echo "\n  SKIPPED:   " . count($filtered);
-echo "\n  FAILED:    " . count($failed);
-
-// Finally we could start some processing on the downloaded resources
+// Finally we could do some processing on the downloaded resources
+// In this example, we will echo the title of all resources
 echo "\n\nDOWNLOADED RESOURCES: ";
-$downloaded = $spider->getPersistenceHandler();
-foreach ($downloaded as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length');
-    // do something with the data
-    echo "\n - " . str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+foreach ($spider->getPersistenceHandler() as $resource) {
+    echo "\n - " . $resource->getCrawler()->filterXpath('//title')->text();
 }
