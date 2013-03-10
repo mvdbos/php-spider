@@ -5,18 +5,21 @@ PHP-Spider Features
 - supports two traversal algorithms: breadth-first and depth-first
 - supports depth limiting and queue size limiting
 - supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP
-- comes with a useful set of prebuilt URI filters, such as Domain limiting
-- supports custom filters, both prefetch (URI) and postfetch (Resource content)
+- comes with a useful set of URI filters, such as Domain limiting
+- supports custom URI filters, both prefetch (URI) and postfetch (Resource content)
 - supports custom request handling logic
+- comes with a useful set of persistence handlers (memory, file. Redis soon to follow)
+- supports custom persistence handlers
+- collects statistics about the crawl for reporting
 - dispatches useful events, allowing developers to add even more custom behavior
 - supports a politeness policy
 - will soon come with many default discoverers: RSS, Atom, RDF, etc.
-- will soon support multiple queueing and persistence mechanisms (file, memcache, redis)
+- will soon support multiple queueing mechanisms (file, memcache, redis)
 - will eventually support distributed spidering with a central queue
 
 Installation
 ------------
-The easiest way to install PHP-Spider is with [composer](http://getcomposer.org/).  Find it on http://packagist.org under the name `vdb/php-spider`.
+The easiest way to install PHP-Spider is with [composer](http://getcomposer.org/).  Find it on [Packagist](https://packagist.org/packages/vdb/php-spider).
 > Note: if you want to run the examples or unit tests, you need to do `composer install --dev`, so that all dependencies for the examples also get installed.
 
 Usage
@@ -53,8 +56,7 @@ echo "\n  ENQUEUED:  " . count($stats->getQueued());
 echo "\n  SKIPPED:   " . count($stats->getFiltered());
 echo "\n  FAILED:    " . count($stats->getFailed());
 ```
-Finally we could do some processing on the downloaded resources
-In this example, we will echo the title of all resources
+Finally we could do some processing on the downloaded resources. In this example, we will echo the title of all resources
 ```php
 echo "\n\nDOWNLOADED RESOURCES: ";
 foreach ($spider->getPersistenceHandler() as $resource) {
