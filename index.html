@@ -37,17 +37,20 @@
 <li>supports two traversal algorithms: breadth-first and depth-first</li>
 <li>supports depth limiting and queue size limiting</li>
 <li>supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP</li>
-<li>comes with a useful set of prebuilt URI filters, such as Domain limiting</li>
-<li>supports custom filters, both prefetch (URI) and postfetch (Resource content)</li>
+<li>comes with a useful set of URI filters, such as Domain limiting</li>
+<li>supports custom URI filters, both prefetch (URI) and postfetch (Resource content)</li>
 <li>supports custom request handling logic</li>
+<li>comes with a useful set of persistence handlers (memory, file. Redis soon to follow)</li>
+<li>supports custom persistence handlers</li>
+<li>collects statistics about the crawl for reporting</li>
 <li>dispatches useful events, allowing developers to add even more custom behavior</li>
 <li>supports a politeness policy</li>
 <li>will soon come with many default discoverers: RSS, Atom, RDF, etc.</li>
-<li>will soon support multiple queueing and persistence mechanisms (file, memcache, redis)</li>
+<li>will soon support multiple queueing mechanisms (file, memcache, redis)</li>
 <li>will eventually support distributed spidering with a central queue</li>
 </ul><h2>Installation</h2>
 
-<p>The easiest way to install PHP-Spider is with <a href="http://getcomposer.org/">composer</a>.  Find it on <a href="http://packagist.org">http://packagist.org</a> under the name <code>vdb/php-spider</code>.</p>
+<p>The easiest way to install PHP-Spider is with <a href="http://getcomposer.org/">composer</a>.  Find it on <a href="https://packagist.org/packages/vdb/php-spider">Packagist</a>.</p>
 
 <blockquote>
 <p>Note: if you want to run the examples or unit tests, you need to do <code>composer install --dev</code>, so that all dependencies for the examples also get installed.</p>
@@ -91,8 +94,7 @@ some logging, caching and filters, see <a href="https://github.com/matthijsvande
 <span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  FAILED:    "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$stats</span><span class="o">-&gt;</span><span class="na">getFailed</span><span class="p">());</span>
 </pre></div>
 
-<p>Finally we could do some processing on the downloaded resources
-In this example, we will echo the title of all resources</p>
+<p>Finally we could do some processing on the downloaded resources. In this example, we will echo the title of all resources</p>
 
 <div class="highlight"><pre><span class="k">echo</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">DOWNLOADED RESOURCES: "</span><span class="p">;</span>
 <span class="k">foreach</span> <span class="p">(</span><span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">getPersistenceHandler</span><span class="p">()</span> <span class="k">as</span> <span class="nv">$resource</span><span class="p">)</span> <span class="p">{</span>
