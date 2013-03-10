@@ -32,7 +32,6 @@ echo "\n  FAILED:    " . count($failed);
 
 // Finally we could start some processing on the downloaded resources
 echo "\n\nDOWNLOADED RESOURCES: ";
-
 $downloaded = $spider->getPersistenceHandler();
 foreach ($downloaded as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();

@@ -28,6 +28,11 @@ $spider->setMaxQueueSize(10);
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
 $spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
 
+// Let's tell the spider to save all found resources on the filesystem
+$spider->setPersistenceHandler(
+    new \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
+);
+
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
 $spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
 
@@ -54,7 +59,7 @@ $spider->getDispatcher()->addListener(
     }
 );
 
-// Set up some caching, logging and profiling on the HTTP client of the spider
+//// Set up some caching, logging and profiling on the HTTP client of the spider
 $guzzleClient = $spider->getRequestHandler()->getClient()->getClient();
 $guzzleClient->addSubscriber($logPlugin);
 $guzzleClient->addSubscriber($timerPlugin);
@@ -78,7 +83,6 @@ echo "\n  ENQUEUED:  " . count($queued);
 echo "\n  SKIPPED:   " . count($filtered);
 echo "\n  FAILED:    " . count($failed);
 
-
 // With the information from some of plugins and listeners, we can determine some metrics
 $peakMem = round(memory_get_peak_usage(true) / 1024 / 1024, 2);
 $totalTime = round(microtime(true) - $start, 2);
@@ -88,12 +92,14 @@ echo "\n  PEAK MEM USAGE:       " . $peakMem . 'MB';
 echo "\n  TOTAL TIME:           " . $totalTime . 's';
 echo "\n  REQUEST TIME:         " . $timerPlugin->getTotal() . 's';
 echo "\n  POLITENESS WAIT TIME: " . $totalDelay . 's';
-echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's' . "\n";
+echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's';
 
-//// Finally we could start some processing on the downloaded resources
-//foreach ($result['queued'] as $resource) {
-//    $title = $resource->getCrawler()->filterXpath('//title')->text();
-//    $contentLength = $resource->getResponse()->getHeader('Content-Length');
-//    // do something with the data
-//    echo "\n - ".  str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
-//}
+// Finally we could start some processing on the downloaded resources
+echo "\n\nDOWNLOADED RESOURCES: ";
+$downloaded = $spider->getPersistenceHandler();
+foreach ($downloaded as $resource) {
+    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    // do something with the data
+    echo "\n - " . str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
+}

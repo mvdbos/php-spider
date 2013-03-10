@@ -32,20 +32,26 @@ class Resource implements Filterable
     /**
      * @param URI $uri
      * @param \Symfony\Component\BrowserKit\Response $response
-     * @param \Symfony\Component\DomCrawler\Crawler $crawler
      */
-    public function __construct(URI $uri, Response $response, Crawler $crawler)
+    public function __construct(URI $uri, Response $response)
     {
         $this->uri = $uri;
         $this->response = $response;
-        $this->crawler = $crawler;
     }
 
     /**
+     * Lazy loads a Crawler object based on the Response;
      * @return Crawler
      */
     public function getCrawler()
     {
+        if (!$this->crawler instanceof Crawler) {
+            $this->crawler = new Crawler('', $this->getUri()->toString());
+            $this->crawler->addContent(
+                $this->getResponse()->getContent(),
+                $this->getResponse()->getHeader('Content-Type')
+            );
+        }
         return $this->crawler;
     }
 
@@ -66,7 +72,8 @@ class Resource implements Filterable
     }
 
     /**
-     * @param boolean $filtered
+     * @param bool $filtered
+     * @param string $reason
      */
     public function setFiltered($filtered = true, $reason = '')
     {
@@ -104,5 +111,20 @@ class Resource implements Filterable
     public function __toString()
     {
         return $this->getIdentifier();
+    }
+
+    public function __sleep()
+    {
+        /*
+         * Because the Crawler isn't serialized correctly, we exclude it from serialization
+         * It will be available again after wakeup through lazy loading with getCrawler()
+         */
+        return array(
+            'isFiltered',
+            'filterReason',
+            'uri',
+            'response',
+            'depthFound'
+        );
     }
 }

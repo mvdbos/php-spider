@@ -18,7 +18,8 @@
     },
     "require": {
         "fabpot/goutte": "1.0.*@dev",
-        "vdb/uri": "dev-master"
+        "vdb/uri": "dev-master",
+        "symfony/finder": "2.2.*@dev"
     },
     "require-dev": {
         "monolog/monolog": "1.4.*@dev",

@@ -11,14 +11,13 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
-use Symfony\Component\DomCrawler\Crawler;
-use VDB\Spider\Tests\TestCase;
-use Symfony\Component\BrowserKit\Response;
 use DOMDocument;
 use DOMElement;
+use Symfony\Component\BrowserKit\Response;
 use VDB\Spider\Resource;
-use VDB\URI\GenericURI;
 use VDB\Spider\Spider;
+use VDB\Spider\Tests\TestCase;
+use VDB\URI\GenericURI;
 
 abstract class DiscovererTestCase extends TestCase
 {
@@ -54,11 +53,11 @@ abstract class DiscovererTestCase extends TestCase
         $this->spider = new Spider('http://php-spider.org');
 
         // Setup Spider\Resource
-        $crawler = new Crawler($this->domDocument, 'http://php-spider.org');
+        $content = $this->domDocument->saveHTML();
+
         $this->spiderResource = new Resource(
             $this->uri,
-            new Response(200),
-            $crawler
+            new Response($content, 200)
         );
     }
 }
