@@ -1,7 +1,7 @@
 <?php
 namespace VDB\Spider\Discoverer;
 
-use VDB\Spider\Discoverer;
+use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\URI\Exception\UriSyntaxException;
@@ -26,6 +26,7 @@ class CssSelectorDiscoverer implements Discoverer
     }
 
     /**
+     * @param Spider $spider
      * @param Resource $document
      * @return URI[]
      */
@@ -37,7 +38,10 @@ class CssSelectorDiscoverer implements Discoverer
             try {
                 $uris[] = new GenericURI($node->getAttribute('href'), $document->getUri()->toString());
             } catch (UriSyntaxException $e) {
-                $spider->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
+                $spider->getStatsHandler()->addToFailed(
+                    $node->getAttribute('href'),
+                    'Invalid URI: ' . $e->getMessage()
+                );
             }
         }
         return $uris;

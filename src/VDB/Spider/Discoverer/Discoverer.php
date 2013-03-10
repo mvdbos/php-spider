@@ -1,8 +1,10 @@
 <?php
 
-namespace VDB\Spider;
+namespace VDB\Spider\Discoverer;
 
-use Symfony\Component\DomCrawler\Link;
+use VDB\Spider\Resource;
+use VDB\Spider\Spider;
+use VDB\URI\URI;
 
 /**
  * @author Matthijs van den Bos
@@ -11,8 +13,9 @@ use Symfony\Component\DomCrawler\Link;
 interface Discoverer
 {
     /**
+     * @param Spider $spider
      * @param Resource $document
-     * @return Link[] An array of Link instances
+     * @return URI[]
      */
     public function discover(Spider $spider, Resource $document);
 }

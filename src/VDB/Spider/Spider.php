@@ -7,13 +7,15 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use VDB\Spider\Discoverer;
+use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\QueueException;
 use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
+use VDB\Spider\PersistenceHandler\PersistenceHandler;
+use VDB\Spider\RequestHandler\BrowserKitClientRequestHandler;
 use VDB\Spider\RequestHandler\RequestHandler;
-use VDB\Spider\RequestHandler\RequestHandlerBrowserKitClient;
 use VDB\Spider\StatsHandler;
 use VDB\Spider\URI\FilterableURI;
 use VDB\URI\HttpURI;
@@ -32,6 +34,9 @@ class Spider
 
     /** @var StatsHandler */
     private $statsHandler;
+
+    /** @var PersistenceHandler */
+    private $persistenceHandler;
 
     /** @var EventDispatcherInterface */
     private $dispatcher;
@@ -69,12 +74,23 @@ class Spider
     /** @var int The traversal algorithm to use. Choose from the class constants */
     private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
+    /** @var string the unique id of this spider instance */
+    private $spiderId;
+
+
     /**
      * @param string $seed the URI to start crawling
      */
-    public function __construct($seed)
+    public function __construct($seed, $spiderId = null)
     {
         $this->setSeed($seed);
+        if (null !== $spiderId) {
+            $this->spiderId = $spiderId;
+        } else {
+            $this->spiderId = md5($seed . microtime(true));
+        }
+
+
     }
 
     /**
@@ -85,7 +101,8 @@ class Spider
     public function crawl()
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_START);
-        $this->getStatsHandler()->setSpiderId(md5($this->seed->toString() . microtime(true)));
+        $this->getStatsHandler()->setSpiderId($this->spiderId);
+        $this->getPersistenceHandler()->setSpiderId($this->spiderId);
 
         try {
             $this->doCrawl();
@@ -177,15 +194,35 @@ class Spider
     }
 
     /**
-     * @return \VDB\Spider\RequestHandler\RequestHandler|RequestHandlerBrowserKitClient
+     * @return \VDB\Spider\RequestHandler\RequestHandler|BrowserKitClientRequestHandler
      */
     public function getRequestHandler()
     {
         if (!$this->requestHandler) {
-            $this->requestHandler = new RequestHandlerBrowserKitClient();
+            $this->requestHandler = new BrowserKitClientRequestHandler();
         }
 
         return $this->requestHandler;
+    }
+
+    /**
+     * @param PersistenceHandler $persistenceHandler
+     */
+    public function setPersistenceHandler($persistenceHandler)
+    {
+        $this->persistenceHandler = $persistenceHandler;
+    }
+
+    /**
+     * @return PersistenceHandler
+     */
+    public function getPersistenceHandler()
+    {
+        if (!$this->persistenceHandler) {
+            $this->persistenceHandler = new MemoryPersistenceHandler();
+        }
+
+        return $this->persistenceHandler;
     }
 
     /**
@@ -369,7 +406,7 @@ class Spider
         }
 
         $this->currentQueueSize++;
-        $this->processQueue[] = $resource;
+        $this->getPersistenceHandler()->persist($resource);
         $this->getStatsHandler()->addToQueued($resource->getUri());
     }
 

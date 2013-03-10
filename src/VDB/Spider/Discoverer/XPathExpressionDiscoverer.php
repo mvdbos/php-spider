@@ -1,11 +1,11 @@
 <?php
 namespace VDB\Spider\Discoverer;
 
-use VDB\Spider\Discoverer;
-use VDB\URI\Exception\UriSyntaxException;
-use VDB\Spider\Spider;
-use VDB\URI\GenericURI;
+use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
+use VDB\Spider\Spider;
+use VDB\URI\Exception\UriSyntaxException;
+use VDB\URI\GenericURI;
 use VDB\URI\URI;
 
 /**
@@ -26,7 +26,8 @@ class XPathExpressionDiscoverer implements Discoverer
     }
 
     /**
-     * @param \VDB\Spider\Resource $document
+     * @param Spider $spider
+     * @param Resource $document
      * @return URI[]
      */
     public function discover(Spider $spider, Resource $document)

@@ -1,19 +1,18 @@
 <?php
 namespace VDB\Spider\RequestHandler;
 
-use VDB\Spider\RequestHandler\RequestHandler;
 use Goutte\Client;
-use VDB\URI\URI;
-use VDB\Spider\Resource;
-
-use Symfony\Component\DomCrawler\Link;
 use Symfony\Component\BrowserKit\Client as AbstractBrowserKitClient;
+use Symfony\Component\DomCrawler\Link;
+use VDB\Spider\RequestHandler\RequestHandler;
+use VDB\Spider\Resource;
+use VDB\URI\URI;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2013 Matthijs van den Bos
  */
-class RequestHandlerBrowserKitClient implements RequestHandler
+class BrowserKitClientRequestHandler implements RequestHandler
 {
 
     /** @var AbstractBrowserKitClient */
