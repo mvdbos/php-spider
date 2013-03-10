@@ -77,27 +77,28 @@ some logging, caching and filters, see <a href="https://github.com/matthijsvande
 <span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">setMaxQueueSize</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
 </pre></div>
 
-<p>Execute crawl</p>
+<p>Execute the crawl</p>
 
-<div class="highlight"><pre><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">crawl</span><span class="p">();</span>
+<div class="highlight"><pre><span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">crawl</span><span class="p">();</span>
 </pre></div>
 
 <p>When crawling is done, we could get some info about the crawl</p>
 
-<div class="highlight"><pre><span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">ENQUEUED: "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">'queued'</span><span class="p">]);</span>
-<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span><span class="o">.</span><span class="nb">implode</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span><span class="p">,</span> <span class="nv">$result</span><span class="p">[</span><span class="s1">'queued'</span><span class="p">]);</span>
-<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">SKIPPED:   "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">'filtered'</span><span class="p">]);</span>
-<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">FAILED:    "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">'failed'</span><span class="p">])</span> <span class="o">.</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+<div class="highlight"><pre><span class="nv">$stats</span> <span class="o">=</span> <span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">getStatsHandler</span><span class="p">();</span>
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">SPIDER ID: "</span> <span class="o">.</span> <span class="nv">$stats</span><span class="o">-&gt;</span><span class="na">getSpiderId</span><span class="p">();</span>
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  ENQUEUED:  "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$stats</span><span class="o">-&gt;</span><span class="na">getQueued</span><span class="p">());</span>
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  SKIPPED:   "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$stats</span><span class="o">-&gt;</span><span class="na">getFiltered</span><span class="p">());</span>
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  FAILED:    "</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$stats</span><span class="o">-&gt;</span><span class="na">getFailed</span><span class="p">());</span>
 </pre></div>
 
-<p>Finally we could start some processing on the downloaded resources</p>
+<p>Finally we could do some processing on the downloaded resources
+In this example, we will echo the title of all resources</p>
 
-<div class="highlight"><pre><span class="k">foreach</span> <span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">'queued'</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$resource</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nv">$title</span> <span class="o">=</span> <span class="nv">$resource</span><span class="o">-&gt;</span><span class="na">getCrawler</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">filterXpath</span><span class="p">(</span><span class="s1">'//title'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">();</span>
-    <span class="nv">$contentLength</span> <span class="o">=</span> <span class="nv">$resource</span><span class="o">-&gt;</span><span class="na">getResponse</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getHeader</span><span class="p">(</span><span class="s1">'Content-Length'</span><span class="p">);</span>
-    <span class="c1">// do something with the data</span>
-    <span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span><span class="o">.</span>  <span class="nb">str_pad</span><span class="p">(</span><span class="s2">"["</span> <span class="o">.</span> <span class="nx">round</span><span class="p">(</span><span class="nv">$contentLength</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">),</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">' '</span><span class="p">,</span> <span class="nx">STR_PAD_LEFT</span><span class="p">)</span> <span class="o">.</span> <span class="s2">"KB] </span><span class="si">$title</span><span class="s2">"</span><span class="p">;</span>
+<div class="highlight"><pre><span class="k">echo</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">DOWNLOADED RESOURCES: "</span><span class="p">;</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$spider</span><span class="o">-&gt;</span><span class="na">getPersistenceHandler</span><span class="p">()</span> <span class="k">as</span> <span class="nv">$resource</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"> - "</span> <span class="o">.</span> <span class="nv">$resource</span><span class="o">-&gt;</span><span class="na">getCrawler</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">filterXpath</span><span class="p">(</span><span class="s1">'//title'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">();</span>
 <span class="p">}</span>
+
 </pre></div>
 
 <h2>Contributing</h2>
