@@ -23,7 +23,8 @@
         "symfony/css-selector": "~2.1",
         "symfony/dom-crawler": "~2.1",
         "symfony/finder": "2.2.*@dev",
-        "vdb/uri": "dev-master"
+        "vdb/uri": "dev-master",
+        "react/react": "0.3.*"
     },
     "require-dev": {
         "monolog/monolog": "1.4.*@dev",

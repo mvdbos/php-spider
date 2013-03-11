@@ -27,7 +27,7 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
         $uris = $discoverer->discover($this->spider, $this->spiderResource);
         $uri = $uris[0];
 
-        $this->assertInstanceOf('VDB\\URI\\GenericURI', $uri);
+        $this->assertInstanceOf('VDB\\URI\\Uri', $uri);
         $this->assertEquals($this->uri->toString(), $uri->toString());
     }
 }

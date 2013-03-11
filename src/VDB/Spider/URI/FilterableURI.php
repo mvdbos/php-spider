@@ -2,13 +2,13 @@
 namespace VDB\Spider\URI;
 
 use VDB\Spider\Filterable;
-use VDB\URI\GenericURI;
+use VDB\Uri\Uri;
 
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class FilterableURI extends GenericURI implements Filterable
+class FilterableURI extends Uri implements Filterable
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;

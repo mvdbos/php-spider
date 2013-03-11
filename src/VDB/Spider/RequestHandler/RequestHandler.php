@@ -2,7 +2,7 @@
 
 namespace VDB\Spider\RequestHandler;
 
-use VDB\URI\URI;
+use VDB\Uri\UriInterface;
 
 interface RequestHandler
 {

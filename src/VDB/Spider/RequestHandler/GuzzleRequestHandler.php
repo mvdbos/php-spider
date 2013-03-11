@@ -6,7 +6,7 @@ use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\Resource;
-use VDB\URI\URI;
+use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>

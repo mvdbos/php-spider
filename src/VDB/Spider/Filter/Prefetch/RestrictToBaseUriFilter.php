@@ -3,8 +3,8 @@ namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\URI\FilterableURI;
-use VDB\URI\HttpURI;
-use VDB\URI\URI;
+use VDB\Uri\Http;
+use VDB\Uri\UriInterface;
 
 /**
  * @author matthijs
@@ -19,7 +19,7 @@ class RestrictToBaseUriFilter implements PreFetchFilter
      */
     public function __construct($seed)
     {
-        $this->seed = new HttpURI($seed);
+        $this->seed = new Http($seed);
     }
 
     public function match(FilterableURI $uri)

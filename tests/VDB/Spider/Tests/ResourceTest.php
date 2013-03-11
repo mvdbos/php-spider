@@ -3,7 +3,7 @@ namespace VDB\Spider\Tests;
 
 use Guzzle\Http\Message\Response;
 use VDB\Spider\Resource;
-use VDB\URI\GenericURI;
+use VDB\Uri\Uri;
 
 /**
  */
@@ -18,7 +18,7 @@ class ResourceTest extends TestCase
     {
         $html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
         $this->resource = new Resource(
-            new GenericURI('/domains/special', 'http://example.org'),
+            new Uri('/domains/special', 'http://example.org'),
             new Response(200, null, $html)
         );
     }
@@ -36,7 +36,7 @@ class ResourceTest extends TestCase
      */
     public function testGetLink()
     {
-        $this->assertInstanceOf('VDB\\URI\GenericURI', $this->resource->getUri());
+        $this->assertInstanceOf('VDB\\URI\Uri', $this->resource->getUri());
         $this->assertEquals('http://example.org/domains/special', $this->resource->getUri()->toString());
     }
 

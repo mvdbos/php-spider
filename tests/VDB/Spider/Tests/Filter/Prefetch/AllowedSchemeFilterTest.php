@@ -14,7 +14,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\URI\FilterableURI;
-use VDB\URI\HttpURI;
+use VDB\Uri\Http;
 
 /**
  *
@@ -26,8 +26,8 @@ class AllowedSchemeFilterTest extends TestCase
      */
     public function testMatch()
     {
-        HttpURI::$allowedSchemes[] = 'https';
-        HttpURI::$allowedSchemes[] = 'mailto';
+        Http::$allowedSchemes[] = 'https';
+        Http::$allowedSchemes[] = 'mailto';
 
         $filter = new AllowedSchemeFilter(array('http'));
 

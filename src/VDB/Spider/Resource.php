@@ -3,7 +3,7 @@ namespace VDB\Spider;
 
 use Guzzle\Http\Message\Response;
 use Symfony\Component\DomCrawler\Crawler;
-use VDB\URI\URI;
+use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos

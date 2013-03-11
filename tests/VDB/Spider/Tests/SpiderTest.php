@@ -6,7 +6,7 @@ use Guzzle\Http\Message\Response;
 use PHPUnit_Framework_MockObject_MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
-use VDB\URI\GenericURI;
+use VDB\Uri\Uri;
 
 /**
  */
@@ -22,19 +22,19 @@ class SpiderTest extends TestCase
      */
     protected $requestHandler;
 
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkA;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkB;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkC;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkD;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkE;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkF;
-    /** @var GenericURI */
+    /** @var Uri */
     protected $linkG;
 
     /** @var Response */
@@ -79,13 +79,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new GenericURI($this->hrefA);
-        $this->linkB = new GenericURI($this->hrefB);
-        $this->linkC = new GenericURI($this->hrefC);
-        $this->linkD = new GenericURI($this->hrefD);
-        $this->linkE = new GenericURI($this->hrefE);
-        $this->linkF = new GenericURI($this->hrefF);
-        $this->linkG = new GenericURI($this->hrefG);
+        $this->linkA = new Uri($this->hrefA);
+        $this->linkB = new Uri($this->hrefB);
+        $this->linkC = new Uri($this->hrefC);
+        $this->linkD = new Uri($this->hrefD);
+        $this->linkE = new Uri($this->hrefE);
+        $this->linkF = new Uri($this->hrefF);
+        $this->linkG = new Uri($this->hrefG);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->responseA = new Response(200, null, $htmlA);
@@ -152,8 +152,8 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSDefaultBehaviour()
     {
-        $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(100);
+        $this->spider->setMaxDepth(10);
+        $this->spider->setMaxQueueSize(50);
 
         $this->spider->crawl();
 

@@ -4,9 +4,9 @@ namespace VDB\Spider\Discoverer;
 use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
-use VDB\URI\Exception\UriSyntaxException;
-use VDB\URI\GenericURI;
-use VDB\URI\URI;
+use VDB\Uri\Exception\UriSyntaxException;
+use VDB\Uri\Uri;
+use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos
@@ -36,9 +36,9 @@ class XPathExpressionDiscoverer implements Discoverer
         $uris = array();
         foreach ($crawler as $node) {
             try {
-                $uris[] = new GenericURI($node->getAttribute('href'), $document->getUri()->toString());
+                $uris[] = new Uri($node->getAttribute('href'), $document->getUri()->toString());
             } catch (UriSyntaxException $e) {
-                $spider->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
+                $spider->getStatsHandler()->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
             }
         }
         return $uris;

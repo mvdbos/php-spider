@@ -4,7 +4,7 @@ namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
-use VDB\URI\URI;
+use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos
