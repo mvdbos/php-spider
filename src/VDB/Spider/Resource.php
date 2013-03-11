@@ -1,7 +1,7 @@
 <?php
 namespace VDB\Spider;
 
-use Symfony\Component\BrowserKit\Response;
+use Guzzle\Http\Message\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\URI\URI;
 
@@ -26,17 +26,23 @@ class Resource implements Filterable
     /** @var Crawler */
     protected $crawler;
 
+    /** @var string */
+    protected $body;
+
     /** @var int */
     public $depthFound;
 
     /**
      * @param URI $uri
-     * @param \Symfony\Component\BrowserKit\Response $response
+     * @param Response $response
      */
     public function __construct(URI $uri, Response $response)
     {
         $this->uri = $uri;
         $this->response = $response;
+
+        // we store the response manually, because otherwise it will not get serialized. It is a php://temp stream
+        $this->body = $response->getBody(true);
     }
 
     /**
@@ -48,8 +54,8 @@ class Resource implements Filterable
         if (!$this->crawler instanceof Crawler) {
             $this->crawler = new Crawler('', $this->getUri()->toString());
             $this->crawler->addContent(
-                $this->getResponse()->getContent(),
-                $this->getResponse()->getHeader('Content-Type')
+                $this->getResponse()->getBody(true),
+                $this->getResponse()->getHeader('Content-Type', true)
             );
         }
         return $this->crawler;
@@ -64,7 +70,7 @@ class Resource implements Filterable
     }
 
     /**
-     * @return \Symfony\Component\BrowserKit\Response
+     * @return Response
      */
     public function getResponse()
     {
@@ -124,7 +130,16 @@ class Resource implements Filterable
             'filterReason',
             'uri',
             'response',
+            'body',
             'depthFound'
         );
+    }
+
+    /**
+     * We need to set the body again after deserialization because it was a stream that didn't get serialized
+     */
+    public function __wakeup()
+    {
+        $this->response->setBody($this->body);
     }
 }

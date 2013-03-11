@@ -2,8 +2,8 @@
 namespace VDB\Spider;
 
 use Exception;
+use Guzzle\Http\Message\Response;
 use PHPUnit_Framework_MockObject_MockObject;
-use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
 use VDB\URI\GenericURI;
@@ -37,20 +37,20 @@ class SpiderTest extends TestCase
     /** @var GenericURI */
     protected $linkG;
 
-    /** @var Crawler */
-    protected $crawlerA;
-    /** @var Crawler */
-    protected $crawlerB;
-    /** @var Crawler */
-    protected $crawlerC;
-    /** @var Crawler */
-    protected $crawlerD;
-    /** @var Crawler */
-    protected $crawlerE;
-    /** @var Crawler */
-    protected $crawlerF;
-    /** @var Crawler */
-    protected $crawlerG;
+    /** @var Response */
+    protected $responseA;
+    /** @var Response */
+    protected $responseB;
+    /** @var Response */
+    protected $responseC;
+    /** @var Response */
+    protected $responseD;
+    /** @var Response */
+    protected $responseE;
+    /** @var Response */
+    protected $responseF;
+    /** @var Response */
+    protected $responseG;
 
     /** @var string */
     protected $hrefA;
@@ -88,25 +88,25 @@ class SpiderTest extends TestCase
         $this->linkG = new GenericURI($this->hrefG);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
-        $this->crawlerA = new Crawler($htmlA, $this->hrefA);
+        $this->responseA = new Response(200, null, $htmlA);
 
         $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceB.html');
-        $this->crawlerB = new Crawler($htmlB, $this->hrefB);
+        $this->responseB = new Response(200, null, $htmlB);
 
         $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceC.html');
-        $this->crawlerC = new Crawler($htmlC, $this->hrefC);
+        $this->responseC = new Response(200, null, $htmlC);
 
         $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceD.html');
-        $this->crawlerD = new Crawler($htmlD, $this->hrefD);
+        $this->responseD = new Response(200, null, $htmlD);
 
         $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceE.html');
-        $this->crawlerE = new Crawler($htmlE, $this->hrefE);
+        $this->responseE = new Response(200, null, $htmlE);
 
         $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceF.html');
-        $this->crawlerF = new Crawler($htmlF, $this->hrefF);
+        $this->responseF = new Response(200, null, $htmlF);
 
         $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
-        $this->crawlerG = new Crawler($htmlG, $this->hrefG);
+        $this->responseG = new Response(200, null, $htmlG);
 
         $this->requestHandler
             ->expects($this->any())
@@ -119,6 +119,7 @@ class SpiderTest extends TestCase
 
     /**
      * @return Resource
+     * @throws \ErrorException
      */
     public function doTestRequest()
     {
@@ -126,19 +127,21 @@ class SpiderTest extends TestCase
 
         switch ($link->toString()) {
             case $this->linkA->toString():
-                return $this->getResource($this->linkA, $this->crawlerA);
+                return $this->getResource($this->linkA, $this->responseA);
             case $this->linkB->toString():
-                return $this->getResource($this->linkB, $this->crawlerB);
+                return $this->getResource($this->linkB, $this->responseB);
             case $this->linkC->toString():
-                return $this->getResource($this->linkC, $this->crawlerC);
+                return $this->getResource($this->linkC, $this->responseC);
             case $this->linkD->toString():
-                return $this->getResource($this->linkD, $this->crawlerD);
+                return $this->getResource($this->linkD, $this->responseD);
             case $this->linkE->toString():
-                return $this->getResource($this->linkE, $this->crawlerE);
+                return $this->getResource($this->linkE, $this->responseE);
             case $this->linkF->toString():
-                return $this->getResource($this->linkF, $this->crawlerF);
+                return $this->getResource($this->linkF, $this->responseF);
             case $this->linkG->toString():
-                return $this->getResource($this->linkG, $this->crawlerG);
+                return $this->getResource($this->linkG, $this->responseG);
+            default:
+                throw new \ErrorException('The requested URI was not stubbed: ' . $link->toString());
         }
     }
 

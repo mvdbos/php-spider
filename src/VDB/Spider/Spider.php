@@ -14,7 +14,7 @@ use VDB\Spider\Filter\PostFetchFilter;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
 use VDB\Spider\PersistenceHandler\PersistenceHandler;
-use VDB\Spider\RequestHandler\BrowserKitClientRequestHandler;
+use VDB\Spider\RequestHandler\GuzzleRequestHandler;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\StatsHandler;
 use VDB\Spider\URI\FilterableURI;
@@ -66,7 +66,7 @@ class Spider
     private $currentQueueSize = 0;
 
     /** @var array the list of already visited URIs with the depth they were discovered on as value */
-    private $visitedURIs = array();
+    private $alreadySeenURIs = array();
 
     /** @var URI[] the list of URIs to process */
     private $traversalQueue = array();
@@ -77,9 +77,9 @@ class Spider
     /** @var string the unique id of this spider instance */
     private $spiderId;
 
-
     /**
      * @param string $seed the URI to start crawling
+     * @param string $spiderId
      */
     public function __construct($seed, $spiderId = null)
     {
@@ -89,8 +89,6 @@ class Spider
         } else {
             $this->spiderId = md5($seed . microtime(true));
         }
-
-
     }
 
     /**
@@ -186,7 +184,7 @@ class Spider
     }
 
     /**
-     * @param \VDB\Spider\RequestHandler\RequestHandler $requestHandler
+     * @param RequestHandler $requestHandler
      */
     public function setRequestHandler(RequestHandler $requestHandler)
     {
@@ -194,12 +192,12 @@ class Spider
     }
 
     /**
-     * @return \VDB\Spider\RequestHandler\RequestHandler|BrowserKitClientRequestHandler
+     * @return RequestHandler
      */
     public function getRequestHandler()
     {
         if (!$this->requestHandler) {
-            $this->requestHandler = new BrowserKitClientRequestHandler();
+            $this->requestHandler = new GuzzleRequestHandler();
         }
 
         return $this->requestHandler;
@@ -321,7 +319,6 @@ class Spider
      *
      * a breadth first algorithm
      *
-     * @param URI $currentURI
      * @return void
      */
     private function doCrawl()
@@ -353,7 +350,7 @@ class Spider
 
             $this->addToProcessQueue($resource);
 
-            $nextLevel = $this->visitedURIs[$currentURI->toString()] + 1;
+            $nextLevel = $this->alreadySeenURIs[$currentURI->toString()] + 1;
             if ($nextLevel > $this->maxDepth) {
                 continue;
             }
@@ -369,9 +366,7 @@ class Spider
                 $uri = new FilterableURI($uri);
 
                 // Always skip nodes we already visited
-                if (array_key_exists($uri->toString(), $this->visitedURIs)) {
-                    $uri->setFiltered(true, 'Already visited');
-                    $this->getStatsHandler()->addToFiltered($uri);
+                if (array_key_exists($uri->toString(), $this->alreadySeenURIs)) {
                     continue;
                 }
 
@@ -384,9 +379,9 @@ class Spider
                     $this->getStatsHandler()->addToFiltered($uri);
                 } else {
                     // The URI was not matched by any filter, mark as visited and add to queue
-                    $this->visitedURIs[$uri->toString()] = $nextLevel;
                     array_push($this->traversalQueue, $uri);
                 }
+                $this->alreadySeenURIs[$uri->toString()] = $nextLevel;
             }
         }
     }
@@ -443,7 +438,7 @@ class Spider
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         try {
             $resource = $this->getRequestHandler()->request($uri);
-            $resource->depthFound = $this->visitedURIs[$uri->toString()];
+            $resource->depthFound = $this->alreadySeenURIs[$uri->toString()];
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST); // necessary until we have 'finally'
             return $resource;
         } catch (\Exception $e) {
@@ -497,6 +492,6 @@ class Spider
     {
         $this->seed = new HttpURI($uri);
         array_push($this->traversalQueue, $this->seed);
-        $this->visitedURIs[$this->seed->normalize()->toString()] = 0;
+        $this->alreadySeenURIs[$this->seed->normalize()->toString()] = 0;
     }
 }

@@ -60,7 +60,7 @@ $spider->getDispatcher()->addListener(
 );
 
 //// Set up some caching, logging and profiling on the HTTP client of the spider
-$guzzleClient = $spider->getRequestHandler()->getClient()->getClient();
+$guzzleClient = $spider->getRequestHandler()->getClient();
 $guzzleClient->addSubscriber($logPlugin);
 $guzzleClient->addSubscriber($timerPlugin);
 $guzzleClient->addSubscriber($cachePlugin);
@@ -99,7 +99,7 @@ echo "\n\nDOWNLOADED RESOURCES: ";
 $downloaded = $spider->getPersistenceHandler();
 foreach ($downloaded as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length');
+    $contentLength = $resource->getResponse()->getHeader('Content-Length', true);
     // do something with the data
     echo "\n - " . str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
 }

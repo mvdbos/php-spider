@@ -1,10 +1,9 @@
 <?php
 namespace VDB\Spider\Tests;
 
+use Guzzle\Http\Message\Response;
 use VDB\Spider\Resource;
 use VDB\URI\GenericURI;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\BrowserKit\Response;
 
 /**
  */
@@ -13,15 +12,14 @@ class ResourceTest extends TestCase
     /**
      * @var Resource
      */
-    protected $document;
+    protected $resource;
 
     protected function setUp()
     {
         $html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
-        $this->document = new Resource(
+        $this->resource = new Resource(
             new GenericURI('/domains/special', 'http://example.org'),
-            new Response(),
-            new Crawler($html, 'http://example.org')
+            new Response(200, null, $html)
         );
     }
 
@@ -30,7 +28,7 @@ class ResourceTest extends TestCase
      */
     public function testGetCrawler()
     {
-        $this->assertInstanceOf('Symfony\\Component\\DomCrawler\\Crawler', $this->document->getCrawler());
+        $this->assertInstanceOf('Symfony\\Component\\DomCrawler\\Crawler', $this->resource->getCrawler());
     }
 
     /**
@@ -38,8 +36,8 @@ class ResourceTest extends TestCase
      */
     public function testGetLink()
     {
-        $this->assertInstanceOf('VDB\\URI\GenericURI', $this->document->getUri());
-        $this->assertEquals('http://example.org/domains/special', $this->document->getUri()->toString());
+        $this->assertInstanceOf('VDB\\URI\GenericURI', $this->resource->getUri());
+        $this->assertEquals('http://example.org/domains/special', $this->resource->getUri()->toString());
     }
 
     /**
@@ -47,7 +45,7 @@ class ResourceTest extends TestCase
      */
     public function testGetResponse()
     {
-        $this->assertInstanceOf('Symfony\\Component\\BrowserKit\\Response', $this->document->getResponse());
+        $this->assertInstanceOf('Guzzle\\Http\\Message\\Response', $this->resource->getResponse());
     }
 
     /**
@@ -57,9 +55,9 @@ class ResourceTest extends TestCase
      */
     public function testSetFiltered()
     {
-        $this->document->setFiltered(true, 'goodReason');
-        $this->assertTrue($this->document->isFiltered());
-        $this->assertEquals('goodReason', $this->document->getFilterReason());
+        $this->resource->setFiltered(true, 'goodReason');
+        $this->assertTrue($this->resource->isFiltered());
+        $this->assertEquals('goodReason', $this->resource->getFilterReason());
     }
 
     /**
@@ -67,6 +65,6 @@ class ResourceTest extends TestCase
      */
     public function testGetIdentifier()
     {
-        $this->assertEquals('http://example.org/domains/special', $this->document->getIdentifier());
+        $this->assertEquals('http://example.org/domains/special', $this->resource->getIdentifier());
     }
 }

@@ -17,9 +17,13 @@
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
-        "fabpot/goutte": "1.0.*@dev",
-        "vdb/uri": "dev-master",
-        "symfony/finder": "2.2.*@dev"
+        "php": ">=5.3.0",
+        "ext-curl": "*",
+        "guzzle/guzzle": ">=3.0, <3.4",
+        "symfony/css-selector": "~2.1",
+        "symfony/dom-crawler": "~2.1",
+        "symfony/finder": "2.2.*@dev",
+        "vdb/uri": "dev-master"
     },
     "require-dev": {
         "monolog/monolog": "1.4.*@dev",

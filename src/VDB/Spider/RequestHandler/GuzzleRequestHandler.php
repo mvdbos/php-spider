@@ -1,8 +1,9 @@
 <?php
 namespace VDB\Spider\RequestHandler;
 
-use Goutte\Client;
-use Symfony\Component\BrowserKit\Client as AbstractBrowserKitClient;
+use Guzzle\Http\Client;
+use Guzzle\Http\Message\Request;
+use Guzzle\Http\Message\RequestInterface;
 use VDB\Spider\RequestHandler\RequestHandler;
 use VDB\Spider\Resource;
 use VDB\URI\URI;
@@ -11,18 +12,16 @@ use VDB\URI\URI;
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2013 Matthijs van den Bos
  */
-class BrowserKitClientRequestHandler implements RequestHandler
+class GuzzleRequestHandler implements RequestHandler
 {
-
-    /** @var AbstractBrowserKitClient */
+    /** @var Client */
     private $client;
 
-
     /**
-     * @param AbstractBrowserKitClient $client
+     * @param Client $client
      * @return RequestHandler
      */
-    public function setClient(AbstractBrowserKitClient $client)
+    public function setClient(Client $client)
     {
         $this->client = $client;
 
@@ -30,7 +29,7 @@ class BrowserKitClientRequestHandler implements RequestHandler
     }
 
     /**
-     * @return AbstractBrowserKitClient
+     * @return Client
      */
     public function getClient()
     {
@@ -47,9 +46,7 @@ class BrowserKitClientRequestHandler implements RequestHandler
      */
     public function request(URI $uri)
     {
-        $this->getClient()->request('GET', $uri->toString());
-        $response = $this->getClient()->getResponse();
-
+        $response = $this->getClient()->createRequest(RequestInterface::GET, $uri->toString())->send();
         return new Resource($uri, $response);
     }
 }
