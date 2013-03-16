@@ -15,7 +15,7 @@ interface Discoverer
     /**
      * @param Spider $spider
      * @param Resource $document
-     * @return URI[]
+     * @return UriInterface[]
      */
     public function discover(Spider $spider, Resource $document);
 }

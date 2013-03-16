@@ -41,10 +41,10 @@ class GuzzleRequestHandler implements RequestHandler
     }
 
     /**
-     * @param URI $uri
+     * @param UriInterface $uri
      * @return Resource
      */
-    public function request(URI $uri)
+    public function request(UriInterface $uri)
     {
         $response = $this->getClient()->createRequest(RequestInterface::GET, $uri->toString())->send();
         return new Resource($uri, $response);

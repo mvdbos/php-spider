@@ -28,7 +28,7 @@ class StatsHandler
         return $this->spiderId;
     }
 
-    public function addToQueued(URI $uri)
+    public function addToQueued(UriInterface $uri)
     {
         $this->queued[] = $uri;
     }
@@ -44,7 +44,7 @@ class StatsHandler
     }
 
     /**
-     * @return URI[]
+     * @return UriInterface[]
      */
     public function getQueued()
     {

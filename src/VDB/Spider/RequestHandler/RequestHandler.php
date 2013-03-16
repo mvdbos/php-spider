@@ -7,8 +7,8 @@ use VDB\Uri\UriInterface;
 interface RequestHandler
 {
     /**
-     * @param URI $uri
+     * @param UriInterface $uri
      * @return Resource
      */
-    public function request(URI $uri);
+    public function request(UriInterface $uri);
 }

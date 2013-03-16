@@ -28,7 +28,7 @@ class XPathExpressionDiscoverer implements Discoverer
     /**
      * @param Spider $spider
      * @param Resource $document
-     * @return URI[]
+     * @return Uri[]
      */
     public function discover(Spider $spider, Resource $document)
     {

@@ -2,7 +2,7 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilter;
-use VDB\Spider\URI\FilterableURI;
+use VDB\Spider\Uri\FilterableUri;
 use VDB\Uri\Http;
 use VDB\Uri\UriInterface;
 
@@ -11,7 +11,7 @@ use VDB\Uri\UriInterface;
  */
 class RestrictToBaseUriFilter implements PreFetchFilter
 {
-    /** @var URI */
+    /** @var Uri */
     private $seed;
 
     /**
@@ -22,7 +22,7 @@ class RestrictToBaseUriFilter implements PreFetchFilter
         $this->seed = new Http($seed);
     }
 
-    public function match(FilterableURI $uri)
+    public function match(FilterableUri $uri)
     {
         /*
          * if the URI does not contain the seed, it is not allowed

@@ -17,7 +17,7 @@ class Resource implements Filterable
     /** @var string */
     private $filterReason = '';
 
-    /** @var URI */
+    /** @var UriInterface */
     protected $uri;
 
     /** @var Response */
@@ -33,10 +33,10 @@ class Resource implements Filterable
     public $depthFound;
 
     /**
-     * @param URI $uri
+     * @param UriInterface $uri
      * @param Response $response
      */
-    public function __construct(URI $uri, Response $response)
+    public function __construct(UriInterface $uri, Response $response)
     {
         $this->uri = $uri;
         $this->response = $response;
@@ -62,7 +62,7 @@ class Resource implements Filterable
     }
 
     /**
-     * @return URI
+     * @return UriInterface
      */
     public function getUri()
     {

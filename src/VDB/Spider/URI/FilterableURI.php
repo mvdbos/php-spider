@@ -1,5 +1,5 @@
 <?php
-namespace VDB\Spider\URI;
+namespace VDB\Spider\Uri;
 
 use VDB\Spider\Filterable;
 use VDB\Uri\Uri;
@@ -8,7 +8,7 @@ use VDB\Uri\Uri;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class FilterableURI extends Uri implements Filterable
+class FilterableUri extends Uri implements Filterable
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;

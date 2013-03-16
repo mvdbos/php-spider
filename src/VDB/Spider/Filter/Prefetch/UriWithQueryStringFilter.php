@@ -2,14 +2,14 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilter;
-use VDB\Spider\URI\FilterableURI;
+use VDB\Spider\Uri\FilterableUri;
 
 /**
  * @author matthijs
  */
 class UriWithQueryStringFilter implements PreFetchFilter
 {
-    public function match(FilterableURI $uri)
+    public function match(FilterableUri $uri)
     {
         if (null !== $uri->getQuery()) {
             $uri->setFiltered(true, 'URI with query string');
