@@ -2,7 +2,7 @@
 namespace VDB\Spider\Tests\URI;
 
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\URI\FilterableURI;
+use VDB\Spider\Uri\FilterableURI;
 
 /**
  *

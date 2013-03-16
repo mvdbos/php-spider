@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\URI\FilterableURI;
+use VDB\Spider\Uri\FilterableURI;
 
 /**
  *
