@@ -94,11 +94,13 @@ class Spider
         }
 
         // This makes the spider handle signals gracefully and allows us to do cleanup
-        declare(ticks = 1);
-        pcntl_signal(SIGTERM, array($this, 'handleSignal'));
-        pcntl_signal(SIGINT, array($this, 'handleSignal'));
-        pcntl_signal(SIGHUP, array($this, 'handleSignal'));
-        pcntl_signal(SIGQUIT, array($this, 'handleSignal'));
+        if(php_sapi_name() == 'cli'){
+            declare(ticks = 1);
+            pcntl_signal(SIGTERM, array($this, 'handleSignal'));
+            pcntl_signal(SIGINT, array($this, 'handleSignal'));
+            pcntl_signal(SIGHUP, array($this, 'handleSignal'));
+            pcntl_signal(SIGQUIT, array($this, 'handleSignal'));
+        }
     }
 
     /**
