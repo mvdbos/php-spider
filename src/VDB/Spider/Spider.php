@@ -24,9 +24,6 @@ use VDB\Uri\Uri;
 use VDB\Uri\Http;
 use VDB\Uri\UriInterface;
 
-/**
- *
- */
 class Spider
 {
     const ALGORITHM_DEPTH_FIRST = 0;
@@ -84,12 +81,18 @@ class Spider
      * @param string $seed the URI to start crawling
      * @param string $spiderId
      */
-    public function __construct($seed, $spiderId = null)
+    public function __construct($seed = null, $spiderId = null)
     {
-        $this->setSeed($seed);
+        if (null !== $seed) {
+            $this->setSeed($seed);
+        }
+
+
         if (null !== $spiderId) {
             $this->spiderId = $spiderId;
-        } else {
+        }
+
+        if (null === $spiderId && null !== $seed) {
             $this->spiderId = md5($seed . microtime(true));
         }
 
@@ -513,9 +516,11 @@ class Spider
     /**
      * @param string $uri
      */
-    private function setSeed($uri)
+    public function setSeed($uri)
     {
+        $this->spiderId = md5($uri . microtime(true));
         $this->seed = new Http($uri);
+
         array_push($this->traversalQueue, $this->seed);
         $this->alreadySeenUris[$this->seed->normalize()->toString()] = 0;
     }
