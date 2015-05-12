@@ -524,4 +524,16 @@ class Spider
         array_push($this->traversalQueue, $this->seed);
         $this->alreadySeenUris[$this->seed->normalize()->toString()] = 0;
     }
+
+    /**
+     * Returns the URL where the crawler is started with.
+     *
+     * @return string
+     */
+    public function getStartUri()
+    {
+        if (null !== $this->seed) {
+            return $this->seed->normalize()->toString();
+        }
+    }
 }
