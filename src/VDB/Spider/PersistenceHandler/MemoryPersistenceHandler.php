@@ -10,6 +10,9 @@ use VDB\Spider\Resource;
 
 class MemoryPersistenceHandler implements PersistenceHandler, \Iterator
 {
+    /**
+     * @var Resource[]
+     */
     private $resources = array();
 
     public function setSpiderId($spiderId)
@@ -31,7 +34,7 @@ class MemoryPersistenceHandler implements PersistenceHandler, \Iterator
     }
 
     /**
-     * @return void
+     * @return Resource
      */
     public function next()
     {
