@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/matthijsvandenbos/php-spider.png?branch=master)](https://travis-ci.org/matthijsvandenbos/php-spider)
+[![Build Status](https://travis-ci.org/mvdbos/php-spider.png?branch=master)](https://travis-ci.org/mvdbos/php-spider)
 
 PHP-Spider Features
 ======
@@ -66,7 +66,7 @@ foreach ($spider->getPersistenceHandler() as $resource) {
 ```
 Contributing
 ------------
-Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request. 
+Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request.
 The Symfony documentation contains an excellent guide for how to do that properly here: [Submitting a Patch](http://symfony.com/doc/current/contributing/code/patches.html#step-1-setup-your-environment).
 
 There a few requirements for a Pull Request to be accepted:
