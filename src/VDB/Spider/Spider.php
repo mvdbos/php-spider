@@ -282,13 +282,13 @@ class Spider
     public function handleSignal($signal)
     {
         switch ($signal) {
-            case SIGTERM:
-            case SIGKILL:
-            case SIGINT:
-            case SIGQUIT:
-                echo "\n\nCAUGHT SIGNAL. TERMINATING\n\n";
-                echo $this->statsHandler->toString();
-                exit();
+        case SIGTERM:
+        case SIGKILL:
+        case SIGINT:
+        case SIGQUIT:
+            echo "\n\nCAUGHT SIGNAL. TERMINATING\n\n";
+            echo $this->statsHandler->toString();
+            exit();
         }
     }
 
