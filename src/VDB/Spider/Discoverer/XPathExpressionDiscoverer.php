@@ -38,6 +38,7 @@ class XPathExpressionDiscoverer implements Discoverer
             try {
                 $uris[] = new Uri($node->getAttribute('href'), $document->getUri()->toString());
             } catch (UriSyntaxException $e) {
+                // TODO: just throw exception and test for it. Or just ignore invalid Uris?
                 $spider->getStatsHandler()->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
             }
         }

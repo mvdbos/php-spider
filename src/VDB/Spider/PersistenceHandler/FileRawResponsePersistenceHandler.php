@@ -9,7 +9,7 @@ namespace VDB\Spider\PersistenceHandler;
 use Symfony\Component\Finder\Finder;
 use VDB\Spider\Resource;
 
-class FileRawResponsePersistenceHandler implements PersistenceHandler, \Iterator
+class FileRawResponsePersistenceHandler implements PersistenceHandler
 {
     /**
      * @var string the path where all spider results should be persisted.
@@ -43,6 +43,11 @@ class FileRawResponsePersistenceHandler implements PersistenceHandler, \Iterator
         }
     }
 
+    public function count()
+    {
+        return $this->getFinder()->count();
+    }
+
     private function getResultPath()
     {
         return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
@@ -56,11 +61,18 @@ class FileRawResponsePersistenceHandler implements PersistenceHandler, \Iterator
         $this->totalSizePersisted += $file->fwrite($rawResponse);
     }
 
+    private function getFinder()
+    {
+        if (!$this->finder instanceof Finder) {
+            $this->finder = Finder::create()->files()->in($this->getResultPath());
+        }
+        return $this->finder;
+    }
+
     private function getIterator()
     {
         if (!$this->iterator instanceof \Iterator) {
-            $finder = Finder::create()->files()->in($this->getResultPath());
-            $this->iterator = $finder->getIterator();
+            $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;
     }

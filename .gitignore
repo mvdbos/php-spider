@@ -3,5 +3,7 @@ composer.lock
 vendor
 TODO.md
 example/logs/*.log
+example/results
 *.doctrinecache.php
 .DS_Store
+cache.properties

@@ -6,17 +6,34 @@
 
 namespace VDB\Spider;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Uri\UriInterface;
 
-class StatsHandler
+use VDB\Spider\Event\SpiderEvents;
+
+class StatsHandler implements EventSubscriberInterface
 {
     protected $spiderId;
+
+    protected $persisted = array();
 
     protected $queued = array();
 
     protected $filtered = array();
 
     protected $failed = array();
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH => 'addToFiltered',
+            SpiderEvents::SPIDER_CRAWL_FILTER_PREFETCH => 'addToFiltered',
+            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE => 'addToQueued',
+            SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED => 'addToPersisted',
+            SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST => 'addToFailed'
+        );
+    }
 
     public function setSpiderId($spiderId)
     {
@@ -28,19 +45,24 @@ class StatsHandler
         return $this->spiderId;
     }
 
-    public function addToQueued(UriInterface $uri)
+    public function addToQueued(GenericEvent $event)
     {
-        $this->queued[] = $uri;
+        $this->queued[] = $event->getArgument('uri');
     }
 
-    public function addToFiltered(Filterable $item)
+    public function addToPersisted(GenericEvent $event)
     {
-        $this->filtered[] = $item;
+        $this->persisted[] = $event->getArgument('uri');
     }
 
-    public function addToFailed($uriString, $reason)
+    public function addToFiltered(GenericEvent $event)
     {
-        $this->failed[$uriString] = $reason;
+        $this->filtered[] = $event->getArgument('uri');
+    }
+
+    public function addToFailed(GenericEvent $event)
+    {
+        $this->failed[$event->getArgument('uri')->toString()] = $event->getArgument('message');
     }
 
     /**
@@ -49,6 +71,14 @@ class StatsHandler
     public function getQueued()
     {
         return $this->queued;
+    }
+
+    /**
+     * @return UriInterface[]
+     */
+    public function getPersisted()
+    {
+        return $this->persisted;
     }
 
     /**

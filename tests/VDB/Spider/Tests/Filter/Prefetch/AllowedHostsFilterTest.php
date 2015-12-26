@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\FilterableURI;
+use VDB\Spider\Uri\FilterableUri;
 use VDB\Uri\Uri;
 
 /**
@@ -28,9 +28,9 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'));
 
-        $uri1 = new FilterableURI('http://example.org');
-        $uri2 = new FilterableURI('http://php-spider.org');
-        $uri3 = new FilterableURI('http://blog.php-spider.org');
+        $uri1 = new FilterableUri('http://example.org');
+        $uri2 = new FilterableUri('http://php-spider.org');
+        $uri3 = new FilterableUri('http://blog.php-spider.org');
 
         $this->assertTrue($filter->match($uri1));
         $this->assertTrue($filter->match($uri2));
@@ -44,10 +44,10 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'), true);
 
-        $uri1 = new FilterableURI('http://example.com');
-        $uri2 = new FilterableURI('http://blog.php-spider.org');
-        $uri3 = new FilterableURI('http://test.php-spider.org');
-        $uri4 = new FilterableURI('http://php-spider.org');
+        $uri1 = new FilterableUri('http://example.com');
+        $uri2 = new FilterableUri('http://blog.php-spider.org');
+        $uri3 = new FilterableUri('http://test.php-spider.org');
+        $uri4 = new FilterableUri('http://php-spider.org');
 
         $this->assertTrue($filter->match($uri1));
         $this->assertFalse($filter->match($uri2));
@@ -62,12 +62,12 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org', 'http://example.com'), true);
 
-        $uri1 = new FilterableURI('http://example.com');
-        $uri2 = new FilterableURI('http://test.example.com');
-        $uri3 = new FilterableURI('http://blog.php-spider.org');
-        $uri4 = new FilterableURI('http://test.php-spider.org');
-        $uri5 = new FilterableURI('http://php-spider.org');
-        $uri6 = new FilterableURI('http://example.org');
+        $uri1 = new FilterableUri('http://example.com');
+        $uri2 = new FilterableUri('http://test.example.com');
+        $uri3 = new FilterableUri('http://blog.php-spider.org');
+        $uri4 = new FilterableUri('http://test.php-spider.org');
+        $uri5 = new FilterableUri('http://php-spider.org');
+        $uri6 = new FilterableUri('http://example.org');
 
         $this->assertFalse($filter->match($uri1));
         $this->assertFalse($filter->match($uri2));

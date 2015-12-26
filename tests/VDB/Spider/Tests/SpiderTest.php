@@ -6,7 +6,9 @@ use Guzzle\Http\Message\Response;
 use PHPUnit_Framework_MockObject_MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
+use VDB\Spider\QueueManager\InMemoryQueueManager;
+use VDB\Spider\StatsHandler;
+use VDB\Spider\Uri\FilterableUri;
 
 /**
  */
@@ -18,23 +20,28 @@ class SpiderTest extends TestCase
     protected $spider;
 
     /**
+     * @var StatsHandler
+     */
+    protected $statsHandler;
+
+    /**
      * @var PHPUnit_Framework_MockObject_MockObject
      */
     protected $requestHandler;
 
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkA;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkB;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkC;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkD;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkE;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkF;
-    /** @var Uri */
+    /** @var FilterableUri */
     protected $linkG;
 
     /** @var Response */
@@ -79,13 +86,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new Uri($this->hrefA);
-        $this->linkB = new Uri($this->hrefB);
-        $this->linkC = new Uri($this->hrefC);
-        $this->linkD = new Uri($this->hrefD);
-        $this->linkE = new Uri($this->hrefE);
-        $this->linkF = new Uri($this->hrefF);
-        $this->linkG = new Uri($this->hrefG);
+        $this->linkA = new FilterableUri($this->hrefA);
+        $this->linkB = new FilterableUri($this->hrefB);
+        $this->linkC = new FilterableUri($this->hrefC);
+        $this->linkD = new FilterableUri($this->hrefD);
+        $this->linkE = new FilterableUri($this->hrefE);
+        $this->linkF = new FilterableUri($this->hrefF);
+        $this->linkG = new FilterableUri($this->hrefG);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->responseA = new Response(200, null, $htmlA);
@@ -114,7 +121,16 @@ class SpiderTest extends TestCase
             ->will($this->returnCallback(array($this, 'doTestRequest')));
 
         $this->spider->setRequestHandler($this->requestHandler);
+
         $this->spider->addDiscoverer(new XPathExpressionDiscoverer('//a'));
+
+        $this->statsHandler = new StatsHandler();
+        $this->spider->getDispatcher()->addSubscriber($this->statsHandler);
+        $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->statsHandler);
+
+        $this->logHandler = new LogHandler();
+        $this->spider->getDispatcher()->addSubscriber($this->logHandler);
+        $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->logHandler);
     }
 
     /**
@@ -152,26 +168,21 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSDefaultBehaviour()
     {
-        $this->spider->setMaxDepth(10);
-        $this->spider->setMaxQueueSize(50);
+        $this->spider->getQueueManager()->maxDepth = 10;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefE,
-            $this->hrefF,
-            $this->hrefC,
-            $this->hrefG,
-            $this->hrefB,
-            $this->hrefD
+            $this->linkA,
+            $this->linkE,
+            $this->linkF,
+            $this->linkC,
+            $this->linkG,
+            $this->linkB,
+            $this->linkD
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     /**
@@ -180,27 +191,22 @@ class SpiderTest extends TestCase
      */
     public function testCrawlBFSDefaultBehaviour()
     {
-        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
-        $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(100);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->maxDepth = 1000;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefB,
-            $this->hrefC,
-            $this->hrefE,
-            $this->hrefD,
-            $this->hrefF,
-            $this->hrefG
+            $this->linkA,
+            $this->linkB,
+            $this->linkC,
+            $this->linkE,
+            $this->linkD,
+            $this->linkF,
+            $this->linkG
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     /**
@@ -210,43 +216,35 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSMaxDepthOne()
     {
-        $this->spider->setMaxDepth(1);
+        $this->spider->getQueueManager()->maxDepth = 1;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefE,
-            $this->hrefC,
-            $this->hrefB,
+            $this->linkA,
+            $this->linkE,
+            $this->linkC,
+            $this->linkB,
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     public function testCrawlBFSMaxDepthOne()
     {
-        $this->spider->setMaxDepth(1);
-        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->maxDepth = 1;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefB,
-            $this->hrefC,
-            $this->hrefE,
+            $this->linkA,
+            $this->linkB,
+            $this->linkC,
+            $this->linkE,
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     /**
@@ -254,43 +252,35 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSMaxQueueSize()
     {
-        $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(3);
+        $this->spider->getQueueManager()->maxDepth = 1000;
+        $this->spider->downloadLimit = 3;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefE,
-            $this->hrefF,
+            $this->linkA,
+            $this->linkE,
+            $this->linkF,
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     public function testCrawlBFSMaxQueueSize()
     {
-        $this->spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
-        $this->spider->setMaxDepth(1000);
-        $this->spider->setMaxQueueSize(3);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->maxDepth = 1000;
+        $this->spider->downloadLimit = 3;
 
         $this->spider->crawl();
 
         $expected = array(
-            $this->hrefA,
-            $this->hrefB,
-            $this->hrefC,
+            $this->linkA,
+            $this->linkB,
+            $this->linkC,
         );
 
-        $stats = $this->spider->getStatsHandler();
-
-        foreach ($stats->getQueued() as $index => $uri) {
-            $this->assertEquals($expected[$index], $uri->toString());
-        }
+        $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
     /**
@@ -306,10 +296,10 @@ class SpiderTest extends TestCase
             );
 
         $this->spider->crawl();
-        $stats = $this->spider->getStatsHandler();
+        $stats = $this->statsHandler;
 
         $this->assertCount(0, $stats->getFiltered(), 'Filtered count');
-        $this->assertCount(0, $stats->getQueued(), 'Queued count');
+        $this->assertCount(0, $stats->getPersisted(), 'Persisted count');
         $this->assertCount(1, $stats->getFailed(), 'Failed count');
     }
 }

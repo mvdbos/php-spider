@@ -1,16 +1,16 @@
 <?php
-namespace VDB\Spider\Tests\URI;
+namespace VDB\Spider\Tests\Uri;
 
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\FilterableURI;
+use VDB\Spider\Uri\FilterableUri;
 
 /**
  *
  */
-class FilterableURITest extends TestCase
+class FilterableUriTest extends TestCase
 {
     /**
-     * @var FilterableURI
+     * @var FilterableUri
      */
     protected $uri;
 
@@ -20,16 +20,16 @@ class FilterableURITest extends TestCase
      */
     protected function setUp()
     {
-        $this->uri = new FilterableURI(
+        $this->uri = new FilterableUri(
             '/domains/special',
             'http://example.org'
         );
     }
 
     /**
-     * @covers VDB\Spider\FilterableURI::setFiltered
-     * @covers VDB\Spider\FilterableURI::isFiltered
-     * @covers VDB\Spider\FilterableURI::getFilterReason
+     * @covers VDB\Spider\Uri\FilterableUri::setFiltered
+     * @covers VDB\Spider\Uri\FilterableUri::isFiltered
+     * @covers VDB\Spider\Uri\FilterableUri::getFilterReason
      */
     public function testSetFiltered()
     {
@@ -39,7 +39,7 @@ class FilterableURITest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\FilterableURI::getIdentifier
+     * @covers VDB\Spider\Uri\FilterableUri::getIdentifier
      * @todo   Implement testGetIdentifier().
      */
     public function testGetIdentifier()

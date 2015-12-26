@@ -27,7 +27,8 @@
     },
     "require-dev": {
         "monolog/monolog": "1.4.*@dev",
-        "doctrine/cache": "dev-master"
+        "doctrine/cache": "dev-master",
+        "ibuildings/qa-tools": "~2.0"
     },
     "autoload": {
         "psr-0": {

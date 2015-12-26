@@ -8,7 +8,7 @@ namespace VDB\Spider\PersistenceHandler;
 
 use VDB\Spider\Resource;
 
-class MemoryPersistenceHandler implements PersistenceHandler, \Iterator
+class MemoryPersistenceHandler implements PersistenceHandler
 {
     /**
      * @var Resource[]
@@ -18,6 +18,11 @@ class MemoryPersistenceHandler implements PersistenceHandler, \Iterator
     public function setSpiderId($spiderId)
     {
         // memory handler ignores this. Only interesting for true persistence as some kind of key or prefix
+    }
+
+    public function count()
+    {
+        return count($this->resources);
     }
 
     public function persist(Resource $resource)
