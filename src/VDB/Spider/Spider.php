@@ -53,9 +53,6 @@ class Spider
     /** @var PostFetchFilter[] */
     private $postFetchFilters = array();
 
-    /** @var Resource[] all Resources enqueued for processing */
-    protected $processQueue = array();
-
     /** @var Uri The URI of the site to spider */
     private $seed = array();
 
