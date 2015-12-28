@@ -122,7 +122,7 @@ class SpiderTest extends TestCase
 
         $this->spider->setRequestHandler($this->requestHandler);
 
-        $this->spider->addDiscoverer(new XPathExpressionDiscoverer('//a'));
+        $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
 
         $this->statsHandler = new StatsHandler();
         $this->spider->getDispatcher()->addSubscriber($this->statsHandler);

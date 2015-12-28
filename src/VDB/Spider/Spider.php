@@ -6,7 +6,8 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use VDB\Spider\Discoverer\Discoverer;
+use VDB\Spider\Discoverer\DiscovererInterface;
+use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\QueueException;
 use VDB\Spider\Filter\PostFetchFilter;
@@ -37,11 +38,8 @@ class Spider
     /** @var EventDispatcherInterface */
     private $dispatcher;
 
-    /** @var Discoverer[] */
-    private $discoverers = array();
-
-    /** @var PreFetchFilter[] */
-    private $preFetchFilters = array();
+    /** @var DiscovererSet */
+    private $discovererSet;
 
     /** @var PostFetchFilter[] */
     private $postFetchFilters = array();
@@ -97,22 +95,6 @@ class Spider
     }
 
     /**
-     * @param Discoverer $discoverer
-     */
-    public function addDiscoverer(Discoverer $discoverer)
-    {
-        array_push($this->discoverers, $discoverer);
-    }
-
-    /**
-     * @param PreFetchFilter $filter
-     */
-    public function addPreFetchFilter(PreFetchFilter $filter)
-    {
-        $this->preFetchFilters[] = $filter;
-    }
-
-    /**
      * @param PostFetchFilter $filter
      */
     public function addPostFetchFilter(PostFetchFilter $filter)
@@ -138,6 +120,26 @@ class Spider
         }
 
         return $this->requestHandler;
+    }
+
+    /**
+     * param DiscovererSet $discovererSet
+     */
+    public function setDiscovererSet(DiscovererSet $discovererSet)
+    {
+        $this->discovererSet = $discovererSet;
+    }
+
+    /**
+     * @return DiscovererSet
+     */
+    public function getDiscovererSet()
+    {
+        if (!$this->discovererSet) {
+            $this->discovererSet = new DiscovererSet();
+        }
+
+        return $this->discovererSet;
     }
 
     /**
@@ -231,24 +233,6 @@ class Spider
         return false;
     }
 
-    /**
-     * @param FilterableUri $uri
-     * @return bool
-     */
-    private function matchesPrefetchFilter(FilterableUri $uri)
-    {
-        foreach ($this->preFetchFilters as $filter) {
-            if ($filter->match($uri)) {
-                $this->dispatch(
-                    SpiderEvents::SPIDER_CRAWL_FILTER_PREFETCH,
-                    new GenericEvent($this, array('uri' => $uri))
-                );
-                return true;
-            }
-        }
-        return false;
-    }
-
     private function isDownLoadLimitExceeded()
     {
         if ($this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit) {
@@ -298,51 +282,26 @@ class Spider
             }
 
             // Once the document is enqueued, apply the discoverers to look for more links to follow
-            $discoveredUris = $this->executeDiscoverers($resource);
+            $discoveredUris = $this->getDiscovererSet()->discover($resource);
 
             foreach ($discoveredUris as $uri) {
-                // normalize the URI
-                $uri->normalize();
-
-                // Decorate the link to make it filterable
-                $uri = new FilterableUri($uri->toString());
 
                 // Always skip nodes we already visited
                 if (array_key_exists($uri->toString(), $this->alreadySeenUris)) {
                     continue;
                 }
 
-                if (!$this->matchesPrefetchFilter($uri)) {
-                    // The URI was not matched by any filter: add to queue
-                    try {
-                        $this->getQueueManager()->addUri($uri);
-                    } catch (QueueException $e) {
-                        // when the queue size is exceeded, we stop discovering
-                        break;
-                    }
+                try {
+                    $this->getQueueManager()->addUri($uri);
+                } catch (QueueException $e) {
+                    // when the queue size is exceeded, we stop discovering
+                    break;
                 }
 
                 // filtered or queued: mark as seen
                 $this->alreadySeenUris[$uri->toString()] = $resource->depthFound + 1;
             }
         }
-    }
-
-    /**
-     * @param Resource $resource
-     * @return UriInterface[]
-     */
-    protected function executeDiscoverers(Resource $resource)
-    {
-        $discoveredUris = array();
-
-        foreach ($this->discoverers as $discoverer) {
-            $discoveredUris = array_merge($discoveredUris, $discoverer->discover($this, $resource));
-        }
-
-        $this->deduplicateUris($discoveredUris);
-
-        return $discoveredUris;
     }
 
     /**
@@ -385,29 +344,6 @@ class Spider
     private function dispatch($eventName, Event $event = null)
     {
         $this->getDispatcher()->dispatch($eventName, $event);
-    }
-
-    /**
-     * @param UriInterface[] $discoveredUris
-     */
-    private function deduplicateUris(array &$discoveredUris)
-    {
-        // make sure there are no duplicates in the list
-        $tmp = array();
-        /** @var Uri $uri */
-        foreach ($discoveredUris as $k => $uri) {
-            $tmp[$k] = $uri->toString();
-        }
-
-        // Find duplicates in temporary array
-        $tmp = array_unique($tmp);
-
-        // Remove the duplicates from original array
-        foreach ($discoveredUris as $k => $uri) {
-            if (!array_key_exists($k, $tmp)) {
-                unset($discoveredUris[$k]);
-            }
-        }
     }
 
     /**

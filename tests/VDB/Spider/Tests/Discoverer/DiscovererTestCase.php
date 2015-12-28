@@ -27,9 +27,6 @@ abstract class DiscovererTestCase extends TestCase
     /** @var DomElement */
     protected $domAnchor;
 
-    /** @var Spider */
-    protected $spider;
-
     /** @var Resource */
     protected $spiderResource;
 
@@ -49,8 +46,6 @@ abstract class DiscovererTestCase extends TestCase
         $html->appendChild($this->domAnchor);
 
         $this->uri = new Uri($this->domAnchor->getAttribute('href'));
-
-        $this->spider = new Spider('http://php-spider.org');
 
         // Setup Spider\Resource
         $content = $this->domDocument->saveHTML();
