@@ -6,7 +6,8 @@ use VDB\Spider\Resource;
 use VDB\Spider\Filter\PreFetchFilter;
 use VDB\Spider\Uri\FilterableUri;
 
-class DiscovererSet implements \IteratorAggregate {
+class DiscovererSet implements \IteratorAggregate
+{
 
     /**
      * @var Discoverer[]
@@ -99,7 +100,7 @@ class DiscovererSet implements \IteratorAggregate {
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->helpers);
+        return new \ArrayIterator($this->discoverers);
     }
 
     /**

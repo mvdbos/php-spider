@@ -70,7 +70,7 @@ class Spider
         }
 
         // This makes the spider handle signals gracefully and allows us to do cleanup
-        if(php_sapi_name() == 'cli'){
+        if (php_sapi_name() == 'cli') {
             declare(ticks = 1);
             if (function_exists('pcntl_signal')) {
                 pcntl_signal(SIGTERM, array($this, 'handleSignal'));
@@ -207,11 +207,11 @@ class Spider
     public function handleSignal($signal)
     {
         switch ($signal) {
-        case SIGTERM:
-        case SIGKILL:
-        case SIGINT:
-        case SIGQUIT:
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_USER_STOPPED);
+            case SIGTERM:
+            case SIGKILL:
+            case SIGINT:
+            case SIGQUIT:
+                $this->dispatch(SpiderEvents::SPIDER_CRAWL_USER_STOPPED);
         }
     }
 

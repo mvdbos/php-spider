@@ -21,7 +21,7 @@ class UriFilter implements PreFetchFilter
 
     public function match(FilterableUri $uri)
     {
-        foreach($this->regexes as $regex) {
+        foreach ($this->regexes as $regex) {
             if (preg_match($regex, $uri->toString())) {
                 $uri->setFiltered(true, "Matched URI regex '$regex'");
                 return true;

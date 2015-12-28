@@ -24,6 +24,9 @@ class FileRawResponsePersistenceHandler implements PersistenceHandler
     /** @var \Iterator */
     private $iterator;
 
+    /** @var Finder */
+    private $finder;
+
     /**
      * @param string $path the path where all spider results should be persisted.
      *        The results will be grouped in a directory by spider ID.
