@@ -25,7 +25,7 @@ class CssSelectorDiscovererTest extends DiscovererTestCase
     {
         $discoverer = new CssSelectorDiscoverer("a");
 
-        $uris = $discoverer->discover($this->spider, $this->spiderResource);
+        $uris = $discoverer->discover($this->spiderResource);
         $uri = $uris[0];
 
         $this->assertInstanceOf('VDB\\Uri\\Uri', $uri);

@@ -42,7 +42,7 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->setPersistenceHandler(
@@ -51,10 +51,10 @@ $spider->setPersistenceHandler(
 
 // Add some prefetch filters. These are executed before a resource is requested.
 // The more you have of these, the less HTTP requests and work for the processors
-$spider->addPreFetchFilter(new AllowedSchemeFilter(array('http')));
-$spider->addPreFetchFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
-$spider->addPreFetchFilter(new UriWithHashFragmentFilter());
-$spider->addPreFetchFilter(new UriWithQueryStringFilter());
+$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
+$spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
+$spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
+$spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
 // We add an eventlistener to the crawler that implements a politeness policy. We wait 450ms between every request to the same domain
 $politenessPolicyEventListener = new PolitenessPolicyListener(200);
