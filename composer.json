@@ -16,7 +16,7 @@
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.5.0",
         "ext-curl": "*",
         "guzzle/guzzle": ">=3.0, <3.4",
         "symfony/css-selector": "~2.1",
