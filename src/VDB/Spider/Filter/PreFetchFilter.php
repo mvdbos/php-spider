@@ -11,7 +11,7 @@ use VDB\Spider\Uri\FilterableUri;
 interface PreFetchFilter
 {
     /**
-     * @param \Symfony\Component\DomCrawler\Link $uri
+     * @param FilterableUri $uri
      * @return boolean
      */
     public function match(FilterableUri $uri);

@@ -10,7 +10,15 @@ use VDB\Spider\Resource;
 
 interface PersistenceHandler extends \Iterator, \Countable
 {
+    /**
+     * @param string $spiderId
+     *
+     * @return void
+     */
     public function setSpiderId($spiderId);
 
+    /**
+     * @return void
+     */
     public function persist(Resource $resource);
 }

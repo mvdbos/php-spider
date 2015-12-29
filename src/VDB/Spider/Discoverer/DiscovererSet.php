@@ -61,7 +61,7 @@ class DiscovererSet implements \IteratorAggregate
     }
 
     /**
-     * @param Filter $filter
+     * @param PreFetchFilter $filter
      */
     public function addFilter(PreFetchFilter $filter)
     {
