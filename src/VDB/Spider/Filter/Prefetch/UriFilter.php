@@ -2,7 +2,7 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\UriInterface;
 
 /**
  * @author matthijs
@@ -19,11 +19,10 @@ class UriFilter implements PreFetchFilterInterface
         $this->regexes = $regexes;
     }
 
-    public function match(FilterableUri $uri)
+    public function match(UriInterface $uri)
     {
         foreach ($this->regexes as $regex) {
             if (preg_match($regex, $uri->toString())) {
-                $uri->setFiltered(true, "Matched URI regex '$regex'");
                 return true;
             }
         }

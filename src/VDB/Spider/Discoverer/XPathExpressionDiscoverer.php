@@ -6,6 +6,7 @@ use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\UriInterface;
 
 /**
@@ -27,7 +28,7 @@ class XPathExpressionDiscoverer extends Discoverer implements DiscovererInterfac
 
     /**
      * @param Resource $resource
-     * @return Uri[]
+     * @return DiscoveredUri[]
      */
     public function discover(Resource $resource)
     {
@@ -35,7 +36,7 @@ class XPathExpressionDiscoverer extends Discoverer implements DiscovererInterfac
         $uris = array();
         foreach ($crawler as $node) {
             try {
-                $uris[] = new Uri($node->getAttribute('href'), $resource->getUri()->toString());
+                $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
             } catch (UriSyntaxException $e) {
                 // do nothing. We simply ignore invalid URI's
             }

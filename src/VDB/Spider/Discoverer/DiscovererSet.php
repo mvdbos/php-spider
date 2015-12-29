@@ -4,7 +4,7 @@ namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Resource;
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Spider\Uri\FilterableUri;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class DiscovererSet implements \IteratorAggregate
 {
@@ -34,14 +34,14 @@ class DiscovererSet implements \IteratorAggregate
     }
 
     /**
-     * @param FilterableUri $uri
+     * @param DiscoveredUri $uri
      *
      * Mark an Uri as already seen.
      *
      * If it already exists, it is not overwritten, since we want to keep the
      * first depth it was found at.
      */
-    private function markSeen(FilterableUri $uri)
+    private function markSeen(DiscoveredUri $uri)
     {
         $uriString = $uri->normalize()->toString();
         if (!array_key_exists($uriString, $this->alreadySeenUris)) {
@@ -52,7 +52,7 @@ class DiscovererSet implements \IteratorAggregate
     /**
      * @return bool Returns true if this URI was found at max depth
      */
-    private function isAtMaxDepth(FilterableUri $uri)
+    private function isAtMaxDepth(DiscoveredUri $uri)
     {
         if ($uri->getDepthFound() === $this->maxDepth) {
             return true;
@@ -178,7 +178,6 @@ class DiscovererSet implements \IteratorAggregate
     private function filter(array &$discoveredUris)
     {
         foreach ($discoveredUris as $k => &$uri) {
-            $uri = new FilterableUri($uri);
             foreach ($this->filters as $filter) {
                 if ($filter->match($uri)) {
                     unset($discoveredUris[$k]);

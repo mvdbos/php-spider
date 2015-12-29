@@ -2,17 +2,16 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\UriInterface;
 
 /**
  * @author matthijs
  */
 class UriWithQueryStringFilter implements PreFetchFilterInterface
 {
-    public function match(FilterableUri $uri)
+    public function match(UriInterface $uri)
     {
         if (null !== $uri->getQuery()) {
-            $uri->setFiltered(true, 'URI with query string');
             return true;
         }
         return false;

@@ -3,7 +3,7 @@
 namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Resource;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos
