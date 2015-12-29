@@ -8,7 +8,7 @@ namespace VDB\Spider\QueueManager;
 
 use VDB\Uri\UriInterface;
 
-interface QueueManager
+interface QueueManagerInterface
 {
     const ALGORITHM_DEPTH_FIRST = 0;
     const ALGORITHM_BREADTH_FIRST = 1;

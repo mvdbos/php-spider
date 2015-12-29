@@ -8,7 +8,7 @@ use VDB\Spider\Resource;
  * @author matthijs
  */
 
-interface PostFetchFilter
+interface PostFetchFilterInterface
 {
     /**
      * @param Resource

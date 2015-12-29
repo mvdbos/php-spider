@@ -17,7 +17,7 @@ use VDB\Spider\Event\SpiderEvents;
 /**
  * TODO: make this an Iterable
  */
-class InMemoryQueueManager implements QueueManager
+class InMemoryQueueManager implements QueueManagerInterface
 {
     /** @var int The maximum depth for the crawl */
     public $maxDepth = 3;

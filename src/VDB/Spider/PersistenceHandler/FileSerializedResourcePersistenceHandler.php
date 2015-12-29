@@ -9,7 +9,7 @@ namespace VDB\Spider\PersistenceHandler;
 use Symfony\Component\Finder\Finder;
 use VDB\Spider\Resource;
 
-class FileSerializedResourcePersistenceHandler implements PersistenceHandler
+class FileSerializedResourcePersistenceHandler implements PersistenceHandlerInterface
 {
     /**
      * @var string the path where all spider results should be persisted.

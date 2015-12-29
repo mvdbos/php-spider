@@ -9,12 +9,12 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\QueueException;
-use VDB\Spider\Filter\PostFetchFilter;
+use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
-use VDB\Spider\PersistenceHandler\PersistenceHandler;
+use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\RequestHandler\GuzzleRequestHandler;
-use VDB\Spider\RequestHandler\RequestHandler;
-use VDB\Spider\QueueManager\QueueManager;
+use VDB\Spider\RequestHandler\RequestHandlerInterface;
+use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Uri\FilterableUri;
 use VDB\Uri\UriInterface;
@@ -24,13 +24,13 @@ use VDB\Uri\UriInterface;
  */
 class Spider
 {
-    /** @var RequestHandler */
+    /** @var RequestHandlerInterface */
     private $requestHandler;
 
-    /** @var PersistenceHandler */
+    /** @var PersistenceHandlerInterface */
     private $persistenceHandler;
 
-    /** @var QueueManager */
+    /** @var QueueManagerInterface */
     private $queueManager;
 
     /** @var EventDispatcherInterface */
@@ -39,7 +39,7 @@ class Spider
     /** @var DiscovererSet */
     private $discovererSet;
 
-    /** @var PostFetchFilter[] */
+    /** @var PostFetchFilterInterface[] */
     private $postFetchFilters = array();
 
     /** @var FilterableUri The URI of the site to spider */
@@ -93,23 +93,23 @@ class Spider
     }
 
     /**
-     * @param PostFetchFilter $filter
+     * @param PostFetchFilterInterface $filter
      */
-    public function addPostFetchFilter(PostFetchFilter $filter)
+    public function addPostFetchFilter(PostFetchFilterInterface $filter)
     {
         $this->postFetchFilters[] = $filter;
     }
 
     /**
-     * @param RequestHandler $requestHandler
+     * @param RequestHandlerInterface $requestHandler
      */
-    public function setRequestHandler(RequestHandler $requestHandler)
+    public function setRequestHandler(RequestHandlerInterface $requestHandler)
     {
         $this->requestHandler = $requestHandler;
     }
 
     /**
-     * @return RequestHandler
+     * @return RequestHandlerInterface
      */
     public function getRequestHandler()
     {
@@ -141,15 +141,15 @@ class Spider
     }
 
     /**
-     * param QueueManager $queueManager
+     * param QueueManagerInterface $queueManager
      */
-    public function setQueueManager(QueueManager $queueManager)
+    public function setQueueManager(QueueManagerInterface $queueManager)
     {
         $this->queueManager = $queueManager;
     }
 
     /**
-     * @return QueueManager
+     * @return QueueManagerInterface
      */
     public function getQueueManager()
     {
@@ -161,7 +161,7 @@ class Spider
     }
 
     /**
-     * @param PersistenceHandler $persistenceHandler
+     * @param PersistenceHandlerInterface $persistenceHandler
      */
     public function setPersistenceHandler(PersistenceHandler $persistenceHandler)
     {
@@ -169,7 +169,7 @@ class Spider
     }
 
     /**
-     * @return PersistenceHandler
+     * @return PersistenceHandlerInterface
      */
     public function getPersistenceHandler()
     {

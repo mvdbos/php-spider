@@ -9,7 +9,7 @@ use VDB\Uri\UriInterface;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class Resource implements Filterable
+class Resource implements FilterableInterface
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;

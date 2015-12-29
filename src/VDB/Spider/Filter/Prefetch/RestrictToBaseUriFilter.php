@@ -1,7 +1,7 @@
 <?php
 namespace VDB\Spider\Filter\Prefetch;
 
-use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\FilterableUri;
 use VDB\Uri\Http;
 use VDB\Uri\UriInterface;
@@ -9,7 +9,7 @@ use VDB\Uri\UriInterface;
 /**
  * @author matthijs
  */
-class RestrictToBaseUriFilter implements PreFetchFilter
+class RestrictToBaseUriFilter implements PreFetchFilterInterface
 {
     /** @var Uri */
     private $seed;

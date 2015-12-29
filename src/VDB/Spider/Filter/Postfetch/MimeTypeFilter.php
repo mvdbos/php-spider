@@ -1,13 +1,13 @@
 <?php
 namespace VDB\Spider\Filter\Postfetch;
 
-use VDB\Spider\Filter\PostFetchFilter;
+use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\Resource;
 
 /**
  * @author matthijs
  */
-class MimeTypeFilter implements PostFetchFilter
+class MimeTypeFilter implements PostFetchFilterInterface
 {
     protected $allowedMimeType = 'text/html';
 

@@ -8,7 +8,7 @@ use VDB\Spider\Uri\FilterableUri;
  * @author matthijs
  */
 
-interface PreFetchFilter
+interface PreFetchFilterInterface
 {
     /**
      * @param FilterableUri $uri

@@ -8,7 +8,7 @@ namespace VDB\Spider\PersistenceHandler;
 
 use VDB\Spider\Resource;
 
-interface PersistenceHandler extends \Iterator, \Countable
+interface PersistenceHandlerInterface extends \Iterator, \Countable
 {
     /**
      * @param string $spiderId

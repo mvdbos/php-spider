@@ -1,13 +1,13 @@
 <?php
 namespace VDB\Spider\Filter\Prefetch;
 
-use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\FilterableUri;
 
 /**
  * @author matthijs
  */
-class AllowedHostsFilter implements PreFetchFilter
+class AllowedHostsFilter implements PreFetchFilterInterface
 {
     /** @var array The hostnames to filter links with */
     private $allowedHosts;

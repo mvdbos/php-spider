@@ -3,7 +3,7 @@
 namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Resource;
-use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\FilterableUri;
 
 class DiscovererSet implements \IteratorAggregate
@@ -61,9 +61,9 @@ class DiscovererSet implements \IteratorAggregate
     }
 
     /**
-     * @param PreFetchFilter $filter
+     * @param PreFetchFilterInterface $filter
      */
-    public function addFilter(PreFetchFilter $filter)
+    public function addFilter(PreFetchFilterInterface $filter)
     {
         $this->filters[] = $filter;
     }

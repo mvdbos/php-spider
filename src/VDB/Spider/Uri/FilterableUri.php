@@ -1,14 +1,14 @@
 <?php
 namespace VDB\Spider\Uri;
 
-use VDB\Spider\Filterable;
+use VDB\Spider\FilterableInterface;
 use VDB\Uri\Uri;
 
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class FilterableUri extends Uri implements Filterable
+class FilterableUri extends Uri implements FilterableInterface
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;

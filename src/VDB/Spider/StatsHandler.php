@@ -82,7 +82,7 @@ class StatsHandler implements EventSubscriberInterface
     }
 
     /**
-     * @return Filterable[]
+     * @return FilterableInterface[]
      */
     public function getFiltered()
     {

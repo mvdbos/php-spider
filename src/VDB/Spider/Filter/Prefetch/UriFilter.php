@@ -1,13 +1,13 @@
 <?php
 namespace VDB\Spider\Filter\Prefetch;
 
-use VDB\Spider\Filter\PreFetchFilter;
+use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\FilterableUri;
 
 /**
  * @author matthijs
  */
-class UriFilter implements PreFetchFilter
+class UriFilter implements PreFetchFilterInterface
 {
     /**
      * @var array An array of regexes

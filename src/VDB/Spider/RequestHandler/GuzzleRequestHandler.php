@@ -4,7 +4,7 @@ namespace VDB\Spider\RequestHandler;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
-use VDB\Spider\RequestHandler\RequestHandler;
+use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
 use VDB\Uri\UriInterface;
 
@@ -12,14 +12,14 @@ use VDB\Uri\UriInterface;
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2013 Matthijs van den Bos
  */
-class GuzzleRequestHandler implements RequestHandler
+class GuzzleRequestHandler implements RequestHandlerInterface
 {
     /** @var Client */
     private $client;
 
     /**
      * @param Client $client
-     * @return RequestHandler
+     * @return RequestHandlerInterface
      */
     public function setClient(Client $client)
     {

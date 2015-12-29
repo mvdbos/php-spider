@@ -8,7 +8,7 @@ namespace VDB\Spider\PersistenceHandler;
 
 use VDB\Spider\Resource;
 
-class MemoryPersistenceHandler implements PersistenceHandler
+class MemoryPersistenceHandler implements PersistenceHandlerInterface
 {
     /**
      * @var Resource[]

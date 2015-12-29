@@ -20,6 +20,11 @@ class SpiderTest extends TestCase
     protected $spider;
 
     /**
+     * @var logHandler
+     */
+    protected $logHandler;
+
+    /**
      * @var StatsHandler
      */
     protected $statsHandler;
@@ -76,7 +81,7 @@ class SpiderTest extends TestCase
     {
         $this->spider = new Spider('http://php-spider.org/A');
 
-        $this->requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandler');
+        $this->requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandlerInterface');
 
         $this->hrefA = 'http://php-spider.org/A';
         $this->hrefB = 'http://php-spider.org/B';
