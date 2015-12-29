@@ -178,7 +178,7 @@ class DiscovererSet implements \IteratorAggregate
     private function filter(array &$discoveredUris)
     {
         foreach ($discoveredUris as $k => &$uri) {
-            $uri = new FilterableUri($uri->toString());
+            $uri = new FilterableUri($uri);
             foreach ($this->filters as $filter) {
                 if ($filter->match($uri)) {
                     unset($discoveredUris[$k]);

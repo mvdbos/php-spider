@@ -14,6 +14,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 use VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\Uri;
 
 /**
  *
@@ -28,7 +29,7 @@ class RestrictToBaseUriFilterTest extends TestCase
     {
         $filter = new RestrictToBaseUriFilter('http://php-spider.org');
 
-        $uri = new FilterableUri($href);
+        $uri = new FilterableUri(new Uri($href));
 
         $this->assertEquals($expected, $filter->match($uri));
     }

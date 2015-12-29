@@ -3,6 +3,7 @@ namespace VDB\Spider\Tests\Uri;
 
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\Uri;
 
 /**
  *
@@ -20,10 +21,10 @@ class FilterableUriTest extends TestCase
      */
     protected function setUp()
     {
-        $this->uri = new FilterableUri(
+        $this->uri = new FilterableUri(new Uri(
             '/domains/special',
             'http://example.org'
-        );
+        ));
     }
 
     /**

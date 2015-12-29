@@ -14,6 +14,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\Uri;
 
 /**
  *
@@ -28,11 +29,11 @@ class UriWithHashFragmentFilterTest extends TestCase
         $filter = new UriWithHashFragmentFilter();
 
         $currentUri = 'http://php-spider.org';
-        $uri1 = new FilterableUri('#', $currentUri);
-        $uri2 = new FilterableUri('#foo', $currentUri);
-        $uri3 = new FilterableUri('http://php-spider.org/foo#bar', $currentUri);
-        $uri4 = new FilterableUri('http://php-spider.org/foo/#bar', $currentUri);
-        $uri5 = new FilterableUri('http://php-spider.org#/foo/bar', $currentUri);
+        $uri1 = new FilterableUri(new Uri('#', $currentUri));
+        $uri2 = new FilterableUri(new Uri('#foo', $currentUri));
+        $uri3 = new FilterableUri(new Uri('http://php-spider.org/foo#bar', $currentUri));
+        $uri4 = new FilterableUri(new Uri('http://php-spider.org/foo/#bar', $currentUri));
+        $uri5 = new FilterableUri(new Uri('http://php-spider.org#/foo/bar', $currentUri));
 
         $this->assertTrue($filter->match($uri1), '# filtered');
         $this->assertTrue($filter->match($uri2), '#foo');

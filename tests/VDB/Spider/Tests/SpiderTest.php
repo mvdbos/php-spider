@@ -9,6 +9,7 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\StatsHandler;
 use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\Uri;
 
 /**
  */
@@ -102,13 +103,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new FilterableUri($this->hrefA);
-        $this->linkB = new FilterableUri($this->hrefB);
-        $this->linkC = new FilterableUri($this->hrefC);
-        $this->linkD = new FilterableUri($this->hrefD);
-        $this->linkE = new FilterableUri($this->hrefE);
-        $this->linkF = new FilterableUri($this->hrefF);
-        $this->linkG = new FilterableUri($this->hrefG);
+        $this->linkA = new FilterableUri(new Uri($this->hrefA));
+        $this->linkB = new FilterableUri(new Uri($this->hrefB));
+        $this->linkC = new FilterableUri(new Uri($this->hrefC));
+        $this->linkD = new FilterableUri(new Uri($this->hrefD));
+        $this->linkE = new FilterableUri(new Uri($this->hrefE));
+        $this->linkF = new FilterableUri(new Uri($this->hrefF));
+        $this->linkG = new FilterableUri(new Uri($this->hrefG));
 
         $this->linkA->setDepthFound(0);
         $this->linkB->setDepthFound(1);

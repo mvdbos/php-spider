@@ -2,13 +2,13 @@
 namespace VDB\Spider\Uri;
 
 use VDB\Spider\FilterableInterface;
-use VDB\Uri\Uri;
+use VDB\Spider\Uri\UriDecorator;
 
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class FilterableUri extends Uri implements FilterableInterface
+class FilterableUri extends UriDecorator implements FilterableInterface
 {
     /** @var bool if the link should be skipped */
     private $isFiltered = false;
@@ -16,9 +16,7 @@ class FilterableUri extends Uri implements FilterableInterface
     /** @var string */
     private $filterReason = '';
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $depthFound;
 
     /**

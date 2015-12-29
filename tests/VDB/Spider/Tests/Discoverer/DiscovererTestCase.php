@@ -18,6 +18,7 @@ use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\FilterableUri;
+use VDB\Uri\Uri;
 
 abstract class DiscovererTestCase extends TestCase
 {
@@ -45,7 +46,7 @@ abstract class DiscovererTestCase extends TestCase
         $this->domDocument->appendChild($html);
         $html->appendChild($this->domAnchor);
 
-        $this->uri = new FilterableUri($this->domAnchor->getAttribute('href'));
+        $this->uri = new FilterableUri(new Uri($this->domAnchor->getAttribute('href')));
 
         // Setup Spider\Resource
         $content = $this->domDocument->saveHTML();

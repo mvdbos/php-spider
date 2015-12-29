@@ -18,6 +18,7 @@ use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Uri\FilterableUri;
 use VDB\Uri\UriInterface;
+use VDB\Uri\Uri;
 
 /**
  *
@@ -331,7 +332,7 @@ class Spider
      */
     private function setSeed($uri)
     {
-        $this->seed = new FilterableUri($uri);
+        $this->seed = new FilterableUri(new Uri($uri));
         $this->seed->setDepthFound(0);
     }
 }
