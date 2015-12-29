@@ -4,7 +4,7 @@ namespace VDB\Spider\RequestHandler;
 
 use VDB\Uri\UriInterface;
 
-interface RequestHandler
+interface RequestHandlerInterface
 {
     /**
      * @param UriInterface $uri

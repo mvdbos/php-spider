@@ -9,7 +9,7 @@ namespace VDB\Spider\PersistenceHandler;
 use Symfony\Component\Finder\Finder;
 use VDB\Spider\Resource;
 
-class FileSerializedResourcePersistenceHandler implements PersistenceHandler, \Iterator
+class FileSerializedResourcePersistenceHandler implements PersistenceHandlerInterface
 {
     /**
      * @var string the path where all spider results should be persisted.
@@ -23,6 +23,9 @@ class FileSerializedResourcePersistenceHandler implements PersistenceHandler, \I
 
     /** @var \Iterator */
     private $iterator;
+
+    /** @var Finder */
+    private $finder;
 
     /**
      * @param string $path the path where all spider results should be persisted.
@@ -43,6 +46,11 @@ class FileSerializedResourcePersistenceHandler implements PersistenceHandler, \I
         }
     }
 
+    public function count()
+    {
+        return $this->getFinder()->count();
+    }
+
     private function getResultPath()
     {
         return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
@@ -55,11 +63,18 @@ class FileSerializedResourcePersistenceHandler implements PersistenceHandler, \I
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
     }
 
+    private function getFinder()
+    {
+        if (!$this->finder instanceof Finder) {
+            $this->finder = Finder::create()->files()->in($this->getResultPath());
+        }
+        return $this->finder;
+    }
+
     private function getIterator()
     {
         if (!$this->iterator instanceof \Iterator) {
-            $finder = Finder::create()->files()->in($this->getResultPath());
-            $this->iterator = $finder->getIterator();
+            $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;
     }

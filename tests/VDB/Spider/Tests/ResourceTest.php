@@ -32,9 +32,9 @@ class ResourceTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Resource::getLink
+     * @covers VDB\Spider\Resource::getUri
      */
-    public function testGetLink()
+    public function testGetUri()
     {
         $this->assertInstanceOf('VDB\\URI\Uri', $this->resource->getUri());
         $this->assertEquals('http://example.org/domains/special', $this->resource->getUri()->toString());

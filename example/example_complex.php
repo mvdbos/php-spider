@@ -8,7 +8,10 @@ use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
+use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
+use VDB\Spider\StatsHandler;
+use VDB\Spider\LogHandler;
 
 require_once('example_complex_bootstrap.php');
 
@@ -20,40 +23,53 @@ $allowSubDomains = true;
 
 // Create spider
 $spider = new Spider($seed);
+$spider->downloadLimit = 10;
+
+$statsHandler = new StatsHandler();
+$LogHandler = new LogHandler();
+
+$queueManager = new InMemoryQueueManager();
+
+$queueManager->getDispatcher()->addSubscriber($statsHandler);
+$queueManager->getDispatcher()->addSubscriber($LogHandler);
 
 // Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
-$spider->setMaxDepth(1);
-$spider->setMaxQueueSize(10);
+$queueManager->maxDepth = 1;
+
+// This time, we set the traversal algorithm to breadth-first. The default is depth-first
+$queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+
+$spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->setPersistenceHandler(
     new \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
 );
 
-// This time, we set the traversal algorithm to breadth-first. The default is depth-first
-$spider->setTraversalAlgorithm(Spider::ALGORITHM_BREADTH_FIRST);
-
 // Add some prefetch filters. These are executed before a resource is requested.
 // The more you have of these, the less HTTP requests and work for the processors
-$spider->addPreFetchFilter(new AllowedSchemeFilter(array('http')));
-$spider->addPreFetchFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
-$spider->addPreFetchFilter(new UriWithHashFragmentFilter());
-$spider->addPreFetchFilter(new UriWithQueryStringFilter());
+$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
+$spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
+$spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
+$spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
 // We add an eventlistener to the crawler that implements a politeness policy. We wait 450ms between every request to the same domain
-$politenessPolicyEventListener = new PolitenessPolicyListener(450);
+$politenessPolicyEventListener = new PolitenessPolicyListener(200);
 $spider->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
     array($politenessPolicyEventListener, 'onCrawlPreRequest')
 );
 
+$spider->getDispatcher()->addSubscriber($statsHandler);
+$spider->getDispatcher()->addSubscriber($LogHandler);
+
 // Let's add a CLI progress meter for fun
 echo "\nCrawling";
 $spider->getDispatcher()->addListener(
-    SpiderEvents::SPIDER_CRAWL_PRE_ENQUEUE,
+    SpiderEvents::SPIDER_CRAWL_POST_REQUEST,
     function (Event $event) {
         echo '.';
     }
@@ -72,16 +88,17 @@ $guzzleClient->setUserAgent('PHP-Spider');
 $result = $spider->crawl();
 
 // Report
-$stats = $spider->getStatsHandler();
-$spiderId = $stats->getSpiderId();
-$queued = $stats->getQueued();
-$filtered = $stats->getFiltered();
-$failed = $stats->getFailed();
+$spiderId = $statsHandler->getSpiderId();
+$queued = $statsHandler->getQueued();
+$filtered = $statsHandler->getFiltered();
+$failed = $statsHandler->getFailed();
+$persisted = $statsHandler->getPersisted();
 
 echo "\n\nSPIDER ID: " . $spiderId;
 echo "\n  ENQUEUED:  " . count($queued);
 echo "\n  SKIPPED:   " . count($filtered);
 echo "\n  FAILED:    " . count($failed);
+echo "\n  PERSISTED:    " . count($persisted);
 
 // With the information from some of plugins and listeners, we can determine some metrics
 $peakMem = round(memory_get_peak_usage(true) / 1024 / 1024, 2);

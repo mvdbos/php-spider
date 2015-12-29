@@ -17,6 +17,7 @@ use Guzzle\Http\Message\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
 abstract class DiscovererTestCase extends TestCase
@@ -27,13 +28,10 @@ abstract class DiscovererTestCase extends TestCase
     /** @var DomElement */
     protected $domAnchor;
 
-    /** @var Spider */
-    protected $spider;
-
     /** @var Resource */
     protected $spiderResource;
 
-    /** @var Uri */
+    /** @var DiscoveredUri */
     protected $uri;
 
     protected function setUp()
@@ -48,9 +46,7 @@ abstract class DiscovererTestCase extends TestCase
         $this->domDocument->appendChild($html);
         $html->appendChild($this->domAnchor);
 
-        $this->uri = new Uri($this->domAnchor->getAttribute('href'));
-
-        $this->spider = new Spider('http://php-spider.org');
+        $this->uri = new DiscoveredUri(new Uri($this->domAnchor->getAttribute('href')));
 
         // Setup Spider\Resource
         $content = $this->domDocument->saveHTML();

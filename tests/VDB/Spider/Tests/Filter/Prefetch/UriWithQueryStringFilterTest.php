@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\FilterableURI;
+use VDB\Uri\Uri;
 
 /**
  *
@@ -28,11 +28,11 @@ class UriWithQueryStringFilterTest extends TestCase
         $filter = new UriWithQueryStringFilter();
 
         $currentUri = 'http://php-spider.org';
-        $uri1 = new FilterableURI('?', $currentUri);
-        $uri2 = new FilterableURI('?foo=2', $currentUri);
-        $uri3 = new FilterableURI('http://php-spider.org/foo?bar=baz', $currentUri);
-        $uri4 = new FilterableURI('http://php-spider.org/foo/?bar=baz', $currentUri);
-        $uri5 = new FilterableURI('http://php-spider.org?/foo/bar', $currentUri);
+        $uri1 = new Uri('?', $currentUri);
+        $uri2 = new Uri('?foo=2', $currentUri);
+        $uri3 = new Uri('http://php-spider.org/foo?bar=baz', $currentUri);
+        $uri4 = new Uri('http://php-spider.org/foo/?bar=baz', $currentUri);
+        $uri5 = new Uri('http://php-spider.org?/foo/bar', $currentUri);
 
         $this->assertTrue($filter->match($uri1), '->match(\'?\')');
         $this->assertTrue($filter->match($uri2));

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Ibuildings QA Tools Default Ruleset"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                     http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        Ibuildings QA Tools Default Ruleset
+    </description>
+
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="BooleanArgumentFlag" />
+        <exclude name="ElseExpression" />
+        <exclude name="StaticAccess" />
+    </rule>
+
+    <rule ref="rulesets/unusedcode.xml">
+        <!-- we turn this back on as soon as an exception for inherited/implemented methods is available-->
+        <exclude name="UnusedFormalParameter"/>
+    </rule>
+
+    <rule ref="rulesets/codesize.xml" />
+
+    <rule ref="rulesets/controversial.xml" />
+
+    <rule ref="rulesets/design.xml">
+        <!--
+            Disabling this rule in the pre-commit-run, PDepend and phpmd cannot successfully determine
+            the coupling between objects for just the changeset. This needs to be fixed up stream. Till
+            then, this rule is disabled for the pre-commit run.
+        -->
+        <exclude name="CouplingBetweenObjects" />
+    </rule>
+
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+        <exclude name="LongVariable" />
+    </rule>
+
+</ruleset>

@@ -5,11 +5,12 @@ namespace VDB\Spider;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-interface Filterable
+interface FilterableInterface
 {
     /**
      * @param bool $filtered
      * @param string $reason
+     * @return void
      */
     public function setFiltered($filtered = true, $reason = '');
 

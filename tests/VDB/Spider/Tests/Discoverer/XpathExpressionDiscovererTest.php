@@ -24,10 +24,10 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     public function testDiscover()
     {
         $discoverer = new XPathExpressionDiscoverer("//a");
-        $uris = $discoverer->discover($this->spider, $this->spiderResource);
+        $uris = $discoverer->discover($this->spiderResource);
         $uri = $uris[0];
 
-        $this->assertInstanceOf('VDB\\URI\\Uri', $uri);
+        $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $uri);
         $this->assertEquals($this->uri->toString(), $uri->toString());
     }
 }

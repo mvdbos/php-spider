@@ -1,18 +1,19 @@
 <?php
 namespace VDB\Spider\Discoverer;
 
+use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
-use VDB\Spider\Spider;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class XPathExpressionDiscoverer implements Discoverer
+class XPathExpressionDiscoverer extends Discoverer implements DiscovererInterface
 {
     /** @var string */
     protected $xpathExpression;
@@ -26,19 +27,18 @@ class XPathExpressionDiscoverer implements Discoverer
     }
 
     /**
-     * @param Spider $spider
-     * @param Resource $document
-     * @return Uri[]
+     * @param Resource $resource
+     * @return DiscoveredUri[]
      */
-    public function discover(Spider $spider, Resource $document)
+    public function discover(Resource $resource)
     {
-        $crawler = $document->getCrawler()->filterXPath($this->xpathExpression);
+        $crawler = $resource->getCrawler()->filterXPath($this->xpathExpression);
         $uris = array();
         foreach ($crawler as $node) {
             try {
-                $uris[] = new Uri($node->getAttribute('href'), $document->getUri()->toString());
+                $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
             } catch (UriSyntaxException $e) {
-                $spider->getStatsHandler()->addToFailed($node->getAttribute('href'), 'Invalid URI: ' . $e->getMessage());
+                // do nothing. We simply ignore invalid URI's
             }
         }
         return $uris;
