@@ -48,10 +48,7 @@ class Spider
     /** @var string the unique id of this spider instance */
     private $spiderId;
 
-    /** @var array the list of already visited URIs with the depth they were discovered on as value */
-    private $alreadySeenUris = array();
-
-    /** @var the maximum number of downloaded resources. 0 means no limit */
+    /** @var int the maximum number of downloaded resources. 0 means no limit */
     public $downloadLimit = 0;
 
     /**
@@ -163,7 +160,7 @@ class Spider
     /**
      * @param PersistenceHandlerInterface $persistenceHandler
      */
-    public function setPersistenceHandler(PersistenceHandler $persistenceHandler)
+    public function setPersistenceHandler(PersistenceHandlerInterface $persistenceHandler)
     {
         $this->persistenceHandler = $persistenceHandler;
     }
@@ -274,30 +271,16 @@ class Spider
                 new GenericEvent($this, array('uri' => $currentUri))
             );
 
-            $nextLevel = $resource->depthFound + 1;
-            if ($nextLevel > $this->getQueueManager()->maxDepth) {
-                continue;
-            }
-
             // Once the document is enqueued, apply the discoverers to look for more links to follow
             $discoveredUris = $this->getDiscovererSet()->discover($resource);
 
             foreach ($discoveredUris as $uri) {
-
-                // Always skip nodes we already visited
-                if (array_key_exists($uri->toString(), $this->alreadySeenUris)) {
-                    continue;
-                }
-
                 try {
                     $this->getQueueManager()->addUri($uri);
                 } catch (QueueException $e) {
                     // when the queue size is exceeded, we stop discovering
                     break;
                 }
-
-                // filtered or queued: mark as seen
-                $this->alreadySeenUris[$uri->toString()] = $resource->depthFound + 1;
             }
         }
     }
@@ -312,7 +295,6 @@ class Spider
 
         try {
             $resource = $this->getRequestHandler()->request($uri);
-            $resource->depthFound = $this->alreadySeenUris[$uri->toString()];
 
             $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri))); // necessary until we have 'finally'
 
@@ -350,6 +332,6 @@ class Spider
     private function setSeed($uri)
     {
         $this->seed = new FilterableUri($uri);
-        $this->alreadySeenUris[$this->seed->normalize()->toString()] = 0;
+        $this->seed->setDepthFound(0);
     }
 }

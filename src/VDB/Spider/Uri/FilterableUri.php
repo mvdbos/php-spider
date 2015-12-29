@@ -17,6 +17,11 @@ class FilterableUri extends Uri implements FilterableInterface
     private $filterReason = '';
 
     /**
+     * @var int
+     */
+    private $depthFound;
+
+    /**
      * @param boolean $filtered
      * @param string $reason
      */
@@ -40,6 +45,22 @@ class FilterableUri extends Uri implements FilterableInterface
     public function getFilterReason()
     {
         return $this->filterReason;
+    }
+
+    /**
+     * @return int The depth this Uri was found on
+     */
+    public function getDepthFound()
+    {
+        return $this->depthFound;
+    }
+
+    /**
+     * @param int The depth this Uri was found on
+     */
+    public function setDepthFound($depthFound)
+    {
+        $this->depthFound = $depthFound;
     }
 
     /**

@@ -14,14 +14,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\SpiderEvents;
 
-/**
- * TODO: make this an Iterable
- */
 class InMemoryQueueManager implements QueueManagerInterface
 {
-    /** @var int The maximum depth for the crawl */
-    public $maxDepth = 3;
-
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     public $maxQueueSize = 0;
 

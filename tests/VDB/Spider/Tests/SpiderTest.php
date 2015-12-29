@@ -76,6 +76,17 @@ class SpiderTest extends TestCase
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
+     *
+     * Setting up the following structure:
+     *
+     * 0:        A
+     *          /|\
+     * 1:      B C E
+     *        /| | |
+     * 2:    D F G |
+     *         | _ |
+     *
+     * Note: E links to F.
      */
     protected function setUp()
     {
@@ -98,6 +109,14 @@ class SpiderTest extends TestCase
         $this->linkE = new FilterableUri($this->hrefE);
         $this->linkF = new FilterableUri($this->hrefF);
         $this->linkG = new FilterableUri($this->hrefG);
+
+        $this->linkA->setDepthFound(0);
+        $this->linkB->setDepthFound(1);
+        $this->linkC->setDepthFound(1);
+        $this->linkD->setDepthFound(2);
+        $this->linkE->setDepthFound(1);
+        $this->linkF->setDepthFound(2);
+        $this->linkG->setDepthFound(2);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->responseA = new Response(200, null, $htmlA);
@@ -173,7 +192,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSDefaultBehaviour()
     {
-        $this->spider->getQueueManager()->maxDepth = 10;
+        $this->spider->getDiscovererSet()->maxDepth = 10;
 
         $this->spider->crawl();
 
@@ -197,7 +216,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSDefaultBehaviour()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getQueueManager()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->maxDepth = 1000;
 
         $this->spider->crawl();
 
@@ -218,10 +237,22 @@ class SpiderTest extends TestCase
      * @covers VDB\Spider\Spider::crawl
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
+     *
+     * Given the following structure:
+     *
+     * 0:        A
+     *          /|\
+     * 1:      B C E
+     *        /| | |
+     * 2:    D F G |
+     *         | _ |
+     *
+     * We expect the following result: A, E, C, B
+     *
      */
     public function testCrawlDFSMaxDepthOne()
     {
-        $this->spider->getQueueManager()->maxDepth = 1;
+        $this->spider->getDiscovererSet()->maxDepth = 1;
 
         $this->spider->crawl();
 
@@ -238,7 +269,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSMaxDepthOne()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getQueueManager()->maxDepth = 1;
+        $this->spider->getDiscovererSet()->maxDepth = 1;
 
         $this->spider->crawl();
 
@@ -257,7 +288,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSMaxQueueSize()
     {
-        $this->spider->getQueueManager()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->maxDepth = 1000;
         $this->spider->downloadLimit = 3;
 
         $this->spider->crawl();
@@ -274,7 +305,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSMaxQueueSize()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getQueueManager()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->maxDepth = 1000;
         $this->spider->downloadLimit = 3;
 
         $this->spider->crawl();
