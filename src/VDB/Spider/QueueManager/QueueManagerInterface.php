@@ -6,7 +6,7 @@
 
 namespace VDB\Spider\QueueManager;
 
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 interface QueueManagerInterface
 {
@@ -26,13 +26,13 @@ interface QueueManagerInterface
     public function getTraversalAlgorithm();
 
     /**
-     * @param UriInterface
+     * @param DiscoveredUri
      * @return void
      */
-    public function addUri(UriInterface $uri);
+    public function addUri(DiscoveredUri $uri);
 
     /**
-     * @return UriInterface
+     * @return DiscoveredUri
      */
     public function next();
 }

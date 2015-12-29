@@ -6,7 +6,7 @@
 
 namespace VDB\Spider\QueueManager;
 
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Spider\Exception\QueueException;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -22,7 +22,7 @@ class InMemoryQueueManager implements QueueManagerInterface
     /** @var int the amount of times a Resource was enqueued */
     private $currentQueueSize = 0;
 
-    /** @var UriInterface[] the list of URIs to process */
+    /** @var DiscoveredUri[] the list of URIs to process */
     private $traversalQueue = array();
 
     /** @var int The traversal algorithm to use. Choose from the class constants
@@ -72,9 +72,9 @@ class InMemoryQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param UriInterface
+     * @param DiscoveredUri
      */
-    public function addUri(UriInterface $uri)
+    public function addUri(DiscoveredUri $uri)
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
             throw new QueueException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');

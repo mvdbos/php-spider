@@ -3,7 +3,6 @@
 <project name="Php Spider-ci" default="build">
         <target name="build"
             depends="composer-run-install,php-lint-ci,phpmd-ci,phpcs-ci,phpunit-ci"/>
-        <!--depends="composer-run-install,php-lint-ci,phpmd-ci,phpcs-ci,phpunit-ci"/>-->
 
     <target name="check-composer">
         <available file="composer.phar" property="composer.installed"/>

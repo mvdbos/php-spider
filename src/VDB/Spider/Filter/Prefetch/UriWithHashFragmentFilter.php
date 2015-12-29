@@ -11,9 +11,6 @@ class UriWithHashFragmentFilter implements PreFetchFilterInterface
 {
     public function match(UriInterface $uri)
     {
-        if (null !== $uri->getFragment()) {
-            return true;
-        }
-        return false;
+        return null !== $uri->getFragment();
     }
 }

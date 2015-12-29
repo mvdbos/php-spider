@@ -11,9 +11,6 @@ class UriWithQueryStringFilter implements PreFetchFilterInterface
 {
     public function match(UriInterface $uri)
     {
-        if (null !== $uri->getQuery()) {
-            return true;
-        }
-        return false;
+        return null !== $uri->getQuery();
     }
 }

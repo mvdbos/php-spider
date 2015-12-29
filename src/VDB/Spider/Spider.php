@@ -231,11 +231,9 @@ class Spider
 
     private function isDownLoadLimitExceeded()
     {
-        if ($this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit) {
-            return true;
-        }
-        return false;
+        return $this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit;
     }
+
     /**
      * Function that crawls each provided URI
      * It applies all processors and listeners set on the Spider
@@ -290,7 +288,7 @@ class Spider
      * @param UriInterface $uri
      * @return Resource
      */
-    protected function fetchResource(UriInterface $uri)
+    protected function fetchResource(DiscoveredUri $uri)
     {
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
 
