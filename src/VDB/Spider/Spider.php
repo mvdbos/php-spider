@@ -304,7 +304,7 @@ class Spider
 
     /**
      * @param UriInterface $uri
-     * @return bool|Resource
+     * @return Resource
      */
     protected function fetchResource(UriInterface $uri)
     {

@@ -16,6 +16,7 @@ interface QueueManager
     /**
      * @param int $traversalAlgorithm Choose from the class constants
      * TODO: This should be extracted to a Strategy pattern
+     * @return void
      */
     public function setTraversalAlgorithm($traversalAlgorithm);
 
@@ -26,6 +27,7 @@ interface QueueManager
 
     /**
      * @param UriInterface
+     * @return void
      */
     public function addUri(UriInterface $uri);
 

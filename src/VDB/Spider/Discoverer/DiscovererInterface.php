@@ -19,6 +19,7 @@ interface DiscovererInterface
 
     /**
      * @param DiscovererSet $discovererSet
+     * @return void
      */
     public function setDiscovererSet(DiscovererSet $discovererSet);
 

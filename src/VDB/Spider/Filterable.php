@@ -10,6 +10,7 @@ interface Filterable
     /**
      * @param bool $filtered
      * @param string $reason
+     * @return void
      */
     public function setFiltered($filtered = true, $reason = '');
 
