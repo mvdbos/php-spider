@@ -24,10 +24,6 @@ class AllowedSchemeFilter implements PreFetchFilterInterface
      */
     public function match(UriInterface $uri)
     {
-        $scheme = $uri->getScheme();
-        if (!in_array($scheme, $this->allowedSchemes)) {
-            return true;
-        }
-        return false;
+        return !in_array($uri->getScheme(), $this->allowedSchemes);
     }
 }

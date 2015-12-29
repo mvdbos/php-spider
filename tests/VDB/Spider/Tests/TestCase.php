@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests;
 
 use Guzzle\Http\Message\Response;
 use VDB\Spider\Resource;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  *
@@ -21,11 +21,11 @@ use VDB\Uri\UriInterface;
 class TestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param UriInterface $uri
+     * @param DiscoveredUri $uri
      * @param Response $response
      * @return Resource
      */
-    protected function getResource(UriInterface $uri, Response $response)
+    protected function getResource(DiscoveredUri $uri, Response $response)
     {
         return new Resource($uri, $response);
     }

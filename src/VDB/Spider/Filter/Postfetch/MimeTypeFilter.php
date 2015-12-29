@@ -18,11 +18,6 @@ class MimeTypeFilter implements PostFetchFilterInterface
 
     public function match(Resource $resource)
     {
-        if (!$resource->getResponse()->isContentType($this->allowedMimeType)) {
-            $mime = $resource->getResponse()->getContentType();
-            $resource->setFiltered(true, "Mime type '$mime' not allowed");
-            return true;
-        }
-        return false;
+        return !$resource->getResponse()->isContentType($this->allowedMimeType);
     }
 }

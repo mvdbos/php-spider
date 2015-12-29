@@ -45,10 +45,6 @@ class AllowedHostsFilter implements PreFetchFilterInterface
             $currentHostname = join('.', array_slice(explode('.', $currentHostname), -2));
         }
 
-        if (!in_array($currentHostname, $this->allowedHosts)) {
-            return true;
-        }
-
-        return false;
+        return !in_array($currentHostname, $this->allowedHosts);
     }
 }

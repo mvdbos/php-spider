@@ -54,10 +54,7 @@ class DiscovererSet implements \IteratorAggregate
      */
     private function isAtMaxDepth(DiscoveredUri $uri)
     {
-        if ($uri->getDepthFound() === $this->maxDepth) {
-            return true;
-        }
-        return false;
+        return $uri->getDepthFound() === $this->maxDepth;
     }
 
     /**
@@ -95,7 +92,7 @@ class DiscovererSet implements \IteratorAggregate
      * Sets a discoverer.
      *
      * @param discovererInterface $discoverer The discoverer instance
-     * @param string          $alias  An alias
+     * @param string|null         $alias  An alias
      */
     public function set(DiscovererInterface $discoverer, $alias = null)
     {

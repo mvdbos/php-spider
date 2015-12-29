@@ -6,7 +6,7 @@ use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
@@ -41,10 +41,10 @@ class GuzzleRequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * @param UriInterface $uri
+     * @param DiscoveredUri $uri
      * @return Resource
      */
-    public function request(UriInterface $uri)
+    public function request(DiscoveredUri $uri)
     {
         $response = $this->getClient()->createRequest(RequestInterface::GET, $uri->toString())->send();
         return new Resource($uri, $response);

@@ -22,10 +22,10 @@ use VDB\Uri\Uri;
 
 abstract class DiscovererTestCase extends TestCase
 {
-    /** @var DomDocument */
+    /** @var \DomDocument */
     protected $domDocument;
 
-    /** @var DomElement */
+    /** @var \DomElement */
     protected $domAnchor;
 
     /** @var Resource */

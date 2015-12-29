@@ -3,21 +3,15 @@ namespace VDB\Spider;
 
 use Guzzle\Http\Message\Response;
 use Symfony\Component\DomCrawler\Crawler;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class Resource implements FilterableInterface
+class Resource
 {
-    /** @var bool if the link should be skipped */
-    private $isFiltered = false;
-
-    /** @var string */
-    private $filterReason = '';
-
-    /** @var UriInterface */
+    /** @var DiscoveredUri */
     protected $uri;
 
     /** @var Response */
@@ -29,14 +23,11 @@ class Resource implements FilterableInterface
     /** @var string */
     protected $body;
 
-    /** @var int */
-    public $depthFound;
-
     /**
-     * @param UriInterface $uri
+    * @param DiscoveredUri $uri
      * @param Response $response
      */
-    public function __construct(UriInterface $uri, Response $response)
+    public function __construct(DiscoveredUri $uri, Response $response)
     {
         $this->uri = $uri;
         $this->response = $response;
@@ -62,7 +53,7 @@ class Resource implements FilterableInterface
     }
 
     /**
-     * @return UriInterface
+     * @return DiscoveredUri
      */
     public function getUri()
     {
@@ -77,48 +68,6 @@ class Resource implements FilterableInterface
         return $this->response;
     }
 
-    /**
-     * @param bool $filtered
-     * @param string $reason
-     */
-    public function setFiltered($filtered = true, $reason = '')
-    {
-        $this->isFiltered = $filtered;
-        $this->filterReason = $reason;
-    }
-
-    /**
-     * @return boolean whether the link should be skipped
-     */
-    public function isFiltered()
-    {
-        return $this->isFiltered;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilterReason()
-    {
-        return $this->filterReason;
-    }
-
-    /**
-     * Get a unique identifier for the filterable item
-     * Used for reporting
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->getUri()->toString();
-    }
-
-    public function __toString()
-    {
-        return $this->getIdentifier();
-    }
-
     public function __sleep()
     {
         /*
@@ -126,12 +75,9 @@ class Resource implements FilterableInterface
          * It will be available again after wakeup through lazy loading with getCrawler()
          */
         return array(
-            'isFiltered',
-            'filterReason',
             'uri',
             'response',
-            'body',
-            'depthFound'
+            'body'
         );
     }
 
