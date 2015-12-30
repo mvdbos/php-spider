@@ -31,14 +31,20 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p><a href="https://travis-ci.org/mvdbos/php-spider"><img src="https://travis-ci.org/mvdbos/php-spider.png?branch=master" alt="Build Status"></a></p>
+        <p><a href="https://travis-ci.org/mvdbos/php-spider"><img src="https://travis-ci.org/mvdbos/php-spider.png?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/mvdbos/php-spider?branch=master"><img src="https://coveralls.io/repos/mvdbos/php-spider/badge.svg?branch=master&amp;service=github" alt="Coverage Status"></a>
+<a href="https://scrutinizer-ci.com/g/mvdbos/php-spider/?branch=master"><img src="https://scrutinizer-ci.com/g/mvdbos/php-spider/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
+<a href="https://www.versioneye.com/php/vdb:php-spider/dev-master"><img src="https://www.versioneye.com/php/vdb:php-spider/dev-master/badge" alt="Dependency Status"></a></p>
+
+<p><a href="https://packagist.org/packages/vdb/php-spider"><img src="https://poser.pugx.org/vdb/php-spider/v/stable" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/vdb/php-spider"><img src="https://poser.pugx.org/vdb/php-spider/license" alt="License"></a></p>
 
 <h1>
 <a id="php-spider-features" class="anchor" href="#php-spider-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>PHP-Spider Features</h1>
 
 <ul>
 <li>supports two traversal algorithms: breadth-first and depth-first</li>
-<li>supports depth limiting and queue size limiting</li>
+<li>supports crawl depth limiting, queue size limiting and max downloads limiting</li>
 <li>supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP</li>
 <li>comes with a useful set of URI filters, such as Domain limiting</li>
 <li>supports custom URI filters, both prefetch (URI) and postfetch (Resource content)</li>
@@ -58,31 +64,30 @@
 
 <p>The easiest way to install PHP-Spider is with <a href="http://getcomposer.org/">composer</a>.  Find it on <a href="https://packagist.org/packages/vdb/php-spider">Packagist</a>.</p>
 
-<blockquote>
-<p>Note: if you want to run the examples or unit tests, you need to do <code>composer install --dev</code>, so that all dependencies for the examples also get installed.</p>
-</blockquote>
-
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>This is a very simple example. This code can be found in <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php">example/example_simple.php</a>. For a more complete example with
-some logging, caching and filters, see <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_complex.php">example/example_complex.php</a>. That file contains a more real-world example.</p>
+<p>This is a very simple example. This code can be found in <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php">example/example_simple.php</a>. For a more complete example with some logging, caching and filters, see <a href="https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_complex.php">example/example_complex.php</a>. That file contains a more real-world example.</p>
 
 <p>First create the spider</p>
 
-<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">VDB\Spider\Spider</span>;</span>
-<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">VDB\Spider\Discoverer\XPathExpressionDiscoverer</span>;</span>
-<span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-smi">$spider</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Spider</span>(<span class="pl-s"><span class="pl-pds">'</span>http://www.dmoz.org<span class="pl-pds">'</span></span>);</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$spider</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Spider</span>(<span class="pl-s"><span class="pl-pds">'</span>http://www.dmoz.org<span class="pl-pds">'</span></span>);</span></pre></div>
 
 <p>Add a URI discoverer. Without it, the spider does nothing. In this case, we want all <code>&lt;a&gt;</code> nodes from a certain <code>&lt;div&gt;</code></p>
 
-<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>addDiscoverer(<span class="pl-k">new</span> <span class="pl-c1">XPathExpressionDiscoverer</span>(<span class="pl-s"><span class="pl-pds">"</span>//div[@id='catalogs']//a<span class="pl-pds">"</span></span>));</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getDiscovererSet()<span class="pl-k">-&gt;</span>set(<span class="pl-k">new</span> <span class="pl-c1">XPathExpressionDiscoverer</span>(<span class="pl-s"><span class="pl-pds">"</span>//div[@id='catalogs']//a<span class="pl-pds">"</span></span>));</span></pre></div>
 
 <p>Set some sane options for this example. In this case, we only get the first 10 items from the start page.</p>
 
-<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>setMaxDepth(<span class="pl-c1">1</span>);</span>
-<span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>setMaxQueueSize(<span class="pl-c1">10</span>);</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getDiscovererSet()<span class="pl-k">-&gt;</span><span class="pl-smi">maxDepth</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>;</span>
+<span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getQueueManager()<span class="pl-k">-&gt;</span><span class="pl-smi">maxQueueSize</span> <span class="pl-k">=</span> <span class="pl-c1">10</span>;</span></pre></div>
+
+<p>Add a listener to collect stats from the Spider and the QueueManager.
+There are more components that dispatch events you can use.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$statsHandler</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">StatsHandler</span>();</span>
+<span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getQueueManager()<span class="pl-k">-&gt;</span>getDispatcher()<span class="pl-k">-&gt;</span>addSubscriber(<span class="pl-smi">$statsHandler</span>);</span>
+<span class="pl-s1"><span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getDispatcher()<span class="pl-k">-&gt;</span>addSubscriber(<span class="pl-smi">$statsHandler</span>);</span></pre></div>
 
 <p>Execute the crawl</p>
 
@@ -90,16 +95,15 @@ some logging, caching and filters, see <a href="https://github.com/matthijsvande
 
 <p>When crawling is done, we could get some info about the crawl</p>
 
-<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$stats</span> <span class="pl-k">=</span> <span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getStatsHandler();</span>
-<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>SPIDER ID: <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-smi">$stats</span><span class="pl-k">-&gt;</span>getSpiderId();</span>
-<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  ENQUEUED:  <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$stats</span><span class="pl-k">-&gt;</span>getQueued());</span>
-<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  SKIPPED:   <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$stats</span><span class="pl-k">-&gt;</span>getFiltered());</span>
-<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  FAILED:    <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$stats</span><span class="pl-k">-&gt;</span>getFailed());</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  ENQUEUED:  <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$statsHandler</span><span class="pl-k">-&gt;</span>getQueued());</span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  SKIPPED:   <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$statsHandler</span><span class="pl-k">-&gt;</span>getFiltered());</span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  FAILED:    <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$statsHandler</span><span class="pl-k">-&gt;</span>getFailed());</span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span>  PERSISTED:    <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-c1">count</span>(<span class="pl-smi">$statsHandler</span><span class="pl-k">-&gt;</span>getPersisted());</span></pre></div>
 
 <p>Finally we could do some processing on the downloaded resources. In this example, we will echo the title of all resources</p>
 
 <div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n\n</span>DOWNLOADED RESOURCES: <span class="pl-pds">"</span></span>;</span>
-<span class="pl-s1"><span class="pl-k">foreach</span> (<span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getPersistenceHandler() <span class="pl-k">as</span> <span class="pl-smi">$resource</span>) {</span>
+<span class="pl-s1"><span class="pl-k">foreach</span> (<span class="pl-smi">$spider</span><span class="pl-k">-&gt;</span>getDownloader()<span class="pl-k">-&gt;</span>getPersistenceHandler() <span class="pl-k">as</span> <span class="pl-smi">$resource</span>) {</span>
 <span class="pl-s1">    <span class="pl-c1">echo</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span> - <span class="pl-pds">"</span></span> <span class="pl-k">.</span> <span class="pl-smi">$resource</span><span class="pl-k">-&gt;</span>getCrawler()<span class="pl-k">-&gt;</span>filterXpath(<span class="pl-s"><span class="pl-pds">'</span>//title<span class="pl-pds">'</span></span>)<span class="pl-k">-&gt;</span>text();</span>
 <span class="pl-s1">}</span>
 <span class="pl-s1"></span></pre></div>
@@ -118,15 +122,13 @@ The Symfony documentation contains an excellent guide for how to do that properl
 </ul>
 
 <blockquote>
-<p>Note: An easy way to check if your code conforms to PHP-Spider is by running <a href="https://scrutinizer-ci.com/">Scrutinizer</a> on your local code. You can do it simply by downloading <a href="https://scrutinizer-ci.com/scrutinizer.phar">scrutinizer.phar</a> and running it on your PHP-Spider repository like so: <code>php scrutinizer.phar run /path/to/php-spider</code></p>
+<p>Note: An easy way to check if your code conforms to PHP-Spider is by running <a href="https://github.com/squizlabs/PHP_CodeSniffe/">PHP CodeSniffer</a> on your local code. Please make sure you use the PSR-2 standard: <code>--standard=PSR2</code></p>
 </blockquote>
 
 <h2>
 <a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h2>
 
 <p>For things like reporting bugs and requesting features it is best to create an <a href="https://github.com/matthijsvandenbos/php-spider/issues">issue</a> here on GitHub. It is even better to accompany it with a Pull Request. ;-)</p>
-
-<p>If you have other questions, or need some tips, you can send a tweet to <a href="https://twitter.com/phpspider">@phpspider</a> or send an email to <a href="mailto:support@php-spider.org">support@php-spider.org</a>.</p>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
