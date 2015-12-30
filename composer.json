@@ -11,30 +11,27 @@
         }
     ],
     "support": {
-        "email": "support@php-spider.org",
         "issues": "https://github.com/matthijsvandenbos/php-spider/issues",
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
         "php": ">=5.5.0",
         "ext-curl": "*",
-        "guzzle/guzzle": ">=3.0, <3.4",
-        "symfony/css-selector": "~2.1",
-        "symfony/dom-crawler": "~2.1",
-        "symfony/finder": "2.2.*@dev",
+        "guzzle/guzzle": ">=3.0",
+        "symfony/css-selector": ">=2.1",
+        "symfony/dom-crawler": ">=2.1",
+        "symfony/finder": ">=2.2",
         "vdb/uri": "0.2",
-        "react/react": "0.3.*"
+        "satooshi/php-coveralls": "^1.0"
     },
     "require-dev": {
         "monolog/monolog": "1.4.*@dev",
-        "doctrine/cache": "dev-master",
-        "ibuildings/qa-tools": "~2.0"
+        "doctrine/cache": "dev-master"
     },
     "autoload": {
         "psr-0": {
             "VDB\\Spider": "src/",
             "VDB\\Spider\\Tests": "tests/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

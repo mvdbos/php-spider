@@ -201,5 +201,4 @@ class Downloader implements DownloaderInterface
 
         return $this->requestHandler;
     }
-
 }

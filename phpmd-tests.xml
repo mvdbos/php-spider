@@ -21,16 +21,14 @@
         <exclude name="UnusedFormalParameter"/>
     </rule>
 
-    <rule ref="rulesets/codesize.xml" />
+    <rule ref="rulesets/codesize.xml" >
+        <exclude name="TooManyFields" />
+        <exclude name="TooManyMethods" />
+    </rule>
 
     <rule ref="rulesets/controversial.xml" />
 
     <rule ref="rulesets/design.xml">
-        <!--
-            Disabling this rule in the pre-commit-run, PDepend and phpmd cannot successfully determine
-            the coupling between objects for just the changeset. This needs to be fixed up stream. Till
-            then, this rule is disabled for the pre-commit run.
-        -->
         <exclude name="CouplingBetweenObjects" />
     </rule>
 

@@ -7,7 +7,6 @@ use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
-
 interface DownloaderInterface
 {
     /**

@@ -7,7 +7,10 @@ php:
 matrix:
   allow_failures:
     - php: 7.0
-before_script:
-  - composer install -n
+install:
+  - composer install --no-interaction
 script:
-  - phpunit
+  - mkdir -p build/logs
+  - phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+after_success:
+  - travis_retry php vendor/bin/coveralls -v
