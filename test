@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo -e "\nPHPLINT src/:"
+find src/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null
+echo -e "\nPHPLINT tests/:"
+find tests/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null
 echo -e "\nPHPUNIT:"
 phpunit --stop-on-error --stop-on-failure
 echo -e "\nPHPCS src/:"
