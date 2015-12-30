@@ -23,7 +23,7 @@ $allowSubDomains = true;
 
 // Create spider
 $spider = new Spider($seed);
-$spider->downloadLimit = 10;
+$spider->getDownloader()->setDownloadLimit(10);
 
 $statsHandler = new StatsHandler();
 $LogHandler = new LogHandler();
@@ -34,7 +34,7 @@ $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
 
 // Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
-$queueManager->maxDepth = 1;
+$spider->getDiscovererSet()->maxDepth = 1;
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
 $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
@@ -45,7 +45,7 @@ $spider->setQueueManager($queueManager);
 $spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
-$spider->setPersistenceHandler(
+$spider->getDownloader()->setPersistenceHandler(
     new \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
 );
 
@@ -57,8 +57,8 @@ $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
 // We add an eventlistener to the crawler that implements a politeness policy. We wait 450ms between every request to the same domain
-$politenessPolicyEventListener = new PolitenessPolicyListener(200);
-$spider->getDispatcher()->addListener(
+$politenessPolicyEventListener = new PolitenessPolicyListener(100);
+$spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
     array($politenessPolicyEventListener, 'onCrawlPreRequest')
 );
@@ -66,9 +66,18 @@ $spider->getDispatcher()->addListener(
 $spider->getDispatcher()->addSubscriber($statsHandler);
 $spider->getDispatcher()->addSubscriber($LogHandler);
 
+// Let's add something to enable us to stop the script
+$spider->getDispatcher()->addListener(
+    SpiderEvents::SPIDER_CRAWL_USER_STOPPED,
+    function (Event $event) {
+        echo "\nCrawl aborted by user.\n";
+        exit();
+    }
+);
+
 // Let's add a CLI progress meter for fun
 echo "\nCrawling";
-$spider->getDispatcher()->addListener(
+$spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_POST_REQUEST,
     function (Event $event) {
         echo '.';
@@ -76,7 +85,7 @@ $spider->getDispatcher()->addListener(
 );
 
 //// Set up some caching, logging and profiling on the HTTP client of the spider
-$guzzleClient = $spider->getRequestHandler()->getClient();
+$guzzleClient = $spider->getDownloader()->getRequestHandler()->getClient();
 $guzzleClient->addSubscriber($logPlugin);
 $guzzleClient->addSubscriber($timerPlugin);
 $guzzleClient->addSubscriber($cachePlugin);
@@ -88,17 +97,11 @@ $guzzleClient->setUserAgent('PHP-Spider');
 $result = $spider->crawl();
 
 // Report
-$spiderId = $statsHandler->getSpiderId();
-$queued = $statsHandler->getQueued();
-$filtered = $statsHandler->getFiltered();
-$failed = $statsHandler->getFailed();
-$persisted = $statsHandler->getPersisted();
-
-echo "\n\nSPIDER ID: " . $spiderId;
-echo "\n  ENQUEUED:  " . count($queued);
-echo "\n  SKIPPED:   " . count($filtered);
-echo "\n  FAILED:    " . count($failed);
-echo "\n  PERSISTED:    " . count($persisted);
+echo "\n\nSPIDER ID: " . $statsHandler->getSpiderId();
+echo "\n  ENQUEUED:  " . count($statsHandler->getQueued());
+echo "\n  SKIPPED:   " . count($statsHandler->getFiltered());
+echo "\n  FAILED:    " . count($statsHandler->getFailed());
+echo "\n  PERSISTED:    " . count($statsHandler->getPersisted());
 
 // With the information from some of plugins and listeners, we can determine some metrics
 $peakMem = round(memory_get_peak_usage(true) / 1024 / 1024, 2);
@@ -113,10 +116,11 @@ echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $to
 
 // Finally we could start some processing on the downloaded resources
 echo "\n\nDOWNLOADED RESOURCES: ";
-$downloaded = $spider->getPersistenceHandler();
+$downloaded = $spider->getDownloader()->getPersistenceHandler();
 foreach ($downloaded as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = $resource->getResponse()->getHeader('Content-Length', true);
+    $contentLength = (int) $resource->getResponse()->getHeader('Content-Length')->__toString();
     // do something with the data
     echo "\n - " . str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
 }
+echo "\n";
