@@ -2,7 +2,7 @@
 namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Discoverer\DiscovererInterface;
-use VDB\Spider\Discoverer\Discoverer;
+use VDB\Spider\Discoverer\CrawlerDiscoverer;
 use VDB\Spider\Resource;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
@@ -13,34 +13,10 @@ use VDB\Uri\UriInterface;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-class CssSelectorDiscoverer extends Discoverer implements DiscovererInterface
+class CssSelectorDiscoverer extends CrawlerDiscoverer
 {
-    /** @var string */
-    protected $cssSelector;
-
-    /**
-     * @param $cssSelector
-     */
-    public function __construct($cssSelector)
+    protected function getFilteredCrawler(Resource $resource)
     {
-        $this->cssSelector = $cssSelector;
-    }
-
-    /**
-     * @param Resource $resource
-     * @return DiscoveredUri[]
-     */
-    public function discover(Resource $resource)
-    {
-        $crawler = $resource->getCrawler()->filter($this->cssSelector);
-        $uris = array();
-        foreach ($crawler as $node) {
-            try {
-                $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
-            } catch (UriSyntaxException $e) {
-                // do nothing. We simply ignore invalid URI's
-            }
-        }
-        return $uris;
+        return $resource->getCrawler()->filter($this->selector);
     }
 }
