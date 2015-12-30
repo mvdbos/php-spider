@@ -17,7 +17,7 @@ abstract class Discoverer
     /**
      * @param DiscovererSet $discovererSet
      */
-    public function setDiscovererSet(DiscovererSet $discovererSet = null)
+    public function setDiscovererSet(DiscovererSet $discovererSet)
     {
         $this->discovererSet = $discovererSet;
     }
@@ -27,5 +27,9 @@ abstract class Discoverer
         return get_class($this);
     }
 
+    /**
+     * @param Resource $resource
+     * @return DiscoveredUri[]
+     */
     abstract public function discover(Resource $resource);
 }

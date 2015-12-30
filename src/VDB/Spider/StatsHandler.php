@@ -14,6 +14,7 @@ use VDB\Spider\Event\SpiderEvents;
 
 class StatsHandler implements EventSubscriberInterface
 {
+    /** @var string */
     protected $spiderId;
 
     protected $persisted = array();

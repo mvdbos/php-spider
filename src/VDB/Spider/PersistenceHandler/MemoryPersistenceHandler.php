@@ -39,7 +39,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource
+     * @return Resource|false
      */
     public function next()
     {

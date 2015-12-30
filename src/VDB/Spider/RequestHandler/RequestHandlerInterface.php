@@ -2,13 +2,14 @@
 
 namespace VDB\Spider\RequestHandler;
 
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Spider\Resource;
 
 interface RequestHandlerInterface
 {
     /**
-     * @param UriInterface $uri
+     * @param DiscoveredUri $uri
      * @return Resource
      */
-    public function request(UriInterface $uri);
+    public function request(DiscoveredUri $uri);
 }

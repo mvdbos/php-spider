@@ -18,6 +18,7 @@ use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Uri\Uri;
 
 abstract class DiscovererTestCase extends TestCase
@@ -55,5 +56,14 @@ abstract class DiscovererTestCase extends TestCase
             $this->uri,
             new Response(200, null, $content)
         );
+    }
+
+    protected function executeDiscoverer(DiscovererInterface $discoverer)
+    {
+        $uris = $discoverer->discover($this->spiderResource);
+        $uri = $uris[0];
+
+        $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $uri);
+        $this->assertEquals($this->uri->toString(), $uri->toString());
     }
 }

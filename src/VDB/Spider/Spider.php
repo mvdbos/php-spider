@@ -54,7 +54,7 @@ class Spider
 
     /**
      * @param string $seed the URI to start crawling
-     * @param string $spiderId
+     * @param string|null $spiderId
      */
     public function __construct($seed, $spiderId = null)
     {
@@ -80,7 +80,7 @@ class Spider
     /**
      * Starts crawling the URI provided on instantiation
      *
-     * @return array
+     * @return void
      */
     public function crawl()
     {
@@ -286,7 +286,7 @@ class Spider
 
     /**
      * @param UriInterface $uri
-     * @return Resource
+     * @return Resource|false
      */
     protected function fetchResource(DiscoveredUri $uri)
     {
@@ -318,7 +318,7 @@ class Spider
      * A shortcut for EventDispatcher::dispatch()
      *
      * @param string $eventName
-     * @param Event $event
+     * @param null|Event $event
      */
     private function dispatch($eventName, Event $event = null)
     {

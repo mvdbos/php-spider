@@ -19,16 +19,11 @@ use VDB\Spider\Discoverer\CssSelectorDiscoverer;
 class CssSelectorDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers VDB\Spider\Discoverer\XPathExpressionDiscoverer::discover()
+     * @covers VDB\Spider\Discoverer\CssSelectorDiscoverer::discover()
      */
     public function testDiscover()
     {
         $discoverer = new CssSelectorDiscoverer("a");
-
-        $uris = $discoverer->discover($this->spiderResource);
-        $uri = $uris[0];
-
-        $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $uri);
-        $this->assertEquals($this->uri->toString(), $uri->toString());
+        $this->executeDiscoverer($discoverer);
     }
 }
