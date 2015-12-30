@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 echo -e "\nPHPLINT src/:"
-find src/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null
+find src/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null || exit $?
 echo -e "\nPHPLINT tests/:"
-find tests/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null
+find tests/ -iname "*.php" -print0 | xargs -0 -n1 -P4 php -l 1>/dev/null || exit $?
 echo -e "\nPHPUNIT:"
-phpunit --stop-on-error --stop-on-failure
+phpunit --stop-on-error --stop-on-failure || exit $?
 echo -e "\nPHPCS src/:"
-phpcs --warning-severity=0 --standard=PSR2 src/ 
+phpcs --warning-severity=0 --standard=PSR2 src/ || exit $?
 echo -e "\nPHPCS tests/:"
-phpcs --warning-severity=0 --standard=PSR2 tests/
+phpcs --warning-severity=0 --standard=PSR2 tests/ || exit $?
 echo -e "\nPHPMD src/:"
-phpmd src/ text phpmd.xml
+phpmd src/ text phpmd.xml || exit $?
 echo -e "\nPHPMD tests/:"
-phpmd tests/ text phpmd-tests.xml
+phpmd tests/ text phpmd-tests.xml || exit $?
 
