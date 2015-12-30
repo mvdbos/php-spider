@@ -9,14 +9,11 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\QueueException;
-use VDB\Spider\Filter\PostFetchFilterInterface;
-use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
-use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
-use VDB\Spider\RequestHandler\GuzzleRequestHandler;
-use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Spider\Downloader\DownloaderInterface;
+use VDB\Spider\Downloader\Downloader;
 use VDB\Uri\UriInterface;
 use VDB\Uri\Uri;
 
@@ -25,11 +22,8 @@ use VDB\Uri\Uri;
  */
 class Spider
 {
-    /** @var RequestHandlerInterface */
-    private $requestHandler;
-
-    /** @var PersistenceHandlerInterface */
-    private $persistenceHandler;
+    /** @var DownloaderInterface */
+    private $downloader;
 
     /** @var QueueManagerInterface */
     private $queueManager;
@@ -40,17 +34,11 @@ class Spider
     /** @var DiscovererSet */
     private $discovererSet;
 
-    /** @var PostFetchFilterInterface[] */
-    private $postFetchFilters = array();
-
     /** @var DiscoveredUri The URI of the site to spider */
     private $seed = array();
 
     /** @var string the unique id of this spider instance */
     private $spiderId;
-
-    /** @var int the maximum number of downloaded resources. 0 means no limit */
-    public $downloadLimit = 0;
 
     /**
      * @param string $seed the URI to start crawling
@@ -85,37 +73,9 @@ class Spider
     public function crawl()
     {
         $this->getQueueManager()->addUri($this->seed);
-        $this->getPersistenceHandler()->setSpiderId($this->spiderId);
+        $this->getDownloader()->getPersistenceHandler()->setSpiderId($this->spiderId);
 
         $this->doCrawl();
-    }
-
-    /**
-     * @param PostFetchFilterInterface $filter
-     */
-    public function addPostFetchFilter(PostFetchFilterInterface $filter)
-    {
-        $this->postFetchFilters[] = $filter;
-    }
-
-    /**
-     * @param RequestHandlerInterface $requestHandler
-     */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler)
-    {
-        $this->requestHandler = $requestHandler;
-    }
-
-    /**
-     * @return RequestHandlerInterface
-     */
-    public function getRequestHandler()
-    {
-        if (!$this->requestHandler) {
-            $this->requestHandler = new GuzzleRequestHandler();
-        }
-
-        return $this->requestHandler;
     }
 
     /**
@@ -159,23 +119,25 @@ class Spider
     }
 
     /**
-     * @param PersistenceHandlerInterface $persistenceHandler
+     * @param DownloaderInterface $downloader
+     * @return $this
      */
-    public function setPersistenceHandler(PersistenceHandlerInterface $persistenceHandler)
+    public function setDownloader(DownloaderInterface $downloader)
     {
-        $this->persistenceHandler = $persistenceHandler;
+        $this->downloader = $downloader;
+
+        return $this;
     }
 
     /**
-     * @return PersistenceHandlerInterface
+     * @return DownloaderInterface
      */
-    public function getPersistenceHandler()
+    public function getDownloader()
     {
-        if (!$this->persistenceHandler) {
-            $this->persistenceHandler = new MemoryPersistenceHandler();
+        if (!$this->downloader) {
+            $this->downloader = new Downloader();
         }
-
-        return $this->persistenceHandler;
+        return $this->downloader;
     }
 
     /**
@@ -212,29 +174,6 @@ class Spider
     }
 
     /**
-     * @param Resource $resource
-     * @return bool
-     */
-    private function matchesPostfetchFilter(Resource $resource)
-    {
-        foreach ($this->postFetchFilters as $filter) {
-            if ($filter->match($resource)) {
-                $this->dispatch(
-                    SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH,
-                    new GenericEvent($this, array('uri' => $resource->getUri()))
-                );
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function isDownLoadLimitExceeded()
-    {
-        return $this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit;
-    }
-
-    /**
      * Function that crawls each provided URI
      * It applies all processors and listeners set on the Spider
      *
@@ -254,16 +193,13 @@ class Spider
     private function doCrawl()
     {
         while ($currentUri = $this->getQueueManager()->next()) {
-            if ($this->isDownLoadLimitExceeded()) {
+            if ($this->getDownloader()->isDownLoadLimitExceeded()) {
                 break;
             }
 
-            // Fetch the document
-            if (!$resource = $this->fetchResource($currentUri)) {
+            if (!$resource = $this->getDownloader()->download($currentUri)) {
                 continue;
             }
-
-            $this->getPersistenceHandler()->persist($resource);
 
             $this->dispatch(
                 SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED,
@@ -281,36 +217,6 @@ class Spider
                     break;
                 }
             }
-        }
-    }
-
-    /**
-     * @param UriInterface $uri
-     * @return Resource|false
-     */
-    protected function fetchResource(DiscoveredUri $uri)
-    {
-        $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
-
-        try {
-            $resource = $this->getRequestHandler()->request($uri);
-
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri))); // necessary until we have 'finally'
-
-            if ($this->matchesPostfetchFilter($resource)) {
-                return false;
-            }
-
-            return $resource;
-        } catch (\Exception $e) {
-            $this->dispatch(
-                SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST,
-                new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage()))
-            );
-
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri))); // necessary until we have 'finally'
-
-            return false;
         }
     }
 

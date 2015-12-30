@@ -145,17 +145,19 @@ class SpiderTest extends TestCase
             ->method('request')
             ->will($this->returnCallback(array($this, 'doTestRequest')));
 
-        $this->spider->setRequestHandler($this->requestHandler);
+        $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
 
         $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
 
         $this->statsHandler = new StatsHandler();
         $this->spider->getDispatcher()->addSubscriber($this->statsHandler);
         $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->statsHandler);
+        $this->spider->getDownloader()->getDispatcher()->addSubscriber($this->statsHandler);
 
         $this->logHandler = new LogHandler();
         $this->spider->getDispatcher()->addSubscriber($this->logHandler);
         $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->logHandler);
+        $this->spider->getDownloader()->getDispatcher()->addSubscriber($this->logHandler);
     }
 
     /**
@@ -290,7 +292,7 @@ class SpiderTest extends TestCase
     public function testCrawlDFSMaxQueueSize()
     {
         $this->spider->getDiscovererSet()->maxDepth = 1000;
-        $this->spider->downloadLimit = 3;
+        $this->spider->getDownloader()->setDownloadLimit(3);
 
         $this->spider->crawl();
 
@@ -307,7 +309,7 @@ class SpiderTest extends TestCase
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
         $this->spider->getDiscovererSet()->maxDepth = 1000;
-        $this->spider->downloadLimit = 3;
+        $this->spider->getDownloader()->setDownloadLimit(3);
 
         $this->spider->crawl();
 
