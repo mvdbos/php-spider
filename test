@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+echo -e "\nPHPUNIT:"
+phpunit --stop-on-error --stop-on-failure
+echo -e "\nPHPCS src/:"
+phpcs --warning-severity=0 --standard=PSR2 src/ 
+echo -e "\nPHPCS tests/:"
+phpcs --warning-severity=0 --standard=PSR2 tests/
+echo -e "\nPHPMD src/:"
+phpmd src/ text phpmd.xml
+echo -e "\nPHPMD tests/:"
+phpmd tests/ text phpmd-tests.xml
+
