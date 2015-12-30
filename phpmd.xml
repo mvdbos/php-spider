@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Ibuildings QA Tools Default Ruleset"
+<ruleset name="PHP Spider Ruleset for source code"
          xmlns="http://pmd.sf.net/ruleset/1.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
@@ -7,7 +7,7 @@
          xsi:noNamespaceSchemaLocation="
                      http://pmd.sf.net/ruleset_xml_schema.xsd">
     <description>
-        Ibuildings QA Tools Default Ruleset
+        PHP Spider Ruleset for source code
     </description>
 
     <rule ref="rulesets/cleancode.xml">
@@ -18,14 +18,22 @@
 
     <rule ref="rulesets/unusedcode.xml">
         <!-- we turn this back on as soon as an exception for inherited/implemented methods is available-->
-        <exclude name="UnusedFormalParameter"/>
+        <!--<exclude name="UnusedFormalParameter"/>-->
     </rule>
 
     <rule ref="rulesets/codesize.xml" />
 
     <rule ref="rulesets/controversial.xml" />
 
-    <rule ref="rulesets/design.xml" />
+    <rule ref="rulesets/design.xml">
+        <exclude name="CouplingBetweenObjects"/>
+    </rule>
+
+    <rule ref="rulesets/design.xml/CouplingBetweenObjects">
+        <properties>
+            <property name="minimum" value="15" />
+        </properties>
+    </rule>
 
     <rule ref="rulesets/naming.xml">
         <exclude name="ShortVariable" />
