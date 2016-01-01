@@ -14,4 +14,7 @@ echo -e "\nPHPMD src/:"
 phpmd src/ text phpmd.xml || exit $?
 echo -e "\nPHPMD tests/:"
 phpmd tests/ text phpmd-tests.xml || exit $?
-
+echo -e "\nPHPCPD src/:"
+phpcpd --min-lines=5 --min-tokens=20  --fuzzy -v src/ || exit $?
+echo -e "\nPHPCPD tests/:"
+phpcpd --min-lines=5 --min-tokens=20  --fuzzy tests/ #|| exit $?
