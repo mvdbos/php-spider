@@ -4,3 +4,15 @@ filter:
         - tests/*
 checks:
     php: true
+
+build_failure_conditions:
+    - 'elements.rating(<= C).exists'               # No classes/methods with a rating of C or worse
+    - 'elements.rating(<= C).new.exists'           # No new classes/methods with a rating of C or worse
+                                                   # allowed (useful for legacy code)
+
+    - 'issues.label("coding-style").exists'        # No coding style issues allowed
+    - 'issues.label("coding-style").new.exists'    # No new coding style issues allowed
+
+    - 'issues.severity(>= MINOR).new.exists'       # New issues of minor or higher severity
+
+    - 'project.metric("scrutinizer.quality", < 9.8)' # Code Quality Rating drops below 9.8
