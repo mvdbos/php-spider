@@ -1,19 +1,40 @@
+## Run on container environment
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - vendor
+
 language: php
 php:
   - 7.0
   - 5.6
   - 5.5
+
 matrix:
+  fast_finish: true
   allow_failures:
     - php: 7.0
+
 # We only build pushes to master and pull requests
 branches:
   only:
     - master
+
+before_install:
+  # Disable XDebug speeds up composer 
+  - phpenv config-rm xdebug.ini || return 0
+  - composer config -g github-oauth.github.com $GITHUB_ACCESS_TOKEN
+
 install:
-  - composer install --no-interaction
+  - travis_retry composer install --no-interaction --prefer-dist --ignore-platform-reqs
+  # Re-enable XDebug for phpunit code coverage
+  - echo "zend_extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - mkdir -p build/logs
+
 script:
   - phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+
 after_success:
   - travis_retry php vendor/bin/coveralls -v
