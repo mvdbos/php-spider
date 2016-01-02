@@ -75,6 +75,11 @@ class SpiderTest extends TestCase
     protected $hrefG;
 
     /**
+     * @var array An associative array, containing a map of $this->linkX to $this->responseX.
+     */
+    protected $linkToResponseMap = [];
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      *
@@ -140,6 +145,14 @@ class SpiderTest extends TestCase
         $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
         $this->responseG = new Response(200, null, $htmlG);
 
+        $this->linkToResponseMap[$this->linkA->toString()] = $this->responseA;
+        $this->linkToResponseMap[$this->linkB->toString()] = $this->responseB;
+        $this->linkToResponseMap[$this->linkC->toString()] = $this->responseC;
+        $this->linkToResponseMap[$this->linkD->toString()] = $this->responseD;
+        $this->linkToResponseMap[$this->linkE->toString()] = $this->responseE;
+        $this->linkToResponseMap[$this->linkF->toString()] = $this->responseF;
+        $this->linkToResponseMap[$this->linkG->toString()] = $this->responseG;
+
         $this->requestHandler
             ->expects($this->any())
             ->method('request')
@@ -168,24 +181,11 @@ class SpiderTest extends TestCase
     {
         $link = func_get_arg(0);
 
-        switch ($link->toString()) {
-            case $this->linkA->toString():
-                return $this->getResource($this->linkA, $this->responseA);
-            case $this->linkB->toString():
-                return $this->getResource($this->linkB, $this->responseB);
-            case $this->linkC->toString():
-                return $this->getResource($this->linkC, $this->responseC);
-            case $this->linkD->toString():
-                return $this->getResource($this->linkD, $this->responseD);
-            case $this->linkE->toString():
-                return $this->getResource($this->linkE, $this->responseE);
-            case $this->linkF->toString():
-                return $this->getResource($this->linkF, $this->responseF);
-            case $this->linkG->toString():
-                return $this->getResource($this->linkG, $this->responseG);
-            default:
-                throw new \ErrorException('The requested URI was not stubbed: ' . $link->toString());
+        if (array_key_exists($link->toString(), $this->linkToResponseMap)) {
+            return $this->getResource($link, $this->linkToResponseMap[$link->toString()]);
         }
+
+        throw new \ErrorException('The requested URI was not stubbed: ' . $link->toString());
     }
 
     /**
