@@ -9,7 +9,7 @@ use VDB\Spider\Uri\DiscoveredUri;
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
  */
-abstract class Discoverer
+abstract class Discoverer implements DiscovererInterface
 {
     /** @var DiscovererSet */
     protected $discovererSet;

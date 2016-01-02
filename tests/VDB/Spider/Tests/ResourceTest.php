@@ -1,7 +1,7 @@
 <?php
 namespace VDB\Spider\Tests;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Uri\Uri;
 use VDB\Spider\Uri\DiscoveredUri;
@@ -20,7 +20,7 @@ class ResourceTest extends TestCase
         $html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
         $this->resource = new Resource(
             new DiscoveredUri(new Uri('/domains/special', 'http://example.org')),
-            new Response(200, null, $html)
+            new Response(200, [], $html)
         );
     }
 
@@ -46,6 +46,6 @@ class ResourceTest extends TestCase
      */
     public function testGetResponse()
     {
-        $this->assertInstanceOf('Guzzle\\Http\\Message\\Response', $this->resource->getResponse());
+        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $this->resource->getResponse());
     }
 }
