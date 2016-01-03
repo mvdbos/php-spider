@@ -189,7 +189,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider::crawl
+     * @covers VDB\Spider\Spider
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
@@ -213,8 +213,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider::crawl
-     *
+     * @covers VDB\Spider\Spider
      */
     public function testCrawlBFSDefaultBehaviour()
     {
@@ -237,7 +236,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider::crawl
+     * @covers VDB\Spider\Spider
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      *
@@ -269,6 +268,9 @@ class SpiderTest extends TestCase
         $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
+    /**
+     * @covers VDB\Spider\Spider
+     */
     public function testCrawlBFSMaxDepthOne()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
@@ -287,7 +289,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider::crawl
+     * @covers VDB\Spider\Spider
      */
     public function testCrawlDFSMaxQueueSize()
     {
@@ -305,6 +307,9 @@ class SpiderTest extends TestCase
         $this->assertEquals($expected, $this->statsHandler->getPersisted());
     }
 
+    /**
+     * @covers VDB\Spider\Spider
+     */
     public function testCrawlBFSMaxQueueSize()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
@@ -323,7 +328,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider::crawl
+     * @covers VDB\Spider\Spider
      */
     public function testCrawlFailedRequest()
     {

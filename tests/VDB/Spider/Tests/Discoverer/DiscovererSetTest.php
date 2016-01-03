@@ -33,7 +33,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet::filter()
+     * @covers VDB\Spider\Discoverer\DiscovererSet
      * @covers VDB\Spider\Filter\Prefetch\UriFilter::match()
      */
     public function testFilter()
