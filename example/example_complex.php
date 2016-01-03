@@ -12,6 +12,8 @@ use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
 use VDB\Spider\StatsHandler;
 use VDB\Spider\LogHandler;
+use GuzzleHttp\Middleware;
+
 
 require_once('example_complex_bootstrap.php');
 
@@ -84,14 +86,10 @@ $spider->getDownloader()->getDispatcher()->addListener(
     }
 );
 
-//// Set up some caching, logging and profiling on the HTTP client of the spider
+// Set up some caching, logging and profiling on the HTTP client of the spider
 $guzzleClient = $spider->getDownloader()->getRequestHandler()->getClient();
-$guzzleClient->addSubscriber($logPlugin);
-$guzzleClient->addSubscriber($timerPlugin);
-$guzzleClient->addSubscriber($cachePlugin);
-
-// Set the user agent
-$guzzleClient->setUserAgent('PHP-Spider');
+$tapMiddleware = Middleware::tap([$timerMiddleware, 'onRequest'], [$timerMiddleware, 'onResponse']);
+$guzzleClient->getConfig('handler')->push($tapMiddleware, 'timer');
 
 // Execute the crawl
 $result = $spider->crawl();
@@ -110,16 +108,16 @@ $totalDelay = round($politenessPolicyEventListener->totalDelay / 1000 / 1000, 2)
 echo "\n\nMETRICS:";
 echo "\n  PEAK MEM USAGE:       " . $peakMem . 'MB';
 echo "\n  TOTAL TIME:           " . $totalTime . 's';
-echo "\n  REQUEST TIME:         " . $timerPlugin->getTotal() . 's';
+echo "\n  REQUEST TIME:         " . $timerMiddleware->getTotal() . 's';
 echo "\n  POLITENESS WAIT TIME: " . $totalDelay . 's';
-echo "\n  PROCESSING TIME:      " . ($totalTime - $timerPlugin->getTotal() - $totalDelay) . 's';
+echo "\n  PROCESSING TIME:      " . ($totalTime - $timerMiddleware->getTotal() - $totalDelay) . 's';
 
 // Finally we could start some processing on the downloaded resources
 echo "\n\nDOWNLOADED RESOURCES: ";
 $downloaded = $spider->getDownloader()->getPersistenceHandler();
 foreach ($downloaded as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();
-    $contentLength = (int) $resource->getResponse()->getHeader('Content-Length')->__toString();
+    $contentLength = (int) $resource->getResponse()->getHeaderLine('Content-Length');
     // do something with the data
     echo "\n - " . str_pad("[" . round($contentLength / 1024), 4, ' ', STR_PAD_LEFT) . "KB] $title";
 }

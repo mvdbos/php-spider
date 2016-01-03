@@ -1,9 +1,10 @@
 <?php
 namespace VDB\Spider\RequestHandler;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\RequestInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Message\Request;
+use GuzzleHttp\Message\RequestInterface;
 use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
@@ -46,7 +47,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
      */
     public function request(DiscoveredUri $uri)
     {
-        $response = $this->getClient()->createRequest(RequestInterface::GET, $uri->toString())->send();
+        $response = $this->getClient()->get($uri->toString());
         return new Resource($uri, $response);
     }
 }

@@ -37,4 +37,5 @@ script:
   - phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
 
 after_success:
-  - travis_retry php vendor/bin/coveralls -v
+  - travis_retry wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.0/coveralls.phar
+  - travis_retry php coveralls.phar -v

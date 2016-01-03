@@ -11,7 +11,7 @@
 
 namespace VDB\Spider\Tests;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 

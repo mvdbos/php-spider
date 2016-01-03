@@ -2,7 +2,7 @@
 namespace VDB\Spider;
 
 use Exception;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit_Framework_MockObject_MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
@@ -125,25 +125,25 @@ class SpiderTest extends TestCase
         $this->linkG->setDepthFound(2);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
-        $this->responseA = new Response(200, null, $htmlA);
+        $this->responseA = new Response(200, [], $htmlA);
 
         $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceB.html');
-        $this->responseB = new Response(200, null, $htmlB);
+        $this->responseB = new Response(200, [], $htmlB);
 
         $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceC.html');
-        $this->responseC = new Response(200, null, $htmlC);
+        $this->responseC = new Response(200, [], $htmlC);
 
         $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceD.html');
-        $this->responseD = new Response(200, null, $htmlD);
+        $this->responseD = new Response(200, [], $htmlD);
 
         $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceE.html');
-        $this->responseE = new Response(200, null, $htmlE);
+        $this->responseE = new Response(200, [], $htmlE);
 
         $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceF.html');
-        $this->responseF = new Response(200, null, $htmlF);
+        $this->responseF = new Response(200, [], $htmlF);
 
         $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
-        $this->responseG = new Response(200, null, $htmlG);
+        $this->responseG = new Response(200, [], $htmlG);
 
         $this->linkToResponseMap[$this->linkA->toString()] = $this->responseA;
         $this->linkToResponseMap[$this->linkB->toString()] = $this->responseB;

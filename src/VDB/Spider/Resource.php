@@ -1,7 +1,8 @@
 <?php
 namespace VDB\Spider;
 
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Uri\DiscoveredUri;
 
@@ -14,7 +15,7 @@ class Resource
     /** @var DiscoveredUri */
     protected $uri;
 
-    /** @var Response */
+    /** @var ResponseInterface */
     protected $response;
 
     /** @var Crawler */
@@ -25,19 +26,17 @@ class Resource
 
     /**
     * @param DiscoveredUri $uri
-     * @param Response $response
+     * @param ResponseInterface $response
      */
-    public function __construct(DiscoveredUri $uri, Response $response)
+    public function __construct(DiscoveredUri $uri, ResponseInterface $response)
     {
         $this->uri = $uri;
         $this->response = $response;
 
-        // we store the response manually, because otherwise it will not get serialized. It is a php://temp stream
-        $this->body = $response->getBody(true);
     }
 
     /**
-     * Lazy loads a Crawler object based on the Response;
+     * Lazy loads a Crawler object based on the ResponseInterface;
      * @return Crawler
      */
     public function getCrawler()
@@ -45,8 +44,8 @@ class Resource
         if (!$this->crawler instanceof Crawler) {
             $this->crawler = new Crawler('', $this->getUri()->toString());
             $this->crawler->addContent(
-                $this->getResponse()->getBody(true),
-                $this->getResponse()->getHeader('Content-Type', true)
+                $this->getResponse()->getBody()->__toString(),
+                $this->getResponse()->getHeaderLine('Content-Type')
             );
         }
         return $this->crawler;
@@ -61,7 +60,7 @@ class Resource
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public function getResponse()
     {
@@ -74,9 +73,12 @@ class Resource
          * Because the Crawler isn't serialized correctly, we exclude it from serialization
          * It will be available again after wakeup through lazy loading with getCrawler()
          */
+
+        // we store the response manually, because otherwise it will not get serialized.
+        $this->body = Psr7\str($this->response);
+
         return array(
             'uri',
-            'response',
             'body'
         );
     }
@@ -86,6 +88,6 @@ class Resource
      */
     public function __wakeup()
     {
-        $this->response->setBody($this->body);
+        $this->response = Psr7\parse_response($this->body);
     }
 }

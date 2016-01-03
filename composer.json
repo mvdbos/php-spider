@@ -16,17 +16,12 @@
     },
     "require": {
         "php": ">=5.5.0",
-        "ext-curl": "*",
-        "guzzle/guzzle": ">=3.0",
-        "symfony/css-selector": ">=2.1",
-        "symfony/dom-crawler": ">=2.1",
-        "symfony/finder": ">=2.2",
-        "vdb/uri": "0.2"
-    },
-    "require-dev": {
-        "satooshi/php-coveralls": "^1.0",
-        "monolog/monolog": ">=1",
-        "doctrine/cache": ">=1"
+        "guzzlehttp/guzzle": "^6.0.0",
+        "symfony/css-selector": "^3.0.0",
+        "symfony/dom-crawler": "^3.0.0",
+        "symfony/finder": "^3.0.0",
+        "symfony/event-dispatcher": "^3.0.0",
+        "vdb/uri": "^0.2"
     },
     "autoload": {
         "psr-0": {

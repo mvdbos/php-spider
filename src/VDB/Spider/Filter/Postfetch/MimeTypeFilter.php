@@ -9,7 +9,7 @@ use VDB\Spider\Resource;
  */
 class MimeTypeFilter implements PostFetchFilterInterface
 {
-    protected $allowedMimeType = 'text/html';
+    protected $allowedMimeType = '';
 
     public function __construct($allowedMimeType)
     {
@@ -18,6 +18,7 @@ class MimeTypeFilter implements PostFetchFilterInterface
 
     public function match(Resource $resource)
     {
-        return !$resource->getResponse()->isContentType($this->allowedMimeType);
+        $contentType = $resource->getResponse()->getHeaderLine('Content-Type');
+        return $contentType !== $this->allowedMimeType;
     }
 }

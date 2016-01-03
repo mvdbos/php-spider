@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Discoverer;
 
 use DOMDocument;
 use DOMElement;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
@@ -54,7 +54,7 @@ abstract class DiscovererTestCase extends TestCase
 
         $this->spiderResource = new Resource(
             $this->uri,
-            new Response(200, null, $content)
+            new Response(200, [], $content)
         );
     }
 
