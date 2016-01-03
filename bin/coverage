@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rm -rf /tmp/coverage.html && phpunit --coverage-html=/tmp/coverage.html && open /tmp/coverage.html/index.html
