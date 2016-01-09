@@ -35,7 +35,6 @@ class PolitenessPolicyListener
         if ($currentHostname === $this->previousHostname) {
             $this->totalDelay = $this->totalDelay + $this->requestDelay;
             usleep($this->requestDelay);
-
         }
         $this->previousHostname = $currentHostname;
     }

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo -e "\nPHPCBF"
+phpcbf --standard=PSR2 tests/ src/
+echo -e "\nPHP-CS-FIXER"
+php-cs-fixer fix --verbose

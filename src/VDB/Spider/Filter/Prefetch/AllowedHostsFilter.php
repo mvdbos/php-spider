@@ -33,7 +33,6 @@ class AllowedHostsFilter implements PreFetchFilterInterface
                 $this->allowedHosts[] = $hostname;
             }
         }
-
     }
 
     public function match(UriInterface $uri)
