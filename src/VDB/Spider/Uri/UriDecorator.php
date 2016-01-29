@@ -3,6 +3,7 @@
 namespace VDB\Spider\Uri;
 
 use VDB\Uri\UriInterface;
+use VDB\Uri\Uri;
 
 abstract class UriDecorator implements UriInterface
 {
@@ -11,10 +12,22 @@ abstract class UriDecorator implements UriInterface
      */
     protected $decorated;
 
-    public function __construct(UriInterface $decorated)
+    /**
+     * @param string|UriInterface $decorated
+     */
+    public function __construct($decorated)
     {
+        if (!$decorated instanceof UriInterface) {
+            $decorated = new Uri($decorated);
+        }
+
         $this->decorated = $decorated;
     }
+
+    // @codeCoverageIgnoreStart
+    // We ignore coverage for all proxy methods below:
+    // the constructor is tested and if that is successful there is no point
+    // to testing the behaviour of the decorated class
 
     public function toString()
     {
@@ -112,4 +125,6 @@ abstract class UriDecorator implements UriInterface
     {
         return $this->decorated->getFragment();
     }
+
+   // @codeCoverageIgnoreEnd
 }
