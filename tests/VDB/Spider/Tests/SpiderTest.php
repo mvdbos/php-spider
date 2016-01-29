@@ -209,7 +209,7 @@ class SpiderTest extends TestCase
             $this->linkD
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
     /**
@@ -232,7 +232,14 @@ class SpiderTest extends TestCase
             $this->linkG
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    private function compareUriArray($expected, $actual)
+    {
+        foreach ($actual as $index => $resource) {
+            $this->assertEquals($resource->getUri(), $expected[$index]);
+        }
     }
 
     /**
@@ -265,7 +272,7 @@ class SpiderTest extends TestCase
             $this->linkB,
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
     /**
@@ -285,7 +292,7 @@ class SpiderTest extends TestCase
             $this->linkE,
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
     /**
@@ -304,7 +311,7 @@ class SpiderTest extends TestCase
             $this->linkF,
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
     /**
@@ -324,7 +331,7 @@ class SpiderTest extends TestCase
             $this->linkC,
         );
 
-        $this->assertEquals($expected, $this->statsHandler->getPersisted());
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
     /**
@@ -342,8 +349,8 @@ class SpiderTest extends TestCase
         $this->spider->crawl();
         $stats = $this->statsHandler;
 
-        $this->assertCount(0, $stats->getFiltered(), 'Filtered count');
-        $this->assertCount(0, $stats->getPersisted(), 'Persisted count');
+
+        $this->assertCount(0, $this->spider->getDownloader()->getPersistenceHandler(), 'Persisted count');
         $this->assertCount(1, $stats->getFailed(), 'Failed count');
     }
 }
