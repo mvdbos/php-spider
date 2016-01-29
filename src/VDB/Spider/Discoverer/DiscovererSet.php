@@ -100,8 +100,6 @@ class DiscovererSet implements \IteratorAggregate
         if (null !== $alias) {
             $this->discoverers[$alias] = $discoverer;
         }
-
-        $discoverer->setDiscovererSet($this);
     }
 
     /**
