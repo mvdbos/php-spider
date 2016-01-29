@@ -7,7 +7,6 @@ use PHPUnit_Framework_MockObject_MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
-use VDB\Spider\StatsHandler;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
@@ -19,16 +18,6 @@ class SpiderTest extends TestCase
      * @var Spider
      */
     protected $spider;
-
-    /**
-     * @var logHandler
-     */
-    protected $logHandler;
-
-    /**
-     * @var StatsHandler
-     */
-    protected $statsHandler;
 
     /**
      * @var PHPUnit_Framework_MockObject_MockObject
@@ -161,16 +150,6 @@ class SpiderTest extends TestCase
         $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
 
         $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
-
-        $this->statsHandler = new StatsHandler();
-        $this->spider->getDispatcher()->addSubscriber($this->statsHandler);
-        $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->statsHandler);
-        $this->spider->getDownloader()->getDispatcher()->addSubscriber($this->statsHandler);
-
-        $this->logHandler = new LogHandler();
-        $this->spider->getDispatcher()->addSubscriber($this->logHandler);
-        $this->spider->getQueueManager()->getDispatcher()->addSubscriber($this->logHandler);
-        $this->spider->getDownloader()->getDispatcher()->addSubscriber($this->logHandler);
     }
 
     /**
@@ -347,10 +326,7 @@ class SpiderTest extends TestCase
             );
 
         $this->spider->crawl();
-        $stats = $this->statsHandler;
-
 
         $this->assertCount(0, $this->spider->getDownloader()->getPersistenceHandler(), 'Persisted count');
-        $this->assertCount(1, $stats->getFailed(), 'Failed count');
     }
 }
