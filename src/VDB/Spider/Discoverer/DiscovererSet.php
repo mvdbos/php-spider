@@ -6,7 +6,7 @@ use VDB\Spider\Resource;
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\DiscoveredUri;
 
-class DiscovererSet implements \IteratorAggregate
+class DiscovererSet
 {
     /**
      * @var Discoverer[]
@@ -108,41 +108,6 @@ class DiscovererSet implements \IteratorAggregate
     public function addFilter(PreFetchFilterInterface $filter)
     {
         $this->filters[] = $filter;
-    }
-
-    /**
-     * Returns true if the discoverer is defined.
-     *
-     * @param string $name The discoverer name
-     *
-     * @return bool true if the discoverer is defined, false otherwise
-     */
-    public function has($name)
-    {
-        return isset($this->discoverers[$name]);
-    }
-
-    /**
-     * Gets a discoverer.
-     *
-     * @param string $name The discoverer name
-     *
-     * @return Discoverer The discoverer instance
-     *
-     * @throws InvalidArgumentException if the discoverer is not defined
-     */
-    public function get($name)
-    {
-        if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf('The discoverer "%s" is not defined.', $name));
-        }
-
-        return $this->discoverers[$name];
-    }
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->discoverers);
     }
 
     /**

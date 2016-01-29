@@ -20,24 +20,49 @@ use VDB\Spider\Filter\Prefetch\UriFilter;
  */
 class DiscovererSetTest extends DiscovererTestCase
 {
+    /**
+     * @var DiscovererSet
+     */
     private $discovererSet;
 
 
     public function setUp()
     {
         parent::setUp();
-
-        $this->discovererSet = new DiscovererSet();
-        $this->discovererSet->set(new XPathExpressionDiscoverer("//a"));
-        $this->discovererSet->addFilter(new UriFilter(['/^.*contact.*$/']));
     }
 
     /**
      * @covers VDB\Spider\Discoverer\DiscovererSet
-     * @covers VDB\Spider\Filter\Prefetch\UriFilter::match()
+     */
+    public function testConstructor()
+    {
+        $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(1, $uris);
+    }
+
+    /**
+     * @covers VDB\Spider\Discoverer\DiscovererSet
+     */
+    public function testSetDiscoverer()
+    {
+        $this->discovererSet = new DiscovererSet();
+        $this->discovererSet->set(new XPathExpressionDiscoverer("//a"));
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(1, $uris);
+    }
+
+    /**
+     * @covers VDB\Spider\Discoverer\DiscovererSet
      */
     public function testFilter()
     {
+        $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $this->discovererSet->addFilter(new UriFilter(['/^.*contact.*$/']));
+
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(0, $uris);
     }
