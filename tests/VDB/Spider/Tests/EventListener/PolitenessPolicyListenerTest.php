@@ -21,6 +21,9 @@ use VDB\Uri\Uri;
  */
 class PolitenessPolicyListenerTest extends TestCase
 {
+    /**
+     * @covers VDB\Spider\EventListener\PolitenessPolicyListener
+     */
     public function testOnCrawlPreRequestSameDomain()
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);
@@ -37,6 +40,9 @@ class PolitenessPolicyListenerTest extends TestCase
         $this->assertGreaterThanOrEqual(0.5, $interval, 'Actual delay');
     }
 
+    /**
+     * @covers VDB\Spider\EventListener\PolitenessPolicyListener
+     */
     public function testOnCrawlPreRequestDifferentDomain()
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);

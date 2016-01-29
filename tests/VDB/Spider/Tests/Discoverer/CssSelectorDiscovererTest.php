@@ -19,7 +19,7 @@ use VDB\Spider\Discoverer\CssSelectorDiscoverer;
 class CssSelectorDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers VDB\Spider\Discoverer\CssSelectorDiscoverer::discover()
+     * @covers VDB\Spider\Discoverer\CssSelectorDiscoverer<extended>
      */
     public function testDiscover()
     {

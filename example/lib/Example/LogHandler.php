@@ -4,12 +4,11 @@
  * @copyright 2013 Matthijs van den Bos
  */
 
-namespace VDB\Spider;
+namespace Example;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Uri\UriInterface;
-
 use VDB\Spider\Event\SpiderEvents;
 
 class LogHandler implements EventSubscriberInterface

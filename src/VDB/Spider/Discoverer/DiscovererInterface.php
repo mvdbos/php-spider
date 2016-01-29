@@ -18,12 +18,6 @@ interface DiscovererInterface
     public function discover(Resource $resource);
 
     /**
-     * @param DiscovererSet $discovererSet
-     * @return void
-     */
-    public function setDiscovererSet(DiscovererSet $discovererSet);
-
-    /**
      * @return string The name of this discoverer
      */
     public function getName();

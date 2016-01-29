@@ -32,7 +32,6 @@ class Resource
     {
         $this->uri = $uri;
         $this->response = $response;
-
     }
 
     /**

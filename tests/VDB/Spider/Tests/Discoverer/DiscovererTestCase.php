@@ -35,19 +35,23 @@ abstract class DiscovererTestCase extends TestCase
     /** @var DiscoveredUri */
     protected $uri;
 
+    protected $uriInBody1;
+
     protected function setUp()
     {
+        $this->uriInBody1 = 'http://php-spider.org/contact/';
+
         // Setup DOM
         $this->domDocument = new \DOMDocument('1', 'UTF-8');
 
         $html = $this->domDocument->createElement('html');
         $this->domAnchor = $this->domDocument->createElement('a', 'fake');
-        $this->domAnchor->setAttribute('href', 'http://php-spider.org/contact/');
+        $this->domAnchor->setAttribute('href', $this->uriInBody1);
 
         $this->domDocument->appendChild($html);
         $html->appendChild($this->domAnchor);
 
-        $this->uri = new DiscoveredUri(new Uri($this->domAnchor->getAttribute('href')));
+        $this->uri = new DiscoveredUri('http://php-spider.org/');
 
         // Setup Spider\Resource
         $content = $this->domDocument->saveHTML();
@@ -64,6 +68,6 @@ abstract class DiscovererTestCase extends TestCase
         $uri = $uris[0];
 
         $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $uri);
-        $this->assertEquals($this->uri->toString(), $uri->toString());
+        $this->assertEquals($this->uriInBody1, $uri->toString());
     }
 }

@@ -46,7 +46,7 @@ class Downloader implements DownloaderInterface
     /**
      * @return int Maximum number of resources to download
      */
-    public function getdownloadLimit()
+    public function getDownloadLimit()
     {
         return $this->downloadLimit;
     }
@@ -70,6 +70,10 @@ class Downloader implements DownloaderInterface
             return false;
         }
 
+        if ($this->matchesPostfetchFilter($resource)) {
+            return false;
+        }
+
         $this->getPersistenceHandler()->persist($resource);
 
         return $resource;
@@ -77,7 +81,7 @@ class Downloader implements DownloaderInterface
 
     public function isDownLoadLimitExceeded()
     {
-        return $this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit;
+        return $this->getDownloadLimit() !== 0 && $this->getPersistenceHandler()->count() >= $this->getDownloadLimit();
     }
 
     /**
@@ -120,28 +124,22 @@ class Downloader implements DownloaderInterface
      */
     protected function fetchResource(DiscoveredUri $uri)
     {
+        $resource = false;
+
         $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
 
         try {
             $resource = $this->getRequestHandler()->request($uri);
-
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri))); // necessary until we have 'finally'
-
-            if ($this->matchesPostfetchFilter($resource)) {
-                return false;
-            }
-
-            return $resource;
         } catch (\Exception $e) {
             $this->dispatch(
                 SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST,
                 new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage()))
             );
-
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri))); // necessary until we have 'finally'
-
-            return false;
+        } finally {
+            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri)));
         }
+
+        return $resource;
     }
 
     /**

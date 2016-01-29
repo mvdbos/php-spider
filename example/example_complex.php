@@ -11,7 +11,7 @@ use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
 use VDB\Spider\StatsHandler;
-use VDB\Spider\LogHandler;
+use Example\LogHandler;
 use GuzzleHttp\Middleware;
 
 

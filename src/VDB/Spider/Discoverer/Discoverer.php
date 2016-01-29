@@ -11,17 +11,6 @@ use VDB\Spider\Uri\DiscoveredUri;
  */
 abstract class Discoverer implements DiscovererInterface
 {
-    /** @var DiscovererSet */
-    protected $discovererSet;
-
-    /**
-     * @param DiscovererSet $discovererSet
-     */
-    public function setDiscovererSet(DiscovererSet $discovererSet)
-    {
-        $this->discovererSet = $discovererSet;
-    }
-
     public function getName()
     {
         return get_class($this);

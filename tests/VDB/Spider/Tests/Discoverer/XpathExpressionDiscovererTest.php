@@ -19,7 +19,7 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 class XpathExpressionDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers VDB\Spider\Discoverer\XPathExpressionDiscoverer::discover()
+     * @covers VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
      */
     public function testDiscover()
     {
