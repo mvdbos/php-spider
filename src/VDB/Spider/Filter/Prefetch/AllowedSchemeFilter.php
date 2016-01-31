@@ -2,7 +2,7 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author matthijs
@@ -22,7 +22,7 @@ class AllowedSchemeFilter implements PreFetchFilterInterface
     /**
      * @return bool
      */
-    public function match(UriInterface $uri)
+    public function match(DiscoveredUri $uri)
     {
         return !in_array($uri->getScheme(), $this->allowedSchemes);
     }

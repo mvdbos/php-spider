@@ -2,7 +2,7 @@
 
 namespace VDB\Spider\Filter;
 
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author matthijs
@@ -11,8 +11,8 @@ use VDB\Uri\UriInterface;
 interface PreFetchFilterInterface
 {
     /**
-     * @param UriInterface $uri
+     * @param DiscoveredUri $uri
      * @return boolean
      */
-    public function match(UriInterface $uri);
+    public function match(DiscoveredUri $uri);
 }

@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  *
@@ -27,9 +27,9 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'));
 
-        $uri1 = new Uri('http://example.org');
-        $uri2 = new Uri('http://php-spider.org');
-        $uri3 = new Uri('http://blog.php-spider.org');
+        $uri1 = new DiscoveredUri('http://example.org');
+        $uri2 = new DiscoveredUri('http://php-spider.org');
+        $uri3 = new DiscoveredUri('http://blog.php-spider.org');
 
         $this->assertTrue($filter->match($uri1));
         $this->assertTrue($filter->match($uri2));
@@ -43,10 +43,10 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'), true);
 
-        $uri1 = new Uri('http://example.com');
-        $uri2 = new Uri('http://blog.php-spider.org');
-        $uri3 = new Uri('http://test.php-spider.org');
-        $uri4 = new Uri('http://php-spider.org');
+        $uri1 = new DiscoveredUri('http://example.com');
+        $uri2 = new DiscoveredUri('http://blog.php-spider.org');
+        $uri3 = new DiscoveredUri('http://test.php-spider.org');
+        $uri4 = new DiscoveredUri('http://php-spider.org');
 
         $this->assertTrue($filter->match($uri1));
         $this->assertFalse($filter->match($uri2));
@@ -61,12 +61,12 @@ class AllowedHostsFilterTest extends TestCase
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org', 'http://example.com'), true);
 
-        $uri1 = new Uri('http://example.com');
-        $uri2 = new Uri('http://test.example.com');
-        $uri3 = new Uri('http://blog.php-spider.org');
-        $uri4 = new Uri('http://test.php-spider.org');
-        $uri5 = new Uri('http://php-spider.org');
-        $uri6 = new Uri('http://example.org');
+        $uri1 = new DiscoveredUri('http://example.com');
+        $uri2 = new DiscoveredUri('http://test.example.com');
+        $uri3 = new DiscoveredUri('http://blog.php-spider.org');
+        $uri4 = new DiscoveredUri('http://test.php-spider.org');
+        $uri5 = new DiscoveredUri('http://php-spider.org');
+        $uri6 = new DiscoveredUri('http://example.org');
 
         $this->assertFalse($filter->match($uri1));
         $this->assertFalse($filter->match($uri2));
