@@ -10,9 +10,14 @@ use VDB\Spider\Uri\DiscoveredUri;
 class AlreadySeenFilter implements PreFetchFilterInterface
 {
     /**
-     * @var array the list of already visited URIs with the depth they were discovered on as value
+     * @var \ArrayObject the list of already visited URIs with the depth they were discovered on as value
      */
-    private $alreadySeenUris = array();
+    private $alreadySeenUris;
+
+    public function __construct(\ArrayObject $alreadySeenUris)
+    {
+        $this->alreadySeenUris = $alreadySeenUris;
+    }
 
     public function match(DiscoveredUri $uri)
     {
@@ -26,9 +31,10 @@ class AlreadySeenFilter implements PreFetchFilterInterface
 
     private function wasSeen(DiscoveredUri $uri)
     {
-        if (array_key_exists($uri->normalize()->toString(), $this->alreadySeenUris)) {
+        if ($this->alreadySeenUris->offsetExists($uri->normalize()->toString())) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -39,9 +45,9 @@ class AlreadySeenFilter implements PreFetchFilterInterface
      * If it already exists, it is not overwritten, since we want to keep the
      * first depth it was found at.
      */
-    private function markSeen(DiscoveredUri $uri)
+    public function markSeen(DiscoveredUri $uri)
     {
         $uriString = $uri->normalize()->toString();
-        $this->alreadySeenUris[$uriString] = $uri->getDepthFound();
+        $this->alreadySeenUris->offsetSet($uriString, $uri->getDepthFound());
     }
 }

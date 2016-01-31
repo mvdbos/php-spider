@@ -22,10 +22,12 @@ class DiscovererSet
      */
     public $maxDepth = 3;
 
+    private $alreadySeenUris;
 
     public function __construct(array $discoverers = array())
     {
-        $this->addFilter(new AlreadySeenFilter());
+        $this->alreadySeenUris = new \ArrayObject();
+        $this->addFilter(new AlreadySeenFilter($this->alreadySeenUris));
 
         foreach ($discoverers as $alias => $discoverer) {
             $this->set($discoverer, is_int($alias) ? null : $alias);
@@ -47,6 +49,7 @@ class DiscovererSet
     public function discover(Resource $resource)
     {
         //$this->markSeen($resource->getUri());
+        $this->alreadySeenUris->offsetSet($resource->getUri()->normalize()->toString(), $resource->getUri()->getDepthFound());
 
         if ($this->isAtMaxDepth($resource->getUri())) {
             return [];
