@@ -22,6 +22,9 @@ class DiscovererSet
      */
     public $maxDepth = 3;
 
+    /**
+     * @FIXME: this should be refactored. See TODO.md for ideas
+     */
     private $alreadySeenUris;
 
     public function __construct(array $discoverers = array())
