@@ -24,6 +24,8 @@ class DiscovererSet
 
     /**
      * @FIXME: this should be refactored. See TODO.md for ideas
+     * The markseen and wasseen methods should not be part of the filter.
+     * Eitheer of a separate alreadyseenuris object, or of this class.
      */
     private $alreadySeenUris;
 
