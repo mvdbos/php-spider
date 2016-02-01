@@ -26,7 +26,7 @@ PHP-Spider Features
 
 Installation
 ------------
-The easiest way to install PHP-Spider is with [composer](http://getcomposer.org/).  Find it on [Packagist](https://packagist.org/packages/vdb/php-spider).
+The easiest way to install PHP-Spider is with [composer](https://getcomposer.org/).  Find it on [Packagist](https://packagist.org/packages/vdb/php-spider).
 
 Usage
 -----
@@ -88,7 +88,7 @@ There a few requirements for a Pull Request to be accepted:
 
 Support
 -------
-For things like reporting bugs and requesting features it is best to create an [issue](https://github.com/matthijsvandenbos/php-spider/issues) here on GitHub. It is even better to accompany it with a Pull Request. ;-)
+For things like reporting bugs and requesting features it is best to create an [issue](https://github.com/mvdbos/php-spider/issues) here on GitHub. It is even better to accompany it with a Pull Request. ;-)
 
 License
 -------
