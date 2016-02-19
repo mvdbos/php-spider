@@ -33,7 +33,7 @@ class DiscoveredUris
 
     public function merge(DiscoveredUris $uris)
     {
-        $this->discoveredUris = array_merge($this->discoveredUris, $uris->toArray());
+        $this->discoveredUris = array_merge($this->toArray(), $uris->toArray());
     }
 
     public function toArray()
@@ -41,9 +41,6 @@ class DiscoveredUris
         return $this->discoveredUris;
     }
 
-    /**
-     *
-     */
     public function filter(array $filters)
     {
         foreach ($this->discoveredUris as $k => $uri) {

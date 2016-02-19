@@ -23,15 +23,13 @@ class DiscovererSet
     public $maxDepth = 3;
 
     /**
-     * @FIXME: this should be refactored. See TODO.md for ideas
-     * The markseen and wasseen methods should not be part of the filter.
-     * Eitheer of a separate alreadyseenuris object, or of this class.
+     * @var AlreadySeeUris The list of already seen uris
      */
     private $alreadySeenUris;
 
     public function __construct(array $discoverers = array())
     {
-        $this->alreadySeenUris = new \ArrayObject();
+        $this->alreadySeenUris = new AlreadySeenUris();
         $this->addFilter(new AlreadySeenFilter($this->alreadySeenUris));
 
         foreach ($discoverers as $alias => $discoverer) {
@@ -53,7 +51,6 @@ class DiscovererSet
      */
     public function discover(Resource $resource)
     {
-        //$this->markSeen($resource->getUri());
         $this->alreadySeenUris->offsetSet($resource->getUri()->normalize()->toString(), $resource->getUri()->getDepthFound());
 
         if ($this->isAtMaxDepth($resource->getUri())) {
