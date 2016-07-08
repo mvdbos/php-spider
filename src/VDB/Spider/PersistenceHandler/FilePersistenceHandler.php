@@ -81,6 +81,17 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
+     * Encodes file name into suitable format and trims its size.
+     * File name length is limited 255 chars, on Win32 a whole file path is limited 260 chars.
+     * @param string $fileName
+     * @return string
+     */
+    protected function encodeFileName($fileName)
+    {
+        return md5($fileName);
+    }
+
+    /**
      * @return Resource
      */
     abstract public function current();
