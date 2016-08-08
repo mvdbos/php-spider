@@ -34,7 +34,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
         $this->handler = new FileSerializedResourcePersistenceHandler(sys_get_temp_dir());
         $this->handler->setSpiderId('spider-UT');
-
     }
 
     /**
