@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 tmpfile="$(mktemp -t coverage).html"
 phpunit --coverage-html="$tmpfile" && open "$tmpfile/index.html"

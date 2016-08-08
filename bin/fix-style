@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 echo -e "\nPHPCBF"
 phpcbf --standard=PSR2 tests/ src/
