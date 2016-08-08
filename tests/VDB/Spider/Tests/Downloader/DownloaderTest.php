@@ -49,7 +49,7 @@ class DownloaderTest extends TestCase
 
         $this->downloader = new Downloader();
 
-        $requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandlerInterface');
+        $requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
         $requestHandler
             ->expects($this->any())
             ->method('request')
@@ -72,7 +72,7 @@ class DownloaderTest extends TestCase
      */
     public function testDownloadFailed()
     {
-        $requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandlerInterface');
+        $requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
         $requestHandler
             ->expects($this->any())
             ->method('request')
@@ -89,7 +89,7 @@ class DownloaderTest extends TestCase
      */
     public function testFilterNotMatches()
     {
-        $filterNeverMatch = $this->getMock('VDB\Spider\Filter\PostFetchFilterInterface');
+        $filterNeverMatch = $this->getMockBuilder('VDB\Spider\Filter\PostFetchFilterInterface')->getMock();
         $filterNeverMatch
             ->expects($this->any())
             ->method('match')
@@ -106,7 +106,7 @@ class DownloaderTest extends TestCase
      */
     public function testFilterMatches()
     {
-        $filterAlwaysMatch = $this->getMock('VDB\Spider\Filter\PostFetchFilterInterface');
+        $filterAlwaysMatch = $this->getMockBuilder('VDB\Spider\Filter\PostFetchFilterInterface')->getMock();
         $filterAlwaysMatch
             ->expects($this->any())
             ->method('match')

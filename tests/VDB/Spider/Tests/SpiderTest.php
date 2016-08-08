@@ -87,7 +87,7 @@ class SpiderTest extends TestCase
     {
         $this->spider = new Spider('http://php-spider.org/A');
 
-        $this->requestHandler = $this->getMock('VDB\Spider\RequestHandler\RequestHandlerInterface');
+        $this->requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
 
         $this->hrefA = 'http://php-spider.org/A';
         $this->hrefB = 'http://php-spider.org/B';
