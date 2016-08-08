@@ -46,6 +46,5 @@ class MimeTypeFilterTest extends TestCase
 
         $filter = new MimeTypeFilter('image/jpeg');
         $this->assertFalse($filter->match($this->spiderResource));
-
     }
 }
