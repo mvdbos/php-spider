@@ -22,19 +22,6 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
     }
 
-    protected function getFileSystemFilename($resource)
-    {
-        $fullPath = $resource->getUri()->getPath();
-        return urlencode(basename($fullPath));
-    }
-
-    protected function getFileSystemPath($resource)
-    {
-        $hostname = $resource->getUri()->getHost();
-        $fullPath = $resource->getUri()->getPath();
-        return $hostname . dirname($fullPath);
-    }
-
     /**
      * @return Resource
      */

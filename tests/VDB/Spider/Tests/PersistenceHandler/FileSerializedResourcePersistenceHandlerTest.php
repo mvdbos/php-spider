@@ -54,10 +54,50 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         );
     }
 
+    /**
+     * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @dataProvider persistenceWithoutFilenameProvider
+     */
+    public function testPersistResourcesWithoutFilename($resource, $expectedFilePath, $expectedFileContents)
+    {
+        $this->handler->persist($resource);
+
+        $this->assertFileExists($expectedFilePath);
+
+        $savedResource = unserialize(file_get_contents($expectedFilePath));
+        $this->assertEquals(
+            $expectedFileContents,
+            $savedResource->getResponse()->getBody()
+        );
+    }
+
+    public function persistenceWithoutFilenameProvider()
+    {
+        // This must be set here instead of in setup methods, because providers
+        // get executed first
+        if (is_null($this->persistenceRootPath)) {
+            $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
+        }
+
+        $data = [];
+
+        $data[] = $this->buildPersistenceProviderRecord(
+            __DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html',
+            'http://example.org/domains/Internet/'
+        );
+
+        $data[] = $this->buildPersistenceProviderRecord(
+            __DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html',
+            'http://example.org/domains/Internet/Abuse/'
+        );
+
+        return $data;
+    }
+
     public function persistenceProvider()
     {
-        // This must be set here instead of in setup methods, because this gets
-        // executed first
+        // This must be set here instead of in setup methods, because providers
+        // get executed first
         if (is_null($this->persistenceRootPath)) {
             $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
         }
@@ -89,9 +129,18 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
             $uriString
         );
         $expectedFileContents = $this->getFixtureContent(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
-        $expectedFilePath = $this->persistenceRootPath . parse_url($uriString)['host'] . parse_url($uriString)['path'];
+        $expectedFilePath = $this->buildExpectedFilePath($uriString);
 
         return [$resource, $expectedFilePath, $expectedFileContents];
+    }
 
+    protected function buildExpectedFilePath($uriString)
+    {
+        $expectedFilePath = $this->persistenceRootPath . parse_url($uriString)['host'] . parse_url($uriString)['path'];
+        if (substr($expectedFilePath, -1, 1) === '/') {
+            $expectedFilePath .= 'index.html';
+        }
+
+        return $expectedFilePath;
     }
 }

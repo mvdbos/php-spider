@@ -27,6 +27,9 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     /** @var Finder */
     protected $finder;
 
+    /** @var string The filename that will be appended for resources that end with a slash */
+    protected $defaultFilename = 'index.html';
+
     /**
      * @param string $path the path where all spider results should be persisted.
      *        The results will be grouped in a directory by spider ID.
@@ -44,6 +47,35 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         if (!file_exists($this->getResultPath())) {
             mkdir($this->getResultPath(), 0700, true);
         }
+    }
+
+    protected function getFileSystemFilename($resource)
+    {
+        $fullPath = $this->completePath($resource->getUri()->getPath());
+
+        return urlencode(basename($fullPath));
+    }
+
+    protected function getFileSystemPath($resource)
+    {
+        $hostname = $resource->getUri()->getHost();
+        $fullPath = $this->completePath($resource->getUri()->getPath());
+
+        return $hostname . dirname($fullPath);
+    }
+
+    /**
+     * @return The path that was provided with a default filenameappended if it is
+     *         a path ending in a /. This is because we don't want to persist
+     *         the directories as files. This is similar to wget behaviour.
+     */
+    protected function completePath($path)
+    {
+        if (substr($path, -1, 1) === '/') {
+            $path .= $this->defaultFilename;
+        }
+
+        return $path;
     }
 
     public function count()
