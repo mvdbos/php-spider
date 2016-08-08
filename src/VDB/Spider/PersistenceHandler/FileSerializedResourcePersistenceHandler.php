@@ -14,9 +14,25 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
 {
     public function persist(Resource $resource)
     {
-        $fileName = urlencode($resource->getUri()->toString());
-        $file = new \SplFileObject($this->getResultPath() . $fileName, 'w');
+        $path = $this->getResultPath() . $this->getFileSystemPath($resource);
+        if (! is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        $file = new \SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
+    }
+
+    protected function getFileSystemFilename($resource)
+    {
+        $fullPath = $resource->getUri()->getPath();
+        return urlencode(basename($fullPath));
+    }
+
+    protected function getFileSystemPath($resource)
+    {
+        $hostname = $resource->getUri()->getHost();
+        $fullPath = $resource->getUri()->getPath();
+        return $hostname . dirname($fullPath);
     }
 
     /**
