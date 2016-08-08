@@ -15,7 +15,7 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
     public function persist(Resource $resource)
     {
         $path = $this->getResultPath() . $this->getFileSystemPath($resource);
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
         $file = new \SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');

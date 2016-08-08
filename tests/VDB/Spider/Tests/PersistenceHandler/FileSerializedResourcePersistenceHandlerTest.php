@@ -11,12 +11,8 @@
 
 namespace VDB\Spider\Tests\Downloader;
 
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Spider\Resource;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
-use VDB\Uri\Uri;
 
 /**
  *
@@ -24,47 +20,78 @@ use VDB\Uri\Uri;
 class FileSerializedResourcePersistenceHandlerTest extends TestCase
 {
     /**
-     * @var Resource
-     */
-    protected $resource;
-
-    /**
-     * @var string
-     */
-    protected $html;
-
-    /**
      * @var FileSerializedResourcePersistenceHandler
      */
-
     protected $handler;
+
+    protected $persistenceRootPath;
+
 
     public function setUp()
     {
-        $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
-        $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special/test.html', 'http://example.org')),
-            new Response(200, [], $this->html)
-        );
+        $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
+        exec('rm -rf ' . $this->persistenceRootPath);
 
         $this->handler = new FileSerializedResourcePersistenceHandler(sys_get_temp_dir());
         $this->handler->setSpiderId('spider-UT');
+
     }
 
     /**
      * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @dataProvider persistenceProvider
      */
-    public function testPersist()
+    public function testPersist($resource, $expectedFilePath, $expectedFileContents)
     {
-        $this->handler->persist($this->resource);
+        $this->handler->persist($resource);
 
-        $expectedFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR .'example.org/domains/special/test.html';
         $this->assertFileExists($expectedFilePath);
 
         $savedResource = unserialize(file_get_contents($expectedFilePath));
         $this->assertEquals(
-            $this->html,
+            $expectedFileContents,
             $savedResource->getResponse()->getBody()
         );
+    }
+
+    public function persistenceProvider()
+    {
+        // This must be set here instead of in setup methods, because this gets
+        // executed first
+        if (is_null($this->persistenceRootPath)) {
+            $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
+        }
+
+        $data = [];
+
+        $data[] = $this->buildPersistenceProviderRecord(
+            __DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html',
+            'http://example.org/domains/special/test1.html'
+        );
+
+        $data[] = $this->buildPersistenceProviderRecord(
+            __DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html',
+            'http://example.org/domains/special/test2.html'
+        );
+
+        $data[] = $this->buildPersistenceProviderRecord(
+            __DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html',
+            'http://example.org/domains/special/subdir/test3.html'
+        );
+
+        return $data;
+    }
+
+    protected function buildPersistenceProviderRecord($fixturePath, $uriString)
+    {
+        $resource = $this->buildResourceFromFixture(
+            $fixturePath,
+            $uriString
+        );
+        $expectedFileContents = $this->getFixtureContent(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
+        $expectedFilePath = $this->persistenceRootPath . parse_url($uriString)['host'] . parse_url($uriString)['path'];
+
+        return [$resource, $expectedFilePath, $expectedFileContents];
+
     }
 }
