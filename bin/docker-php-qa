@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -it --rm -v "$PWD":/app -w /app mvdbos/php-qa:latest $@
