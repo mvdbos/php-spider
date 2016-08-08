@@ -44,7 +44,7 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@class='dir-1 borN'][2]//a"));
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div[1]/a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
