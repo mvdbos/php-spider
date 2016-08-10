@@ -38,6 +38,8 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
     /**
      * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @covers VDB\Spider\PersistenceHandler\FilePersistenceHandler
+     *
      * @dataProvider persistenceProvider
      */
     public function testPersist($resource, $expectedFilePath, $expectedFileContents)
@@ -55,6 +57,8 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
     /**
      * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @covers VDB\Spider\PersistenceHandler\FilePersistenceHandler
+     *
      * @dataProvider persistenceWithoutFilenameProvider
      */
     public function testPersistResourcesWithoutFilename($resource, $expectedFilePath, $expectedFileContents)
