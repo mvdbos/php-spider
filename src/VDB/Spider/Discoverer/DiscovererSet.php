@@ -4,7 +4,7 @@ namespace VDB\Spider\Discoverer;
 
 use VDB\Spider\Resource;
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Spider\Filter\PreFetch\AlreadySeenFilter;
+use VDB\Spider\Filter\Prefetch\AlreadySeenFilter;
 use VDB\Spider\Uri\DiscoveredUri;
 
 class DiscovererSet
@@ -51,7 +51,7 @@ class DiscovererSet
      */
     public function discover(Resource $resource)
     {
-        $this->alreadySeenUris->offsetSet($resource->getUri()->normalize()->toString(), $resource->getUri()->getDepthFound());
+        $this->alreadySeenUris->markSeen($resource->getUri());
 
         if ($this->isAtMaxDepth($resource->getUri())) {
             return [];

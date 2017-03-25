@@ -3,6 +3,7 @@ namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Spider\Discoverer\AlreadySeenUris;
 
 /**
  * @author matthijs
