@@ -18,7 +18,7 @@ use GuzzleHttp\Middleware;
 require_once('example_complex_bootstrap.php');
 
 // The URI we want to start crawling with
-$seed = 'http://www.dmoz.org/Computers/Internet/';
+$seed = 'http://dmoztools.net/Computers/Internet/';
 
 // We want to allow all subdomains of dmoz.org
 $allowSubDomains = true;
