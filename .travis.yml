@@ -10,7 +10,6 @@ language: php
 php:
   - 7.0
   - 5.6
-  - 5.5
 
 matrix:
   fast_finish: true
@@ -32,7 +31,7 @@ install:
   - mkdir -p build/logs
 
 script:
-  - phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
 
 after_success:
   - travis_retry wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.0/coveralls.phar

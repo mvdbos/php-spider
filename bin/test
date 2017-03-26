@@ -5,7 +5,7 @@ find src/ -iname "*.php" -print0 | xargs -0 -n1 php -l 1>/dev/null || exit $?
 echo -e "\nPHPLINT tests/:"
 find tests/ -iname "*.php" -print0 | xargs -0 -n1 php -l 1>/dev/null || exit $?
 echo -e "\nPHPUNIT:"
-phpunit --stop-on-error --stop-on-failure --report-useless-tests --colors=auto || exit $?
+composer exec -- phpunit --stop-on-error --stop-on-failure --report-useless-tests --colors=auto || exit $?
 echo -e "\nPHPCS src/:"
 phpcs --warning-severity=0 --standard=PSR2 src/ || exit $?
 echo -e "\nPHPCS tests/:"

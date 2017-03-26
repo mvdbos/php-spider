@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 tmpfile="./.tmp/code-coverage"
-phpunit --colors=auto --coverage-html="$tmpfile" --coverage-text
+composer exec -- phpunit --colors=auto --coverage-html="$tmpfile" --coverage-text
