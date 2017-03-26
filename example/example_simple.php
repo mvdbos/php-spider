@@ -9,7 +9,7 @@ use VDB\Spider\Spider;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Create Spider
-$spider = new Spider('http://www.dmoz.org');
+$spider = new Spider('http://dmoztools.net');
 
 // Add a URI discoverer. Without it, the spider does nothing. In this case, we want <a> tags from a certain <div>
 $spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
