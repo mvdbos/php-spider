@@ -46,12 +46,8 @@ class Spider
     public function __construct($seed, $spiderId = null)
     {
         $this->setSeed($seed);
-        if (null !== $spiderId) {
-            $this->spiderId = $spiderId;
-        } else {
-            $this->spiderId = md5($seed . microtime(true));
-        }
-
+        $this->spiderId = (null !== $spiderId)? $spiderId : md5($seed . microtime(true));
+        
         // This makes the spider handle signals gracefully and allows us to do cleanup
         if (php_sapi_name() == 'cli') {
             declare (ticks = 1);
