@@ -112,6 +112,7 @@ class Spider
     {
         if (!$this->queueManager) {
             $this->queueManager = new InMemoryQueueManager();
+            $this->queueManager->setDispatcher($this->getDispatcher());
         }
 
         return $this->queueManager;
@@ -135,6 +136,7 @@ class Spider
     {
         if (!$this->downloader) {
             $this->downloader = new Downloader();
+            $this->downloader->setDispatcher($this->getDispatcher());
         }
         return $this->downloader;
     }

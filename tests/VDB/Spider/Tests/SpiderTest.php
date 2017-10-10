@@ -329,4 +329,30 @@ class SpiderTest extends TestCase
 
         $this->assertCount(0, $this->spider->getDownloader()->getPersistenceHandler(), 'Persisted count');
     }
+
+    /**
+     * @covers VDB\Spider\Spider
+     * @covers VDB\Spider\Downloader\Downloader::getDispatcher
+     */
+    public function testDownloaderEventDispatcher()
+    {
+        $this->assertSame(
+            $this->spider->getDispatcher(),
+            $this->spider->getDownloader()->getDispatcher(),
+            'Default Spider dispatcher is the same as default Downloader dispatcher'
+        );
+    }
+
+    /**
+     * @covers VDB\Spider\Spider
+     * @covers VDB\Spider\QueueManager\InMemoryQueueManager::getDispatcher
+     */
+    public function testQueueManagerEventDispatcher()
+    {
+        $this->assertSame(
+            $this->spider->getDispatcher(),
+            $this->spider->getQueueManager()->getDispatcher(),
+            'Default Spider dispatcher is the same as default Queue manager dispatcher'
+        );
+    }
 }
