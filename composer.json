@@ -20,7 +20,7 @@
         "symfony/css-selector": "^3.0.0",
         "symfony/dom-crawler": "^3.0.0",
         "symfony/finder": "^3.0.0",
-        "symfony/event-dispatcher": "^3.0.0",
+        "symfony/event-dispatcher": "^4.0.0",
         "vdb/uri": "^0.2"
     },
     "require-dev": {
