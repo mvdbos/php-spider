@@ -1,5 +1,5 @@
 {
-    "name": "mvdbos/php-spider",
+    "name": "vdb/php-spider",
     "type": "application",
     "description": "A configurable and extensible PHP web spider",
     "keywords": ["spider", "crawler", "scraper"],
