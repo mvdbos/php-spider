@@ -1,5 +1,5 @@
 {
-    "name": "vdb/php-spider",
+    "name": "lunardevelopment/php-spider",
     "type": "application",
     "description": "A configurable and extensible PHP web spider",
     "keywords": ["spider", "crawler", "scraper"],
