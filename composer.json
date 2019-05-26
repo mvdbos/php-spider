@@ -17,10 +17,10 @@
     "require": {
         "php": ">=5.5.0",
         "guzzlehttp/guzzle": "^6.0.0",
-        "symfony/css-selector": "^3.0.0|^4.0",
-        "symfony/dom-crawler": "^3.0.0|^4.0",
-        "symfony/finder": "^3.0.0|^4.0",
-        "symfony/event-dispatcher": "^3.0.0|^4.0",
+        "symfony/css-selector": "^3.0.0,^4.0",
+        "symfony/dom-crawler": "^3.0.0,^4.0",
+        "symfony/finder": "^3.0.0,^4.0",
+        "symfony/event-dispatcher": "^3.0.0,^4.0",
         "vdb/uri": "^0.2"
     },
     "require-dev": {
