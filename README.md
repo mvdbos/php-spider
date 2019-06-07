@@ -84,7 +84,7 @@ There a few requirements for a Pull Request to be accepted:
 - Follow the coding standards: PHP-Spider follows the coding standards defined in the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) Coding Style Guides;
 - Prove that the code works with unit tests;
 
-> Note: An easy way to check if your code conforms to PHP-Spider is by running [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffe/) on your local code. Please make sure you use the PSR-2 standard: `--standard=PSR2`
+> Note: An easy way to check if your code conforms to PHP-Spider is by running [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/) on your local code. Please make sure you use the PSR-2 standard: `--standard=PSR2`
 
 Support
 -------
