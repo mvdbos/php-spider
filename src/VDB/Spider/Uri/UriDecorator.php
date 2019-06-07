@@ -126,5 +126,5 @@ abstract class UriDecorator implements UriInterface
         return $this->decorated->getFragment();
     }
 
-   // @codeCoverageIgnoreEnd
+    // @codeCoverageIgnoreEnd
 }

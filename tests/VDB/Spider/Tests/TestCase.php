@@ -16,10 +16,12 @@ use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+
 /**
  *
  */
-class TestCase extends \PHPUnit_Framework_TestCase
+class TestCase extends PHPUnitTestCase
 {
     /**
      * @param DiscoveredUri $uri

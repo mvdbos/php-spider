@@ -27,7 +27,7 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     protected $persistenceRootPath;
 
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
         exec('rm -rf ' . $this->persistenceRootPath);

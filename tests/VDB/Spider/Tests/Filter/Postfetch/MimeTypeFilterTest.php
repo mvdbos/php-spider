@@ -26,7 +26,7 @@ class MimeTypeFilterTest extends TestCase
     /** @var DiscoveredUri */
     protected $uri;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'));
 

@@ -37,7 +37,7 @@ abstract class DiscovererTestCase extends TestCase
 
     protected $uriInBody1;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->uriInBody1 = 'http://php-spider.org/contact/';
 

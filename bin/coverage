@@ -1,4 +1,10 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+
+# Go to the root dir so configs and vendor dir is found
+cd $(git rev-parse --show-toplevel)
 
 tmpfile="./.tmp/code-coverage"
-composer exec -- phpunit --colors=auto --coverage-html="$tmpfile" --coverage-text
+tmpfile_php="./.tmp/code-coverage_php"
+
+./vendor/bin/phpunit --colors=auto --coverage-php "$tmpfile_php" --coverage-html="$tmpfile" --coverage-text

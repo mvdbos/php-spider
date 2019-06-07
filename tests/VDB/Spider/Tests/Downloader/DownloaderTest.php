@@ -39,7 +39,7 @@ class DownloaderTest extends TestCase
      */
     protected $html;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
         $this->resource = new Resource(

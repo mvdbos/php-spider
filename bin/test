@@ -1,22 +1,26 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+# Go to the root dir first, so configs and vendor dir is found
+cd $(git rev-parse --show-toplevel)
 
 echo -e "\nPHPLINT src/:"
 find src/ -iname "*.php" -print0 | xargs -0 -n1 php -l 1>/dev/null || exit $?
 echo -e "\nPHPLINT tests/:"
 find tests/ -iname "*.php" -print0 | xargs -0 -n1 php -l 1>/dev/null || exit $?
 echo -e "\nPHPUNIT:"
-composer exec -- phpunit --stop-on-error --stop-on-failure --report-useless-tests --colors=auto || exit $?
+./vendor/bin/phpunit --stop-on-error --stop-on-failure --colors=auto || exit $?
 echo -e "\nPHPCS src/:"
-phpcs --warning-severity=0 --standard=PSR2 src/ || exit $?
+./vendor/bin/phpcs --warning-severity=0 --standard=PSR2 src/ || exit $?
 echo -e "\nPHPCS tests/:"
-phpcs --warning-severity=0 --standard=PSR2 tests/ || exit $?
+./vendor/bin/phpcs --warning-severity=0 --standard=PSR2 tests/ || exit $?
 echo -e "\nPHPMD src/:"
-phpmd src/ text phpmd.xml || exit $?
+./vendor/bin/phpmd src/ text phpmd.xml || exit $?
 echo -e "\nPHPMD tests/:"
-phpmd tests/ text phpmd-tests.xml || exit $?
+./vendor/bin/phpmd tests/ text phpmd-tests.xml || exit $?
 echo -e "\nPHPCPD src/:"
-phpcpd --min-lines=7 --min-tokens=30  --fuzzy -v src/ || exit $?
+./vendor/bin/phpcpd --min-lines=7 --min-tokens=30  --fuzzy -v src/ || exit $?
 echo -e "\nPHPCPD tests/:"
-phpcpd --min-lines=7 --min-tokens=30  --fuzzy tests/ #|| exit $?
+./vendor/bin/phpcpd --min-lines=7 --min-tokens=30  --fuzzy tests/ || exit $?
 
-echo "\n\n All Done, no failures.\n"
+
+echo -e "\n\n All Done, no failures.\n"

@@ -83,7 +83,7 @@ class SpiderTest extends TestCase
      *
      * Note: E links to F.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->spider = new Spider('http://php-spider.org/A');
 

@@ -9,3 +9,5 @@ example/results
 .DS_Store
 cache.properties
 .tmp
+.phpunit.result.cache
+.php_cs.cache

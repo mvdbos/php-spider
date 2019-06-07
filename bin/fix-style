@@ -1,6 +1,8 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+cd $(git rev-parse --show-toplevel)
 
 echo -e "\nPHPCBF"
-phpcbf --standard=PSR2 tests/ src/
+./vendor/bin/phpcbf --standard=PSR2 tests/ src/
 echo -e "\nPHP-CS-FIXER"
-php-cs-fixer fix --verbose
+./vendor/bin/php-cs-fixer fix --verbose

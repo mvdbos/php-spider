@@ -20,7 +20,7 @@ class ResourceTest extends TestCase
      */
     protected $html;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
         $this->resource = new Resource(

@@ -26,7 +26,7 @@ class DiscovererSetTest extends DiscovererTestCase
     private $discovererSet;
 
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
     }
