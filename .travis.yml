@@ -8,8 +8,9 @@ cache:
 
 language: php
 php:
-  - 7.0
-  - 5.6
+  - 7.3
+  - 7.2
+  - 7.1
 
 matrix:
   fast_finish: true
@@ -22,7 +23,6 @@ branches:
 before_install:
   # Disable XDebug speeds up composer 
   - phpenv config-rm xdebug.ini || return 0
-  - composer config -g github-oauth.github.com $GITHUB_ACCESS_TOKEN
 
 install:
   - travis_retry composer install --no-interaction --prefer-dist --ignore-platform-reqs

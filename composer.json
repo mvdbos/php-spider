@@ -15,7 +15,7 @@
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=7.1",
         "guzzlehttp/guzzle": "^6.0.0",
         "symfony/css-selector": "^3.0.0",
         "symfony/dom-crawler": "^3.0.0",
