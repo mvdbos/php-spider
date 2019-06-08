@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+
+<?php
+
+if ($argc < 2 || !is_numeric($argv[1])) {
+    exit("Usage: coverage-enforce <percentage> (e.g. 80)\n");
+}
+
+$requiredLineCoverage = floatval($argv[1]);
+
+chdir(realpath(dirname(__FILE__) . '/../'));
+
+print getcwd();
+require './vendor/autoload.php';
+
+$temp_file = tempnam(sys_get_temp_dir(), 'coverage-php');
+passthru("./vendor/bin/phpunit --colors=auto --coverage-php '{$temp_file}' --coverage-text", $status);
+if ($status != 0) exit($status);
+
+$coverage = require_once($temp_file);
+$report = $coverage->getReport();
+$percentage = round(($report->getNumExecutedLines() / $report->getNumExecutableLines()) * 100, 2);
+
+print "\nLine Coverage: " . $percentage . "%";
+if ($percentage < $requiredLineCoverage) {
+    print "\n\nTOO LOW: should be >= " . $requiredLineCoverage . "%\n";
+    exit(1);
+} else {
+    print "\n\nOK\n";
+    exit(0);
+}
