@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Go to the root dir first, so configs and vendor dir is found
+cd $(git rev-parse --show-toplevel)
+
+savedOutput=""
+
+error () {
+    local status=$1
+    echo -e "\e[0;37;41mNOK\e[0m"
+    echo -e "${savedOutput}\n"
+#    exit ${status}
+}
+
+success () {
+    echo -e "\e[0;30;42mOK\e[0m"
+}
+
+runCheck () {
+    local label=$1
+    local command=$2
+
+    echo -en "\e[0;37m- $(padTo "${label}" 25): \e[0m"
+    savedOutput=$(eval "${command}") && success || error $?
+}
+
+padTo () {
+    local string=$1
+    local targetLen=$2
+
+    len=$(echo -n "${string}" | wc -c)
+    while [[ ${len} -lt ${targetLen} ]];
+    do
+        string=${string}"."
+        let len=len+1
+    done
+    echo ${string}
+}
+
+echo -en "\n\e[0;37m############################\e[0m"
+echo -en "\n\e[0;37m# Starting static analysis #\e[0m"
+echo -e "\n\e[0;37m############################\e[0m\n"
+
+runCheck "php lint 'src/'"      "find src/ -iname "*.php" -print0 | xargs -0 -n1 php -l 2>&1 1>/dev/null"
+runCheck "php lint 'tests/'"   "find tests/ -iname "*.php" -print0 | xargs -0 -n1 php -l 2>&1 1>/dev/null"
+runCheck "phpcs 'src/'"        "vendor/bin/phpcs --warning-severity=0 --standard=PSR2 src/"
+runCheck "phpcs 'tests/'"      "vendor/bin/phpcs --warning-severity=0 --standard=PSR2 tests/"
+runCheck "phpmd 'src/'"        "vendor/bin/phpmd src/ text phpmd.xml"
+runCheck "phpmd 'tests/'"      "vendor/bin/phpmd tests/ text phpmd-tests.xml"
+runCheck "phpcpd 'src/'"       "vendor/bin/phpcpd --min-lines=7 --min-tokens=30  --fuzzy -v src/"
+runCheck "phpcpd 'tests/'"     "vendor/bin/phpcpd --min-lines=10 --min-tokens=100  --fuzzy tests/"
+
+echo -e "\n\n\e[0;37;42mStatic analysis completed successfully.\e[0m\n"

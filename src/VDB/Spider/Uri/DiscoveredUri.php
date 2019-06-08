@@ -1,7 +1,6 @@
 <?php
-namespace VDB\Spider\Uri;
 
-use VDB\Spider\Uri\UriDecorator;
+namespace VDB\Spider\Uri;
 
 /**
  * @author Matthijs van den Bos

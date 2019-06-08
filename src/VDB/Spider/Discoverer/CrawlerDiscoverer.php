@@ -1,14 +1,12 @@
 <?php
+
 namespace VDB\Spider\Discoverer;
 
 use Symfony\Component\DomCrawler\Crawler;
-use VDB\Spider\Discoverer\DiscovererInterface;
-use VDB\Spider\Discoverer\Discoverer;
 use VDB\Spider\Resource;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
-use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\UriInterface;
 
 /**
  * @author Matthijs van den Bos

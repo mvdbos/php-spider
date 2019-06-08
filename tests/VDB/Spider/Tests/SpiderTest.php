@@ -1,17 +1,17 @@
 <?php
+
 namespace VDB\Spider;
 
 use Exception;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
-use VDB\Spider\Tests\TestCase;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
+use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
-/**
- */
 class SpiderTest extends TestCase
 {
     /**
@@ -20,7 +20,7 @@ class SpiderTest extends TestCase
     protected $spider;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     protected $requestHandler;
 
@@ -82,6 +82,7 @@ class SpiderTest extends TestCase
      *         | _ |
      *
      * Note: E links to F.
+     * @throws UriSyntaxException
      */
     protected function setUp(): void
     {

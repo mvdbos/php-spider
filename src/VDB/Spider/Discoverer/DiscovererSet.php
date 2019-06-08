@@ -2,8 +2,8 @@
 
 namespace VDB\Spider\Discoverer;
 
-use VDB\Spider\Resource;
 use VDB\Spider\Filter\PreFetchFilterInterface;
+use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
 class DiscovererSet
@@ -92,7 +92,7 @@ class DiscovererSet
      * Sets a discoverer.
      *
      * @param discovererInterface $discoverer The discoverer instance
-     * @param string|null         $alias  An alias
+     * @param string|null $alias An alias
      */
     public function set(DiscovererInterface $discoverer, $alias = null)
     {

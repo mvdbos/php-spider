@@ -1,4 +1,5 @@
 <?php
+
 namespace VDB\Spider\EventListener;
 
 use Symfony\Component\EventDispatcher\GenericEvent;

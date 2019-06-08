@@ -8,8 +8,8 @@ namespace VDB\Spider;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use VDB\Uri\UriInterface;
 use VDB\Spider\Event\SpiderEvents;
+use VDB\Uri\UriInterface;
 
 class StatsHandler implements EventSubscriberInterface
 {

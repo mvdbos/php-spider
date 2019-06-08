@@ -1,11 +1,10 @@
 <?php
+
 namespace VDB\Spider\RequestHandler;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Message\Request;
 use GuzzleHttp\Message\RequestInterface;
-use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 

@@ -2,8 +2,8 @@
 
 namespace VDB\Spider\RequestHandler;
 
-use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Spider\Resource;
+use VDB\Spider\Uri\DiscoveredUri;
 
 interface RequestHandlerInterface
 {

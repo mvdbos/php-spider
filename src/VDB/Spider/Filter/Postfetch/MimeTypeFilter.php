@@ -1,4 +1,5 @@
 <?php
+
 namespace VDB\Spider\Filter\Postfetch;
 
 use VDB\Spider\Filter\PostFetchFilterInterface;
