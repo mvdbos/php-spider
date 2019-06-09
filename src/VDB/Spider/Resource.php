@@ -1,4 +1,5 @@
 <?php
+
 namespace VDB\Spider;
 
 use GuzzleHttp\Psr7;
@@ -25,7 +26,7 @@ class Resource
     protected $body;
 
     /**
-    * @param DiscoveredUri $uri
+     * @param DiscoveredUri $uri
      * @param ResponseInterface $response
      */
     public function __construct(DiscoveredUri $uri, ResponseInterface $response)

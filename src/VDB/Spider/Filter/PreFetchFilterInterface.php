@@ -7,7 +7,6 @@ use VDB\Uri\UriInterface;
 /**
  * @author matthijs
  */
-
 interface PreFetchFilterInterface
 {
     /**

@@ -6,8 +6,6 @@
 
 namespace VDB\Spider\PersistenceHandler;
 
-use Symfony\Component\Finder\Finder;
-use VDB\Spider\PersistenceHandler\FilePersistenceHandler;
 use VDB\Spider\Resource;
 
 class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler implements PersistenceHandlerInterface

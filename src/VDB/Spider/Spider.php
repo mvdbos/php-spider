@@ -1,4 +1,5 @@
 <?php
+
 namespace VDB\Spider;
 
 use Symfony\Component\EventDispatcher\Event;
@@ -6,14 +7,13 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererSet;
+use VDB\Spider\Downloader\Downloader;
+use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\QueueException;
-use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
+use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Spider\Downloader\DownloaderInterface;
-use VDB\Spider\Downloader\Downloader;
-use VDB\Uri\UriInterface;
 use VDB\Uri\Uri;
 
 /**
@@ -54,7 +54,7 @@ class Spider
 
         // This makes the spider handle signals gracefully and allows us to do cleanup
         if (php_sapi_name() == 'cli') {
-            declare(ticks = 1);
+            declare(ticks=1);
             if (function_exists('pcntl_signal')) {
                 pcntl_signal(SIGTERM, array($this, 'handleSignal'));
                 pcntl_signal(SIGINT, array($this, 'handleSignal'));
@@ -227,7 +227,7 @@ class Spider
      */
     private function dispatch($eventName, Event $event = null)
     {
-        $this->getDispatcher()->dispatch($eventName, $event);
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**

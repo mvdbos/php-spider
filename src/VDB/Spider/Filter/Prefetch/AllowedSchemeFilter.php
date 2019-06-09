@@ -1,4 +1,5 @@
 <?php
+
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;

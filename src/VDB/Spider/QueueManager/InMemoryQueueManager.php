@@ -6,13 +6,12 @@
 
 namespace VDB\Spider\QueueManager;
 
-use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Spider\Exception\QueueException;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\Exception\QueueException;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class InMemoryQueueManager implements QueueManagerInterface
 {
@@ -84,8 +83,8 @@ class InMemoryQueueManager implements QueueManagerInterface
         array_push($this->traversalQueue, $uri);
 
         $this->getDispatcher()->dispatch(
-            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE,
-            new GenericEvent($this, array('uri' => $uri))
+            new GenericEvent($this, array('uri' => $uri)),
+            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE
         );
     }
 

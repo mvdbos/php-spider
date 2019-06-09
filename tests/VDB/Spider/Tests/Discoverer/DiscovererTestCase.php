@@ -12,14 +12,11 @@
 namespace VDB\Spider\Tests\Discoverer;
 
 use DOMDocument;
-use DOMElement;
 use GuzzleHttp\Psr7\Response;
+use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
-use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Spider\Discoverer\DiscovererInterface;
-use VDB\Uri\Uri;
 
 abstract class DiscovererTestCase extends TestCase
 {
@@ -42,7 +39,7 @@ abstract class DiscovererTestCase extends TestCase
         $this->uriInBody1 = 'http://php-spider.org/contact/';
 
         // Setup DOM
-        $this->domDocument = new \DOMDocument('1', 'UTF-8');
+        $this->domDocument = new DOMDocument('1', 'UTF-8');
 
         $html = $this->domDocument->createElement('html');
         $this->domAnchor = $this->domDocument->createElement('a', 'fake');

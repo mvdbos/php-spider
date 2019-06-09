@@ -2,17 +2,16 @@
 
 namespace VDB\Spider\Downloader;
 
-use VDB\Spider\Downloader\DownloaderInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
 use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\RequestHandler\GuzzleRequestHandler;
 use VDB\Spider\RequestHandler\RequestHandlerInterface;
-use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
@@ -92,7 +91,7 @@ class Downloader implements DownloaderInterface
      */
     private function dispatch($eventName, Event $event = null)
     {
-        $this->getDispatcher()->dispatch($eventName, $event);
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**

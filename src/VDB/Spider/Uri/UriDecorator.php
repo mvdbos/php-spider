@@ -2,8 +2,8 @@
 
 namespace VDB\Spider\Uri;
 
-use VDB\Uri\UriInterface;
 use VDB\Uri\Uri;
+use VDB\Uri\UriInterface;
 
 abstract class UriDecorator implements UriInterface
 {

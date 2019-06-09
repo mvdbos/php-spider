@@ -20,18 +20,11 @@ branches:
     - master
 
 before_install:
-  # Disable XDebug speeds up composer 
-  - phpenv config-rm xdebug.ini || return 0
+  - mkdir -p build/coverage
 
 install:
   - travis_retry composer install --no-interaction --prefer-dist --ignore-platform-reqs
-  # Re-enable XDebug for phpunit code coverage
-  - echo "zend_extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - mkdir -p build/logs
 
 script:
-  - vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
-
-after_success:
-  - travis_retry wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.0/coveralls.phar
-  - travis_retry php coveralls.phar -v
+  - bin/static-analysis
+  - bin/coverage-enforce 60
