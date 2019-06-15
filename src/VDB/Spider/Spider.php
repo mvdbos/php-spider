@@ -227,7 +227,7 @@ class Spider
      */
     private function dispatch($eventName, Event $event = null)
     {
-        $this->getDispatcher()->dispatch($event, $eventName);
+        $this->getDispatcher()->dispatch($eventName, $event);
     }
 
     /**

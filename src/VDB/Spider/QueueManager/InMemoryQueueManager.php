@@ -72,6 +72,7 @@ class InMemoryQueueManager implements QueueManagerInterface
 
     /**
      * @param DiscoveredUri
+     * @throws QueueException
      */
     public function addUri(DiscoveredUri $uri)
     {
@@ -83,8 +84,8 @@ class InMemoryQueueManager implements QueueManagerInterface
         array_push($this->traversalQueue, $uri);
 
         $this->getDispatcher()->dispatch(
-            new GenericEvent($this, array('uri' => $uri)),
-            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE
+            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE,
+            new GenericEvent($this, array('uri' => $uri))
         );
     }
 
