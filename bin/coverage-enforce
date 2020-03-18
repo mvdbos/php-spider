@@ -15,6 +15,9 @@ print "\n\e[0;37m# Starting Unit Tests with code coverage. Requirement: {$requir
 print "\n\e[0;37m############################################################\n\n\e[0m";
 
 chdir(realpath(dirname(__FILE__) . '/../'));
+if (!file_exists("./build/coverage")) {
+    mkdir("./build/coverage/", 0777, true);
+}
 require './vendor/autoload.php';
 
 passthru("./vendor/bin/phpunit --colors=always --coverage-php build/coverage/coverage.php", $status);
