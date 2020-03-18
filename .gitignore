@@ -11,3 +11,4 @@ cache.properties
 .tmp
 .phpunit.result.cache
 .php_cs.cache
+composer.phar
