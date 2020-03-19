@@ -26,6 +26,9 @@ abstract class DiscovererTestCase extends TestCase
     /** @var \DomElement */
     protected $domAnchor;
 
+    /** @var \DomElement */
+    protected $domAnchor2;
+
     /** @var Resource */
     protected $spiderResource;
 
@@ -33,26 +36,31 @@ abstract class DiscovererTestCase extends TestCase
     protected $uri;
 
     protected $uriInBody1;
+    protected $uriInBody2;
 
     protected function setUp(): void
     {
         $this->uriInBody1 = 'http://php-spider.org/contact/';
+        $this->uriInBody2 = 'http://php-spider.org:8080/internal/';
 
         // Setup DOM
         $this->domDocument = new DOMDocument('1', 'UTF-8');
 
         $html = $this->domDocument->createElement('html');
+        $this->domDocument->appendChild($html);
+
         $this->domAnchor = $this->domDocument->createElement('a', 'fake');
         $this->domAnchor->setAttribute('href', $this->uriInBody1);
-
-        $this->domDocument->appendChild($html);
         $html->appendChild($this->domAnchor);
 
-        $this->uri = new DiscoveredUri('http://php-spider.org/');
+        $this->domAnchor2 = $this->domDocument->createElement('a', 'fake2');
+        $this->domAnchor2->setAttribute('href', $this->uriInBody2);
+        $html->appendChild($this->domAnchor2);
 
         // Setup Spider\Resource
         $content = $this->domDocument->saveHTML();
 
+        $this->uri = new DiscoveredUri('http://php-spider.org/');
         $this->spiderResource = new Resource(
             $this->uri,
             new Response(200, [], $content)

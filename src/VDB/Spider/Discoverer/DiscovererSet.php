@@ -80,6 +80,9 @@ class DiscovererSet
         $this->filterAlreadySeen($discoveredUris);
         $this->filter($discoveredUris);
 
+        // reset the indexes of the discovered URIs after filtering
+        $discoveredUris = array_values($discoveredUris);
+
         foreach ($discoveredUris as $uri) {
             $uri->setDepthFound($resource->getUri()->getDepthFound() + 1);
             $this->markSeen($uri);
@@ -133,6 +136,7 @@ class DiscovererSet
     }
 
     /**
+     * Filter out any URI that matches any of the filters
      * @param UriInterface[] $discoveredUris
      */
     private function filter(array &$discoveredUris)
