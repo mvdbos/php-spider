@@ -4,8 +4,8 @@ namespace VDB\Spider\Downloader;
 
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;

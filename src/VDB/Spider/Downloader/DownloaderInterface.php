@@ -29,12 +29,17 @@ interface DownloaderInterface
     /**
      * @return int Maximum number of resources to download
      */
-    public function getdownloadLimit();
+    public function getDownloadLimit();
 
     /**
      * @return RequestHandlerInterface
      */
     public function getRequestHandler();
+
+    /**
+     * @param RequestHandlerInterface $requestHandler
+     */
+    public function setRequestHandler(RequestHandlerInterface $requestHandler);
 
     /**
      * @return PersistenceHandlerInterface

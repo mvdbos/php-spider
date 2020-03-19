@@ -1,5 +1,7 @@
 <?php
 
+use Example\LogHandler;
+use GuzzleHttp\Middleware;
 use Symfony\Component\EventDispatcher\Event;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Event\SpiderEvents;
@@ -11,9 +13,13 @@ use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
 use VDB\Spider\StatsHandler;
-use Example\LogHandler;
-use GuzzleHttp\Middleware;
 
+/*
+ * This example is almost identical to example_complex, with one big difference:
+ * We set a custom request handler that does not throw exceptions on failed requests.
+ * This way, failed requests with their status code are also persisted.
+ * That means we can then use the spider as a link checker.
+ */
 
 require_once('example_complex_bootstrap.php');
 
@@ -26,6 +32,9 @@ $allowSubDomains = true;
 // Create spider
 $spider = new Spider($seed);
 $spider->getDownloader()->setDownloadLimit(10);
+
+// Set a custom request handler that does not throw exceptions on failed requests
+$spider->getDownloader()->setRequestHandler(new \Example\LinkCheckRequestHandler());
 
 $statsHandler = new StatsHandler();
 $LogHandler = new LogHandler();
@@ -44,7 +53,8 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
+//$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
@@ -53,7 +63,8 @@ $spider->getDownloader()->setPersistenceHandler(
 
 // Add some prefetch filters. These are executed before a resource is requested.
 // The more you have of these, the less HTTP requests and work for the processors
-$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
+//$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
+$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('https', 'http')));
 $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
@@ -115,6 +126,8 @@ echo "\n  PROCESSING TIME:      " . ($totalTime - $timerMiddleware->getTotal() -
 // Finally we could start some processing on the downloaded resources
 echo "\n\nDOWNLOADED RESOURCES: ";
 $downloaded = $spider->getDownloader()->getPersistenceHandler();
+
+/** @var \VDB\Spider\Resource $resource */
 foreach ($downloaded as $resource) {
     $title = $resource->getCrawler()->filterXpath('//title')->text();
     $contentLength = (int)$resource->getResponse()->getHeaderLine('Content-Length');
