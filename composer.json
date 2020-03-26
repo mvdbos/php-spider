@@ -20,7 +20,7 @@
         "guzzlehttp/guzzle": "^6.0.0",
         "symfony/css-selector": "^3.0.0||^4.0.0",
         "symfony/dom-crawler": "^3.0.0||^4.0.0",
-        "symfony/finder": "^3.0.0||^4.0.0",
+        "symfony/finder": "^5.0.0",
         "symfony/event-dispatcher": "^5.0.0",
         "vdb/uri": "^0.2.1"
     },

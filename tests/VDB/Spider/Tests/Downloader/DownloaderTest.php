@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Downloader;
 
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Downloader\DownloaderInterface;
@@ -76,7 +77,7 @@ class DownloaderTest extends TestCase
         $requestHandler
             ->expects($this->any())
             ->method('request')
-            ->will($this->throwException(new \Exception));
+            ->will($this->throwException(new Exception));
         $this->downloader->setRequestHandler($requestHandler);
 
         $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));

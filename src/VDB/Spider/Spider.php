@@ -2,7 +2,7 @@
 
 namespace VDB\Spider;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -168,7 +168,7 @@ class Spider
             case SIGKILL:
             case SIGINT:
             case SIGQUIT:
-                $this->dispatch(SpiderEvents::SPIDER_CRAWL_USER_STOPPED);
+                $this->dispatch(null, SpiderEvents::SPIDER_CRAWL_USER_STOPPED);
         }
     }
 
@@ -201,8 +201,8 @@ class Spider
             }
 
             $this->dispatch(
-                SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED,
-                new GenericEvent($this, array('uri' => $currentUri))
+                new GenericEvent($this, array('uri' => $currentUri)),
+                SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED
             );
 
             // Once the document is enqueued, apply the discoverers to look for more links to follow
@@ -222,12 +222,12 @@ class Spider
     /**
      * A shortcut for EventDispatcher::dispatch()
      *
-     * @param string $eventName
      * @param null|Event $event
+     * @param string $eventName
      */
-    private function dispatch($eventName, Event $event = null)
+    private function dispatch(Event $event = null, $eventName)
     {
-        $this->getDispatcher()->dispatch($eventName, $event);
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**

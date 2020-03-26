@@ -2,7 +2,7 @@
 
 namespace VDB\Spider\Downloader;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -86,12 +86,12 @@ class Downloader implements DownloaderInterface
     /**
      * A shortcut for EventDispatcher::dispatch()
      *
-     * @param string $eventName
      * @param null|Event $event
+     * @param string $eventName
      */
-    private function dispatch($eventName, Event $event = null)
+    private function dispatch(Event $event = null, $eventName)
     {
-        $this->getDispatcher()->dispatch($eventName, $event);
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**
@@ -113,6 +113,7 @@ class Downloader implements DownloaderInterface
         if (!$this->dispatcher) {
             $this->dispatcher = new EventDispatcher();
         }
+
         return $this->dispatcher;
     }
 
@@ -125,17 +126,20 @@ class Downloader implements DownloaderInterface
     {
         $resource = false;
 
-        $this->dispatch(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, new GenericEvent($this, array('uri' => $uri)));
+        $this->dispatch(new GenericEvent($this, array('uri' => $uri)), SpiderEvents::SPIDER_CRAWL_PRE_REQUEST);
 
         try {
             $resource = $this->getRequestHandler()->request($uri);
         } catch (\Exception $e) {
             $this->dispatch(
-                SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST,
-                new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage()))
+                new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage())),
+                SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST
             );
         } finally {
-            $this->dispatch(SpiderEvents::SPIDER_CRAWL_POST_REQUEST, new GenericEvent($this, array('uri' => $uri)));
+            $this->dispatch(
+                new GenericEvent($this, array('uri' => $uri)),
+                SpiderEvents::SPIDER_CRAWL_POST_REQUEST
+            );
         }
 
         return $resource;
@@ -150,8 +154,8 @@ class Downloader implements DownloaderInterface
         foreach ($this->postFetchFilters as $filter) {
             if ($filter->match($resource)) {
                 $this->dispatch(
-                    SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH,
-                    new GenericEvent($this, array('uri' => $resource->getUri()))
+                    new GenericEvent($this, array('uri' => $resource->getUri())),
+                    SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH
                 );
                 return true;
             }
