@@ -2,10 +2,10 @@
 
 namespace VDB\Spider;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Downloader\DownloaderInterface;
@@ -222,10 +222,10 @@ class Spider
     /**
      * A shortcut for EventDispatcher::dispatch()
      *
-     * @param null|Event $event
+     * @param Event $event
      * @param string $eventName
      */
-    private function dispatch(Event $event = null, $eventName)
+    private function dispatch(Event $event, $eventName)
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
