@@ -1,6 +1,8 @@
 <?php
 
-use Symfony\Contracts\EventDispatcher\Event;
+use Example\LogHandler;
+use GuzzleHttp\Middleware;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
@@ -11,8 +13,6 @@ use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
 use VDB\Spider\StatsHandler;
-use Example\LogHandler;
-use GuzzleHttp\Middleware;
 
 
 require_once('example_complex_bootstrap.php');
@@ -71,7 +71,7 @@ $spider->getDispatcher()->addSubscriber($LogHandler);
 // Let's add something to enable us to stop the script
 $spider->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_USER_STOPPED,
-    function (Event $event) {
+    function (GenericEvent $event) {
         echo "\nCrawl aborted by user.\n";
         exit();
     }
@@ -81,7 +81,7 @@ $spider->getDispatcher()->addListener(
 echo "\nCrawling";
 $spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_POST_REQUEST,
-    function (Event $event) {
+    function (GenericEvent $event) {
         echo '.';
     }
 );
