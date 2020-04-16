@@ -14,7 +14,7 @@ use VDB\Spider\Exception\QueueException;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
+use VDB\Uri\Http;
 
 /**
  *
@@ -235,7 +235,8 @@ class Spider
      */
     private function setSeed($uri)
     {
-        $this->seed = new DiscoveredUri(new Uri($uri));
+        $seed = new Http($uri);
+        $this->seed = new DiscoveredUri($seed->normalize());
         $this->seed->setDepthFound(0);
     }
 }

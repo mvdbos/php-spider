@@ -10,6 +10,7 @@ use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
+use VDB\Uri\Http;
 use VDB\Uri\Uri;
 
 class SpiderTest extends TestCase
@@ -98,13 +99,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new DiscoveredUri(new Uri($this->hrefA));
-        $this->linkB = new DiscoveredUri(new Uri($this->hrefB));
-        $this->linkC = new DiscoveredUri(new Uri($this->hrefC));
-        $this->linkD = new DiscoveredUri(new Uri($this->hrefD));
-        $this->linkE = new DiscoveredUri(new Uri($this->hrefE));
-        $this->linkF = new DiscoveredUri(new Uri($this->hrefF));
-        $this->linkG = new DiscoveredUri(new Uri($this->hrefG));
+        $this->linkA = new DiscoveredUri(new Http($this->hrefA));
+        $this->linkB = new DiscoveredUri(new Http($this->hrefB));
+        $this->linkC = new DiscoveredUri(new Http($this->hrefC));
+        $this->linkD = new DiscoveredUri(new Http($this->hrefD));
+        $this->linkE = new DiscoveredUri(new Http($this->hrefE));
+        $this->linkF = new DiscoveredUri(new Http($this->hrefF));
+        $this->linkG = new DiscoveredUri(new Http($this->hrefG));
 
         $this->linkA->setDepthFound(0);
         $this->linkB->setDepthFound(1);

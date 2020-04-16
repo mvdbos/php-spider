@@ -53,7 +53,7 @@ $spider->getDownloader()->setPersistenceHandler(
 
 // Add some prefetch filters. These are executed before a resource is requested.
 // The more you have of these, the less HTTP requests and work for the processors
-$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
+$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http', 'https')));
 $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());

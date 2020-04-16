@@ -6,6 +6,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
+use VDB\Uri\Http;
 use VDB\Uri\Uri;
 
 /**
@@ -41,7 +42,13 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
         $uris = array();
         foreach ($crawler as $node) {
             try {
-                $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
+                $href = $node->getAttribute('href');
+
+                if (substr($href, 0, 4) === "http") {
+                    $uris[] = new DiscoveredUri(new Http($node->getAttribute('href'), $resource->getUri()->toString()));
+                } else {
+                    $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
+                }
             } catch (UriSyntaxException $e) {
                 // do nothing. We simply ignore invalid URI's
             }
