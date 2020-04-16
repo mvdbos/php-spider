@@ -1,7 +1,7 @@
 <?php
 
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\StatsHandler;
 use VDB\Spider\Spider;

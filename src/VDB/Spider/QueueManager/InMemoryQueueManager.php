@@ -6,6 +6,7 @@
 
 namespace VDB\Spider\QueueManager;
 
+use LogicException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -84,8 +85,8 @@ class InMemoryQueueManager implements QueueManagerInterface
         array_push($this->traversalQueue, $uri);
 
         $this->getDispatcher()->dispatch(
-            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE,
-            new GenericEvent($this, array('uri' => $uri))
+            new GenericEvent($this, array('uri' => $uri)),
+            SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE
         );
     }
 
@@ -96,7 +97,7 @@ class InMemoryQueueManager implements QueueManagerInterface
         } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
             return array_shift($this->traversalQueue);
         } else {
-            throw new \LogicException('No search algorithm set');
+            throw new LogicException('No search algorithm set');
         }
     }
 }

@@ -36,4 +36,3 @@ class AllowedPortsFilterTest extends TestCase
         $this->assertTrue($filter->match($uri3));
     }
 }
-
