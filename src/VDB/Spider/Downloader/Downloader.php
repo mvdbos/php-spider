@@ -2,7 +2,6 @@
 
 namespace VDB\Spider\Downloader;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -86,10 +85,10 @@ class Downloader implements DownloaderInterface
     /**
      * A shortcut for EventDispatcher::dispatch()
      *
-     * @param null|Event $event
+     * @param GenericEvent $event
      * @param string $eventName
      */
-    private function dispatch(Event $event = null, $eventName)
+    private function dispatch(GenericEvent $event, $eventName)
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
