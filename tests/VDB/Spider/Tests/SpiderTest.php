@@ -3,6 +3,7 @@
 namespace VDB\Spider;
 
 use Exception;
+use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -166,7 +167,7 @@ class SpiderTest extends TestCase
             return $this->getResource($link, $this->linkToResponseMap[$link->toString()]);
         }
 
-        throw new \ErrorException('The requested URI was not stubbed: ' . $link->toString());
+        throw new ErrorException('The requested URI was not stubbed: ' . $link->toString());
     }
 
     /**

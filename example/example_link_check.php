@@ -2,7 +2,7 @@
 
 use Example\LogHandler;
 use GuzzleHttp\Middleware;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
@@ -82,7 +82,7 @@ $spider->getDispatcher()->addSubscriber($LogHandler);
 // Let's add something to enable us to stop the script
 $spider->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_USER_STOPPED,
-    function (Event $event) {
+    function (GenericEvent $event) {
         echo "\nCrawl aborted by user.\n";
         exit();
     }
@@ -92,7 +92,7 @@ $spider->getDispatcher()->addListener(
 echo "\nCrawling";
 $spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_POST_REQUEST,
-    function (Event $event) {
+    function (GenericEvent $event) {
         echo '.';
     }
 );
