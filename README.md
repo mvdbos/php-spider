@@ -3,6 +3,7 @@
 [![Total Downloads](https://poser.pugx.org/vdb/php-spider/downloads)](https://packagist.org/packages/vdb/php-spider)
 [![License](https://poser.pugx.org/vdb/php-spider/license)](https://packagist.org/packages/vdb/php-spider)
 
+> Backwards compatibility break: since v0.5.0, Symfony EventDispatcher v3 is no longer supported and PHP Spider requires v4 or v5. This is because of a BC break in the EventDispatcheri v5, which we need to support to keep up with modern frameworks.
 
 PHP-Spider Features
 ======
@@ -12,14 +13,13 @@ PHP-Spider Features
 - comes with a useful set of URI filters, such as Domain limiting
 - supports custom URI filters, both prefetch (URI) and postfetch (Resource content)
 - supports custom request handling logic
-- comes with a useful set of persistence handlers (memory, file. Redis soon to follow)
+- comes with a useful set of persistence handlers (memory, file)
 - supports custom persistence handlers
 - collects statistics about the crawl for reporting
 - dispatches useful events, allowing developers to add even more custom behavior
 - supports a politeness policy
-- will soon come with many default discoverers: RSS, Atom, RDF, etc.
-- will soon support multiple queueing mechanisms (file, memcache, redis)
-- will eventually support distributed spidering with a central queue
+
+This Spider does not support Javascript.
 
 Installation
 ------------
@@ -79,9 +79,11 @@ The Symfony documentation contains an excellent guide for how to do that properl
 
 There a few requirements for a Pull Request to be accepted:
 - Follow the coding standards: PHP-Spider follows the coding standards defined in the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) Coding Style Guides;
-- Prove that the code works with unit tests;
+- Prove that the code works with unit tests and that coverage remains above 60%;
 
-> Note: An easy way to check if your code conforms to PHP-Spider is by running [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/) on your local code. Please make sure you use the PSR-2 standard: `--standard=PSR2`
+> Note: An easy way to check if your code conforms to PHP-Spider is by running the script `bin/static-analysis`, which is part of this repo. This will run the following tools, configured for PHP-Spider: PHP CodeSniffer, PHP Mess Detector and PHP Copy/Paste Detector.  
+
+> Note: To run PHPUnit with coverage, and to check that coverage >= 60%, you can run `bin/coverage-enforce 60`.
 
 Support
 -------
