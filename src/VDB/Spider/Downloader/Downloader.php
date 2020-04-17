@@ -2,6 +2,7 @@
 
 namespace VDB\Spider\Downloader;
 
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -63,8 +64,9 @@ class Downloader implements DownloaderInterface
      */
     public function download(DiscoveredUri $uri)
     {
-        // Fetch the document
-        if (!$resource = $this->fetchResource($uri)) {
+        $resource = $this->fetchResource($uri);
+
+        if (!$resource) {
             return false;
         }
 
@@ -129,7 +131,7 @@ class Downloader implements DownloaderInterface
 
         try {
             $resource = $this->getRequestHandler()->request($uri);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatch(
                 new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage())),
                 SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST

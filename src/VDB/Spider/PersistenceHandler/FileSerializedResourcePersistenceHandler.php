@@ -6,6 +6,7 @@
 
 namespace VDB\Spider\PersistenceHandler;
 
+use SplFileObject;
 use VDB\Spider\Resource;
 
 class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler implements PersistenceHandlerInterface
@@ -16,7 +17,7 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
-        $file = new \SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
+        $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
     }
 

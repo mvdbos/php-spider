@@ -5,6 +5,7 @@ namespace VDB\Spider\Discoverer;
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\UriInterface;
 
 class DiscovererSet
 {
@@ -13,7 +14,7 @@ class DiscovererSet
      */
     private $discoverers = array();
 
-    /** @var Filter[] */
+    /** @var PreFetchFilterInterface[] */
     private $filters = array();
 
     /**
@@ -50,6 +51,7 @@ class DiscovererSet
     }
 
     /**
+     * @param DiscoveredUri $uri
      * @return bool Returns true if this URI was found at max depth
      */
     private function isAtMaxDepth(DiscoveredUri $uri)
@@ -118,8 +120,9 @@ class DiscovererSet
      */
     private function normalize(array &$discoveredUris)
     {
-        foreach ($discoveredUris as &$uri) {
-            $uri->normalize();
+        /** @var DiscoveredUri[] $discoveredUris */
+        foreach ($discoveredUris as $k => $uri) {
+            $discoveredUris[$k] = $uri->normalize();
         }
     }
 
@@ -128,7 +131,7 @@ class DiscovererSet
      */
     private function filterAlreadySeen(array &$discoveredUris)
     {
-        foreach ($discoveredUris as $k => &$uri) {
+        foreach ($discoveredUris as $k => $uri) {
             if (array_key_exists($uri->toString(), $this->alreadySeenUris)) {
                 unset($discoveredUris[$k]);
             }
@@ -141,7 +144,7 @@ class DiscovererSet
      */
     private function filter(array &$discoveredUris)
     {
-        foreach ($discoveredUris as $k => &$uri) {
+        foreach ($discoveredUris as $k => $uri) {
             foreach ($this->filters as $filter) {
                 if ($filter->match($uri)) {
                     unset($discoveredUris[$k]);
@@ -157,7 +160,6 @@ class DiscovererSet
     {
         // make sure there are no duplicates in the list
         $tmp = array();
-        /** @var Uri $uri */
         foreach ($discoveredUris as $k => $uri) {
             $tmp[$k] = $uri->toString();
         }

@@ -2,6 +2,8 @@
 
 namespace VDB\Spider\Uri;
 
+use ErrorException;
+use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 use VDB\Uri\UriInterface;
 
@@ -14,6 +16,9 @@ abstract class UriDecorator implements UriInterface
 
     /**
      * @param string|UriInterface $decorated
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
      */
     public function __construct($decorated)
     {
@@ -49,7 +54,9 @@ abstract class UriDecorator implements UriInterface
      */
     public function normalize()
     {
-        return $this->decorated->normalize();
+        // This normalizes the decorated Uri in place. We don't want to return the decorated Uri, but $this.
+        $this->decorated->normalize();
+        return $this;
     }
 
     /**

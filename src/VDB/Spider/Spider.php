@@ -187,6 +187,8 @@ class Spider
      * a breadth first algorithm
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.IfStatementAssignment)
      */
     private function doCrawl()
     {

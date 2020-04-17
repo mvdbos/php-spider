@@ -26,13 +26,12 @@ interface QueueManagerInterface
     public function getTraversalAlgorithm();
 
     /**
-     * @param DiscoveredUri
-     * @return void
+     * @param DiscoveredUri $uri
      */
     public function addUri(DiscoveredUri $uri);
 
     /**
-     * @return DiscoveredUri
+     * @return null|DiscoveredUri
      */
     public function next();
 }
