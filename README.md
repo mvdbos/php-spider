@@ -3,7 +3,7 @@
 [![Total Downloads](https://poser.pugx.org/vdb/php-spider/downloads)](https://packagist.org/packages/vdb/php-spider)
 [![License](https://poser.pugx.org/vdb/php-spider/license)](https://packagist.org/packages/vdb/php-spider)
 
-> Backwards compatibility break: since v0.5.0, Symfony EventDispatcher v3 is no longer supported and PHP Spider requires v4 or v5. This is because of a BC break in the EventDispatcheri v5, which we need to support to keep up with modern frameworks.
+> Note on backwards compatibility break: since v0.5.0, Symfony EventDispatcher v3 is no longer supported and PHP Spider requires v4 or v5. If you are stuck with v3, you can still use PHP Spider v0.4.x. The reason for this is because of a BC break in the EventDispatcher v5, which we needed to support to keep up with modern frameworks.
 
 PHP-Spider Features
 ======
