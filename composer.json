@@ -31,9 +31,13 @@
         "friendsofphp/php-cs-fixer": "^2.0.0"
     },
     "autoload": {
-        "psr-0": {
-            "VDB\\Spider": "src/",
-            "VDB\\Spider\\Tests": "tests/"
+        "psr-4": {
+            "VDB\\Spider\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "VDB\\Spider\\Tests\\": "tests/"
         }
     }
 }
