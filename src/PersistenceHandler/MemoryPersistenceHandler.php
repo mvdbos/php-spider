@@ -35,7 +35,8 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource
+     * @return mixed Returns Resource or false
+     * @suppress PhanTypeMismatchDeclaredReturn Can be fixed by setting return type to mixed when lowest PHP version is 8
      */
     public function current(): Resource
     {
@@ -43,7 +44,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource|false
+     * @return void Any returned value is ignored.
      */
     public function next()
     {

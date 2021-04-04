@@ -30,7 +30,7 @@ class Spider
     private $discovererSet;
 
     /** @var DiscoveredUri The URI of the site to spider */
-    private $seed = array();
+    private $seed;
 
     /** @var string the unique id of this spider instance */
     private $spiderId;
@@ -61,6 +61,23 @@ class Spider
     }
 
     /**
+     * @param string $uri
+     */
+    private function setSeed(string $uri)
+    {
+        if (strlen($uri) == 0) {
+            throw new InvalidArgumentException("Empty seed");
+        }
+        try {
+            $seed = new Http($uri);
+            $this->seed = new DiscoveredUri($seed->normalize());
+            $this->seed->setDepthFound(0);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
+        }
+    }
+
+    /**
      * Starts crawling the URI provided on instantiation
      *
      * @return void
@@ -80,24 +97,15 @@ class Spider
     }
 
     /**
-     * param DiscovererSet $discovererSet
-     * @param DiscovererSet $discovererSet
+     * @return QueueManagerInterface
      */
-    public function setDiscovererSet(DiscovererSet $discovererSet)
+    public function getQueueManager()
     {
-        $this->discovererSet = $discovererSet;
-    }
-
-    /**
-     * @return DiscovererSet
-     */
-    public function getDiscovererSet(): DiscovererSet
-    {
-        if (!$this->discovererSet) {
-            $this->discovererSet = new DiscovererSet();
+        if (!$this->queueManager) {
+            $this->queueManager = new InMemoryQueueManager();
         }
 
-        return $this->discovererSet;
+        return $this->queueManager;
     }
 
     /**
@@ -110,15 +118,14 @@ class Spider
     }
 
     /**
-     * @return QueueManagerInterface
+     * @return DownloaderInterface
      */
-    public function getQueueManager()
+    public function getDownloader()
     {
-        if (!$this->queueManager) {
-            $this->queueManager = new InMemoryQueueManager();
+        if (!$this->downloader) {
+            $this->downloader = new Downloader();
         }
-
-        return $this->queueManager;
+        return $this->downloader;
     }
 
     /**
@@ -133,25 +140,14 @@ class Spider
     }
 
     /**
-     * @return DownloaderInterface
+     * A shortcut for EventDispatcher::dispatch()
+     *
+     * @param GenericEvent $event
+     * @param string $eventName
      */
-    public function getDownloader()
+    private function dispatch(GenericEvent $event, string $eventName)
     {
-        if (!$this->downloader) {
-            $this->downloader = new Downloader();
-        }
-        return $this->downloader;
-    }
-
-    public function handleSignal($signal)
-    {
-        switch ($signal) {
-            case SIGTERM:
-            case SIGKILL:
-            case SIGINT:
-            case SIGQUIT:
-                $this->dispatch(null, SpiderEvents::SPIDER_CRAWL_USER_STOPPED);
-        }
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**
@@ -204,27 +200,37 @@ class Spider
     }
 
     /**
-     * A shortcut for EventDispatcher::dispatch()
-     *
-     * @param GenericEvent $event
-     * @param string $eventName
+     * @return DiscovererSet
      */
-    private function dispatch(GenericEvent $event, string $eventName)
+    public function getDiscovererSet(): DiscovererSet
     {
-        $this->getDispatcher()->dispatch($event, $eventName);
+        if (!$this->discovererSet) {
+            $this->discovererSet = new DiscovererSet();
+        }
+
+        return $this->discovererSet;
     }
 
     /**
-     * @param string $uri
+     * param DiscovererSet $discovererSet
+     * @param DiscovererSet $discovererSet
      */
-    private function setSeed(string $uri)
+    public function setDiscovererSet(DiscovererSet $discovererSet)
     {
-        try {
-            $seed = new Http($uri);
-            $this->seed = new DiscoveredUri($seed->normalize());
-            $this->seed->setDepthFound(0);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
+        $this->discovererSet = $discovererSet;
+    }
+
+    public function handleSignal($signal)
+    {
+        switch ($signal) {
+            case SIGTERM:
+            case SIGKILL:
+            case SIGINT:
+            case SIGQUIT:
+                $this->dispatch(
+                    new GenericEvent($this, ['signal' => $signal]),
+                    SpiderEvents::SPIDER_CRAWL_USER_STOPPED
+                );
         }
     }
 }

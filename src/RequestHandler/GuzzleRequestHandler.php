@@ -43,6 +43,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
      * @param DiscoveredUri $uri
      * @return Resource
      * @throws GuzzleException
+     * @suppress PhanTypeInvalidThrowsIsInterface
      */
     public function request(DiscoveredUri $uri): Resource
     {
