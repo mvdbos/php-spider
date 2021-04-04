@@ -15,12 +15,16 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
      */
     private $resources = array();
 
-    public function setSpiderId($spiderId)
+    /**
+     * @param string $spiderId
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function setSpiderId(string $spiderId)
     {
         // memory handler ignores this. Only interesting for true persistence as some kind of key or prefix
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->resources);
     }
@@ -33,7 +37,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return Resource
      */
-    public function current()
+    public function current(): Resource
     {
         return current($this->resources);
     }
@@ -49,7 +53,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return key($this->resources);
     }
@@ -57,7 +61,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return boolean
      */
-    public function valid()
+    public function valid(): bool
     {
         return (bool)current($this->resources);
     }

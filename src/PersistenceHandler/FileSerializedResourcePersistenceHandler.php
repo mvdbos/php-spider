@@ -6,6 +6,7 @@
 
 namespace VDB\Spider\PersistenceHandler;
 
+use Exception;
 use SplFileObject;
 use VDB\Spider\Resource;
 
@@ -23,8 +24,9 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
 
     /**
      * @return Resource
+     * @throws Exception
      */
-    public function current()
+    public function current(): Resource
     {
         return unserialize($this->getIterator()->current()->getContents());
     }

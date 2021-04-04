@@ -24,7 +24,7 @@ class AllowedPortsFilter implements PreFetchFilterInterface
         $this->allowedPorts = $allowedPorts;
     }
 
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         return !in_array($uri->getPort(), $this->allowedPorts);
     }

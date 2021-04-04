@@ -11,5 +11,5 @@ interface RequestHandlerInterface
      * @param DiscoveredUri $uri
      * @return Resource
      */
-    public function request(DiscoveredUri $uri);
+    public function request(DiscoveredUri $uri): Resource;
 }

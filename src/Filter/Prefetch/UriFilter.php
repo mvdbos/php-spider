@@ -20,7 +20,7 @@ class UriFilter implements PreFetchFilterInterface
         $this->regexes = $regexes;
     }
 
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         foreach ($this->regexes as $regex) {
             if (preg_match($regex, $uri->toString())) {

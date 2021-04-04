@@ -15,9 +15,10 @@ interface PersistenceHandlerInterface extends \Iterator, \Countable
      *
      * @return void
      */
-    public function setSpiderId($spiderId);
+    public function setSpiderId(string $spiderId);
 
     /**
+     * @param Resource $resource
      * @return void
      */
     public function persist(Resource $resource);

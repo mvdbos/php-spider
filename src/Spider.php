@@ -2,32 +2,29 @@
 
 namespace VDB\Spider;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Downloader\DownloaderInterface;
+use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
-use VDB\Spider\Exception\QueueException;
+use VDB\Spider\Exception\MaxQueueSizeExceededException;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Http;
 
-/**
- *
- */
 class Spider
 {
+    use DispatcherTrait;
+
     /** @var DownloaderInterface */
     private $downloader;
 
     /** @var QueueManagerInterface */
     private $queueManager;
-
-    /** @var EventDispatcherInterface */
-    private $dispatcher;
 
     /** @var DiscovererSet */
     private $discovererSet;
@@ -42,7 +39,7 @@ class Spider
      * @param string $seed the URI to start crawling
      * @param string|null $spiderId
      */
-    public function __construct($seed, $spiderId = null)
+    public function __construct(string $seed, string $spiderId = null)
     {
         $this->setSeed($seed);
         if (null !== $spiderId) {
@@ -67,7 +64,7 @@ class Spider
      * Starts crawling the URI provided on instantiation
      *
      * @return void
-     * @throws QueueException
+     * @throws MaxQueueSizeExceededException
      */
     public function crawl()
     {
@@ -84,6 +81,7 @@ class Spider
 
     /**
      * param DiscovererSet $discovererSet
+     * @param DiscovererSet $discovererSet
      */
     public function setDiscovererSet(DiscovererSet $discovererSet)
     {
@@ -93,7 +91,7 @@ class Spider
     /**
      * @return DiscovererSet
      */
-    public function getDiscovererSet()
+    public function getDiscovererSet(): DiscovererSet
     {
         if (!$this->discovererSet) {
             $this->discovererSet = new DiscovererSet();
@@ -104,6 +102,7 @@ class Spider
 
     /**
      * param QueueManagerInterface $queueManager
+     * @param QueueManagerInterface $queueManager
      */
     public function setQueueManager(QueueManagerInterface $queueManager)
     {
@@ -126,7 +125,7 @@ class Spider
      * @param DownloaderInterface $downloader
      * @return $this
      */
-    public function setDownloader(DownloaderInterface $downloader)
+    public function setDownloader(DownloaderInterface $downloader): Spider
     {
         $this->downloader = $downloader;
 
@@ -142,28 +141,6 @@ class Spider
             $this->downloader = new Downloader();
         }
         return $this->downloader;
-    }
-
-    /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @return $this
-     */
-    public function setDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->dispatcher = $eventDispatcher;
-
-        return $this;
-    }
-
-    /**
-     * @return EventDispatcherInterface
-     */
-    public function getDispatcher()
-    {
-        if (!$this->dispatcher) {
-            $this->dispatcher = new EventDispatcher();
-        }
-        return $this->dispatcher;
     }
 
     public function handleSignal($signal)
@@ -218,7 +195,7 @@ class Spider
             foreach ($discoveredUris as $uri) {
                 try {
                     $this->getQueueManager()->addUri($uri);
-                } catch (QueueException $e) {
+                } catch (MaxQueueSizeExceededException $e) {
                     // when the queue size is exceeded, we stop discovering
                     break;
                 }
@@ -232,7 +209,7 @@ class Spider
      * @param GenericEvent $event
      * @param string $eventName
      */
-    private function dispatch(GenericEvent $event, $eventName)
+    private function dispatch(GenericEvent $event, string $eventName)
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
@@ -240,10 +217,14 @@ class Spider
     /**
      * @param string $uri
      */
-    private function setSeed($uri)
+    private function setSeed(string $uri)
     {
-        $seed = new Http($uri);
-        $this->seed = new DiscoveredUri($seed->normalize());
-        $this->seed->setDepthFound(0);
+        try {
+            $seed = new Http($uri);
+            $this->seed = new DiscoveredUri($seed->normalize());
+            $this->seed->setDepthFound(0);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
+        }
     }
 }

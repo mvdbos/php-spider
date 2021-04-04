@@ -3,8 +3,7 @@
 namespace VDB\Spider\RequestHandler;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Request;
-use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
@@ -21,7 +20,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
      * @param Client $client
      * @return RequestHandlerInterface
      */
-    public function setClient(Client $client)
+    public function setClient(Client $client): RequestHandlerInterface
     {
         $this->client = $client;
 
@@ -31,7 +30,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
     /**
      * @return Client
      */
-    public function getClient()
+    public function getClient(): Client
     {
         if (!$this->client) {
             $this->client = new Client();
@@ -43,8 +42,9 @@ class GuzzleRequestHandler implements RequestHandlerInterface
     /**
      * @param DiscoveredUri $uri
      * @return Resource
+     * @throws GuzzleException
      */
-    public function request(DiscoveredUri $uri)
+    public function request(DiscoveredUri $uri): Resource
     {
         $response = $this->getClient()->get($uri->toString());
         return new Resource($uri, $response);

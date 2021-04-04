@@ -10,8 +10,8 @@ use VDB\Spider\Resource;
 interface PostFetchFilterInterface
 {
     /**
-     * @param Resource
+     * @param Resource $resource
      * @return boolean
      */
-    public function match(Resource $document);
+    public function match(Resource $resource): bool;
 }

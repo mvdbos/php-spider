@@ -1,7 +1,6 @@
 <?php
-namespace VDB\Spider\Event;
 
-use VDB\Spider\RequestHandler\RequestHandlerInterface;
+namespace VDB\Spider\Event;
 
 /**
  * @author Matthijs van den Bos

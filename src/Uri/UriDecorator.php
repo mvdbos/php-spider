@@ -34,7 +34,7 @@ abstract class UriDecorator implements UriInterface
     // the constructor is tested and if that is successful there is no point
     // to testing the behaviour of the decorated class
 
-    public function toString()
+    public function toString(): string
     {
         return $this->decorated->toString();
     }
@@ -44,7 +44,7 @@ abstract class UriDecorator implements UriInterface
      * @param boolean $normalized whether to compare normalized versions of the URIs
      * @return boolean
      */
-    public function equals(UriInterface $that, $normalized = false)
+    public function equals(UriInterface $that, $normalized = false): bool
     {
         return $this->decorated->equals($that, $normalized);
     }
@@ -52,7 +52,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return UriInterface
      */
-    public function normalize()
+    public function normalize(): UriInterface
     {
         // This normalizes the decorated Uri in place. We don't want to return the decorated Uri, but $this.
         $this->decorated->normalize();
@@ -64,7 +64,7 @@ abstract class UriDecorator implements UriInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->decorated->__toString();
     }
@@ -72,7 +72,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->decorated->getHost();
     }
@@ -80,7 +80,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->decorated->getPassword();
     }
@@ -88,7 +88,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->decorated->getPath();
     }
@@ -96,7 +96,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return int|null
      */
-    public function getPort()
+    public function getPort(): ?int
     {
         return $this->decorated->getPort();
     }
@@ -104,7 +104,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getQuery()
+    public function getQuery(): ?string
     {
         return $this->decorated->getQuery();
     }
@@ -112,7 +112,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getScheme()
+    public function getScheme(): ?string
     {
         return $this->decorated->getScheme();
     }
@@ -120,7 +120,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->decorated->getUsername();
     }
@@ -128,7 +128,7 @@ abstract class UriDecorator implements UriInterface
     /**
      * @return string|null
      */
-    public function getFragment()
+    public function getFragment(): ?string
     {
         return $this->decorated->getFragment();
     }

@@ -3,9 +3,8 @@
 namespace VDB\Spider\Downloader;
 
 use Exception;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
@@ -17,8 +16,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 
 class Downloader implements DownloaderInterface
 {
-    /** @var EventDispatcherInterface */
-    private $dispatcher;
+    use DispatcherTrait;
 
     /** @var PersistenceHandlerInterface */
     private $persistenceHandler;
@@ -36,7 +34,7 @@ class Downloader implements DownloaderInterface
      * @param int Maximum number of resources to download
      * @return $this
      */
-    public function setDownloadLimit($downloadLimit)
+    public function setDownloadLimit(int $downloadLimit): DownloaderInterface
     {
         $this->downloadLimit = $downloadLimit;
         return $this;
@@ -45,7 +43,7 @@ class Downloader implements DownloaderInterface
     /**
      * @return int Maximum number of resources to download
      */
-    public function getDownloadLimit()
+    public function getDownloadLimit(): int
     {
         return $this->downloadLimit;
     }
@@ -79,7 +77,7 @@ class Downloader implements DownloaderInterface
         return $resource;
     }
 
-    public function isDownLoadLimitExceeded()
+    public function isDownLoadLimitExceeded(): bool
     {
         return $this->getDownloadLimit() !== 0 && $this->getPersistenceHandler()->count() >= $this->getDownloadLimit();
     }
@@ -90,34 +88,10 @@ class Downloader implements DownloaderInterface
      * @param GenericEvent $event
      * @param string $eventName
      */
-    private function dispatch(GenericEvent $event, $eventName)
+    private function dispatch(GenericEvent $event, string $eventName)
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
-
-    /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @return $this
-     */
-    public function setDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->dispatcher = $eventDispatcher;
-
-        return $this;
-    }
-
-    /**
-     * @return EventDispatcherInterface
-     */
-    public function getDispatcher()
-    {
-        if (!$this->dispatcher) {
-            $this->dispatcher = new EventDispatcher();
-        }
-
-        return $this->dispatcher;
-    }
-
 
     /**
      * @param DiscoveredUri $uri
@@ -150,7 +124,7 @@ class Downloader implements DownloaderInterface
      * @param Resource $resource
      * @return bool
      */
-    private function matchesPostfetchFilter(Resource $resource)
+    private function matchesPostfetchFilter(Resource $resource): bool
     {
         foreach ($this->postFetchFilters as $filter) {
             if ($filter->match($resource)) {
@@ -175,7 +149,7 @@ class Downloader implements DownloaderInterface
     /**
      * @return PersistenceHandlerInterface
      */
-    public function getPersistenceHandler()
+    public function getPersistenceHandler(): PersistenceHandlerInterface
     {
         if (!$this->persistenceHandler) {
             $this->persistenceHandler = new MemoryPersistenceHandler();
@@ -195,7 +169,7 @@ class Downloader implements DownloaderInterface
     /**
      * @return RequestHandlerInterface
      */
-    public function getRequestHandler()
+    public function getRequestHandler(): RequestHandlerInterface
     {
         if (!$this->requestHandler) {
             $this->requestHandler = new GuzzleRequestHandler();

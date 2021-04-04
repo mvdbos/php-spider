@@ -15,10 +15,10 @@ interface DiscovererInterface
      * @param Resource $resource
      * @return DiscoveredUri[]
      */
-    public function discover(Resource $resource);
+    public function discover(Resource $resource): array;
 
     /**
      * @return string The name of this discoverer
      */
-    public function getName();
+    public function getName(): string;
 }

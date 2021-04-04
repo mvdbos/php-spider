@@ -11,7 +11,7 @@ use VDB\Spider\Uri\DiscoveredUri;
  */
 abstract class Discoverer implements DiscovererInterface
 {
-    public function getName()
+    public function getName(): string
     {
         return get_class($this);
     }
@@ -20,5 +20,5 @@ abstract class Discoverer implements DiscovererInterface
      * @param Resource $resource
      * @return DiscoveredUri[]
      */
-    abstract public function discover(Resource $resource);
+    abstract public function discover(Resource $resource): array;
 }

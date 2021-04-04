@@ -6,6 +6,8 @@
 
 namespace VDB\Spider\PersistenceHandler;
 
+use Exception;
+use Iterator;
 use Symfony\Component\Finder\Finder;
 use VDB\Spider\Resource;
 
@@ -21,7 +23,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected $totalSizePersisted = 0;
 
-    /** @var \Iterator */
+    /** @var Iterator */
     protected $iterator;
 
     /** @var Finder */
@@ -34,12 +36,12 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @param string $path the path where all spider results should be persisted.
      *        The results will be grouped in a directory by spider ID.
      */
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path = $path;
     }
 
-    public function setSpiderId($spiderId)
+    public function setSpiderId(string $spiderId)
     {
         $this->spiderId = $spiderId;
 
@@ -49,14 +51,14 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         }
     }
 
-    protected function getFileSystemFilename($resource)
+    protected function getFileSystemFilename($resource): string
     {
         $fullPath = $this->completePath($resource->getUri()->getPath());
 
         return urlencode(basename($fullPath));
     }
 
-    protected function getFileSystemPath($resource)
+    protected function getFileSystemPath(Resource $resource): string
     {
         $hostname = $resource->getUri()->getHost();
         $fullPath = $this->completePath($resource->getUri()->getPath());
@@ -65,11 +67,12 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return The path that was provided with a default filenameappended if it is
+     * @param $path
+     * @return string The path that was provided with a default filename appended if it is
      *         a path ending in a /. This is because we don't want to persist
      *         the directories as files. This is similar to wget behaviour.
      */
-    protected function completePath($path)
+    protected function completePath(string $path): string
     {
         if (substr($path, -1, 1) === '/') {
             $path .= $this->defaultFilename;
@@ -78,12 +81,12 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         return $path;
     }
 
-    public function count()
+    public function count(): int
     {
         return $this->getFinder()->count();
     }
 
-    protected function getResultPath()
+    protected function getResultPath(): string
     {
         return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
     }
@@ -93,7 +96,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return Finder
      */
-    protected function getFinder()
+    protected function getFinder(): Finder
     {
         if (!$this->finder instanceof Finder) {
             $this->finder = Finder::create()->files()->in($this->getResultPath());
@@ -102,11 +105,12 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return \Iterator
+     * @return Iterator
+     * @throws Exception
      */
-    protected function getIterator()
+    protected function getIterator(): Iterator
     {
-        if (!$this->iterator instanceof \Iterator) {
+        if (!$this->iterator instanceof Iterator) {
             $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;
@@ -115,7 +119,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return Resource
      */
-    abstract public function current();
+    abstract public function current(): Resource;
 
     /**
      * @return void

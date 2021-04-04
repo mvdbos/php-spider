@@ -13,5 +13,5 @@ interface PreFetchFilterInterface
      * @param UriInterface $uri
      * @return boolean
      */
-    public function match(UriInterface $uri);
+    public function match(UriInterface $uri): bool;
 }

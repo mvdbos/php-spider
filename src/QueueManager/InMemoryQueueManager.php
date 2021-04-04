@@ -10,12 +10,15 @@ use LogicException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
-use VDB\Spider\Exception\QueueException;
+use VDB\Spider\Exception\MaxQueueSizeExceededException;
 use VDB\Spider\Uri\DiscoveredUri;
 
 class InMemoryQueueManager implements QueueManagerInterface
 {
+    use DispatcherTrait;
+
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     public $maxQueueSize = 0;
 
@@ -29,14 +32,11 @@ class InMemoryQueueManager implements QueueManagerInterface
      */
     private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
-    /** @var EventDispatcherInterface */
-    private $dispatcher;
-
     /**
      * @param int $traversalAlgorithm Choose from the class constants
      * TODO: This should be extracted to a Strategy pattern
      */
-    public function setTraversalAlgorithm($traversalAlgorithm)
+    public function setTraversalAlgorithm(int $traversalAlgorithm)
     {
         $this->traversalAlgorithm = $traversalAlgorithm;
     }
@@ -44,41 +44,19 @@ class InMemoryQueueManager implements QueueManagerInterface
     /**
      * @return int
      */
-    public function getTraversalAlgorithm()
+    public function getTraversalAlgorithm(): int
     {
         return $this->traversalAlgorithm;
     }
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @return $this
-     */
-    public function setDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->dispatcher = $eventDispatcher;
-
-        return $this;
-    }
-
-    /**
-     * @return EventDispatcherInterface
-     */
-    public function getDispatcher()
-    {
-        if (!$this->dispatcher) {
-            $this->dispatcher = new EventDispatcher();
-        }
-        return $this->dispatcher;
-    }
-
-    /**
-     * @param DiscoveredUri
-     * @throws QueueException
+     * @param DiscoveredUri $uri
+     * @throws MaxQueueSizeExceededException
      */
     public function addUri(DiscoveredUri $uri)
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
-            throw new QueueException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
+            throw new MaxQueueSizeExceededException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
         }
 
         $this->currentQueueSize++;
@@ -90,7 +68,7 @@ class InMemoryQueueManager implements QueueManagerInterface
         );
     }
 
-    public function next()
+    public function next(): ?DiscoveredUri
     {
         if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
             return array_pop($this->traversalQueue);

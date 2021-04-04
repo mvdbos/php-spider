@@ -21,7 +21,7 @@ class PolitenessPolicyListener
     /**
      * @param int $requestDelay the delay in milliseconds between requests to the same domain
      */
-    public function __construct($requestDelay)
+    public function __construct(int $requestDelay)
     {
         $this->requestDelay = $requestDelay * 1000;
     }

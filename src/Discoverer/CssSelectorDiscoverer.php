@@ -2,6 +2,7 @@
 
 namespace VDB\Spider\Discoverer;
 
+use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Resource;
 
 /**
@@ -10,7 +11,7 @@ use VDB\Spider\Resource;
  */
 class CssSelectorDiscoverer extends CrawlerDiscoverer
 {
-    protected function getFilteredCrawler(Resource $resource)
+    protected function getFilteredCrawler(Resource $resource): Crawler
     {
         return $resource->getCrawler()->filter($this->selector);
     }

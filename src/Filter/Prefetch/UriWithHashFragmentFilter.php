@@ -10,7 +10,7 @@ use VDB\Uri\UriInterface;
  */
 class UriWithHashFragmentFilter implements PreFetchFilterInterface
 {
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         return null !== $uri->getFragment();
     }

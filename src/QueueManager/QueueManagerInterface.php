@@ -18,12 +18,12 @@ interface QueueManagerInterface
      * TODO: This should be extracted to a Strategy pattern
      * @return void
      */
-    public function setTraversalAlgorithm($traversalAlgorithm);
+    public function setTraversalAlgorithm(int $traversalAlgorithm);
 
     /**
      * @return int
      */
-    public function getTraversalAlgorithm();
+    public function getTraversalAlgorithm(): int;
 
     /**
      * @param DiscoveredUri $uri
@@ -33,5 +33,5 @@ interface QueueManagerInterface
     /**
      * @return null|DiscoveredUri
      */
-    public function next();
+    public function next(): ?DiscoveredUri;
 }
