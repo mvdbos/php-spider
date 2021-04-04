@@ -67,11 +67,17 @@ class Spider
      * Starts crawling the URI provided on instantiation
      *
      * @return void
+     * @throws QueueException
      */
     public function crawl()
     {
         $this->getQueueManager()->addUri($this->seed);
         $this->getDownloader()->getPersistenceHandler()->setSpiderId($this->spiderId);
+
+        $this->dispatch(
+            new GenericEvent($this, array('seed' => $this->seed)),
+            SpiderEvents::SPIDER_CRAWL_PRE_CRAWL
+        );
 
         $this->doCrawl();
     }
