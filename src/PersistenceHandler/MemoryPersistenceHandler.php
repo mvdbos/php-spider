@@ -36,6 +36,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
 
     /**
      * @return mixed Returns Resource or false
+     * @suppress PhanTypeMismatchDeclaredReturn Can be fixed by setting return type to mixed when lowest PHP version is 8
      */
     public function current(): Resource
     {

@@ -52,7 +52,7 @@ return [
     // Note that the **only** effect of choosing `'5.6'` is to infer that functions removed in php 7.0 exist.
     // (See `backward_compatibility_checks` for additional options)
     // Automatically inferred from composer.json requirement for "php" of ">=7.3"
-    'target_php_version' => '7.3',
+    'target_php_version' => null,
 
     // If enabled, missing properties will be created when
     // they are first seen. If false, we'll report an
@@ -163,7 +163,7 @@ return [
     // If true, check to make sure the return type declared
     // in the doc-block (if any) matches the return type
     // declared in the method signature.
-    'check_docblock_signature_return_type_match' => false,
+    'check_docblock_signature_return_type_match' => true,
 
     // This setting maps case-insensitive strings to union types.
     //
@@ -358,16 +358,5 @@ return [
     // with a path relative to the root directory of the
     // project.
     'file_list' => [
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/AbstractFixerTestCase.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/AbstractIntegrationCaseFactory.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/AbstractIntegrationTestCase.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/Assert/AssertTokensTrait.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/IntegrationCase.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/IntegrationCaseFactory.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/IntegrationCaseFactoryInterface.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/InternalIntegrationCaseFactory.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/IsIdenticalConstraint.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/Test/TokensWithObservedTransformers.php',
-//        'vendor/friendsofphp/php-cs-fixer/tests/TestCase.php',
     ],
 ];

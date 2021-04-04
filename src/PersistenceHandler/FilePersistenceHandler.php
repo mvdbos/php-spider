@@ -51,47 +51,15 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         }
     }
 
-    protected function getFileSystemFilename($resource): string
+    protected function getResultPath(): string
     {
-        $fullPath = $this->completePath($resource->getUri()->getPath());
-
-        return urlencode(basename($fullPath));
-    }
-
-    protected function getFileSystemPath(Resource $resource): string
-    {
-        $hostname = $resource->getUri()->getHost();
-        $fullPath = $this->completePath($resource->getUri()->getPath());
-
-        return $hostname . dirname($fullPath);
-    }
-
-    /**
-     * @param $path
-     * @return string The path that was provided with a default filename appended if it is
-     *         a path ending in a /. This is because we don't want to persist
-     *         the directories as files. This is similar to wget behaviour.
-     */
-    protected function completePath(string $path): string
-    {
-        if (substr($path, -1, 1) === '/') {
-            $path .= $this->defaultFilename;
-        }
-
-        return $path;
+        return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
     }
 
     public function count(): int
     {
         return $this->getFinder()->count();
     }
-
-    protected function getResultPath(): string
-    {
-        return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
-    }
-
-    abstract public function persist(Resource $resource);
 
     /**
      * @return Finder
@@ -104,17 +72,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         return $this->finder;
     }
 
-    /**
-     * @return Iterator
-     * @throws Exception
-     */
-    protected function getIterator(): Iterator
-    {
-        if (!$this->iterator instanceof Iterator) {
-            $this->iterator = $this->getFinder()->getIterator();
-        }
-        return $this->iterator;
-    }
+    abstract public function persist(Resource $resource);
 
     /**
      * @return Resource
@@ -130,7 +88,20 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
+     * @return Iterator
+     * @throws Exception
+     */
+    protected function getIterator(): Iterator
+    {
+        if (!$this->iterator instanceof Iterator) {
+            $this->iterator = $this->getFinder()->getIterator();
+        }
+        return $this->iterator;
+    }
+
+    /**
      * @return integer|double|string|boolean|null
+     * @throws Exception
      */
     public function key()
     {
@@ -139,17 +110,51 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     /**
      * @return boolean
+     * @throws Exception
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->getIterator()->valid();
     }
 
     /**
      * @return void
+     * @throws Exception
      */
     public function rewind()
     {
         $this->getIterator()->rewind();
+    }
+
+    protected function getFileSystemFilename(Resource $resource): string
+    {
+        $fullPath = $this->completePath($resource->getUri()->getPath());
+
+        return urlencode(basename($fullPath));
+    }
+
+    /**
+     * @param $path
+     * @return string The path that was provided with a default filename appended if it is
+     *         a path ending in a /. This is because we don't want to persist
+     *         the directories as files. This is similar to wget behaviour.
+     */
+    protected function completePath(?string $path): string
+    {
+        if ($path == null) {
+            $path = "/" . $this->defaultFilename;
+        } elseif (substr($path, -1, 1) === '/') {
+            $path .= $this->defaultFilename;
+        }
+
+        return $path;
+    }
+
+    protected function getFileSystemPath(Resource $resource): string
+    {
+        $hostname = $resource->getUri()->getHost();
+        $fullPath = $this->completePath($resource->getUri()->getPath());
+
+        return $hostname . dirname($fullPath);
     }
 }
