@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="[CHECK] coverage-enforce 60" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/bin/coverage-enforce" scriptParameters="60">
+    <method v="2" />
+  </configuration>
+</component>
