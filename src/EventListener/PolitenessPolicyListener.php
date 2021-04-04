@@ -6,7 +6,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
- * @copyright 2013 Matthijs van den Bos
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class PolitenessPolicyListener
 {
@@ -21,7 +21,7 @@ class PolitenessPolicyListener
     /**
      * @param int $requestDelay the delay in milliseconds between requests to the same domain
      */
-    public function __construct($requestDelay)
+    public function __construct(int $requestDelay)
     {
         $this->requestDelay = $requestDelay * 1000;
     }

@@ -6,7 +6,7 @@ use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class AllowedHostsFilter implements PreFetchFilterInterface
 {
@@ -19,7 +19,7 @@ class AllowedHostsFilter implements PreFetchFilterInterface
      * @param string[] $seeds
      * @param bool $allowSubDomains
      */
-    public function __construct(array $seeds, $allowSubDomains = false)
+    public function __construct(array $seeds, bool $allowSubDomains = false)
     {
         $this->allowSubDomains = $allowSubDomains;
 
@@ -36,7 +36,7 @@ class AllowedHostsFilter implements PreFetchFilterInterface
         }
     }
 
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         $currentHostname = $uri->getHost();
 

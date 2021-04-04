@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
- * @copyright 2013 Matthijs van den Bos
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 
 namespace VDB\Spider\PersistenceHandler;
@@ -15,9 +15,10 @@ interface PersistenceHandlerInterface extends \Iterator, \Countable
      *
      * @return void
      */
-    public function setSpiderId($spiderId);
+    public function setSpiderId(string $spiderId);
 
     /**
+     * @param Resource $resource
      * @return void
      */
     public function persist(Resource $resource);

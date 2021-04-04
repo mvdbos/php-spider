@@ -2,8 +2,8 @@
 namespace VDB\Spider;
 
 /**
- * @author Matthijs van den Bos
- * @copyright 2013 Matthijs van den Bos
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 interface FilterableInterface
 {
@@ -17,14 +17,14 @@ interface FilterableInterface
     /**
      * @return boolean whether the item matched a filter
      */
-    public function isFiltered();
+    public function isFiltered(): bool;
 
     /**
      * Get the reason the item was filtered
      *
      * @return string
      */
-    public function getFilterReason();
+    public function getFilterReason(): string;
 
     /**
      * Get a unique identifier for the filterable item
@@ -32,5 +32,5 @@ interface FilterableInterface
      *
      * @return string
      */
-    public function getIdentifier();
+    public function getIdentifier(): string;
 }

@@ -54,16 +54,16 @@ class DiscovererSet
      * @param DiscoveredUri $uri
      * @return bool Returns true if this URI was found at max depth
      */
-    private function isAtMaxDepth(DiscoveredUri $uri)
+    private function isAtMaxDepth(DiscoveredUri $uri): bool
     {
         return $uri->getDepthFound() === $this->maxDepth;
     }
 
     /**
      * @param Resource $resource
-     * @return UriInterface[]
+     * @return DiscoveredUri[]
      */
-    public function discover(Resource $resource)
+    public function discover(Resource $resource): array
     {
         $this->markSeen($resource->getUri());
 
@@ -99,7 +99,7 @@ class DiscovererSet
      * @param discovererInterface $discoverer The discoverer instance
      * @param string|null $alias An alias
      */
-    public function set(DiscovererInterface $discoverer, $alias = null)
+    public function set(DiscovererInterface $discoverer, ?string $alias = null)
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
         if (null !== $alias) {

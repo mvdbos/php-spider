@@ -3,13 +3,14 @@
 namespace VDB\Spider;
 
 use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Message;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Uri\DiscoveredUri;
 
 /**
- * @author Matthijs van den Bos
- * @copyright 2013 Matthijs van den Bos
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class Resource
 {
@@ -39,7 +40,7 @@ class Resource
      * Lazy loads a Crawler object based on the ResponseInterface;
      * @return Crawler
      */
-    public function getCrawler()
+    public function getCrawler(): Crawler
     {
         if (!$this->crawler instanceof Crawler) {
             $this->crawler = new Crawler('', $this->getUri()->toString());
@@ -54,7 +55,7 @@ class Resource
     /**
      * @return DiscoveredUri
      */
-    public function getUri()
+    public function getUri(): DiscoveredUri
     {
         return $this->uri;
     }
@@ -62,12 +63,12 @@ class Resource
     /**
      * @return ResponseInterface
      */
-    public function getResponse()
+    public function getResponse(): ResponseInterface
     {
         return $this->response;
     }
 
-    public function __sleep()
+    public function __sleep(): array
     {
         /*
          * Because the Crawler isn't serialized correctly, we exclude it from serialization
@@ -75,7 +76,7 @@ class Resource
          */
 
         // we store the response manually, because otherwise it will not get serialized.
-        $this->body = Psr7\str($this->response);
+        $this->body = Message::toString($this->response);
 
         return array(
             'uri',
@@ -88,6 +89,6 @@ class Resource
      */
     public function __wakeup()
     {
-        $this->response = Psr7\parse_response($this->body);
+        $this->response = Message::parseResponse($this->body);
     }
 }

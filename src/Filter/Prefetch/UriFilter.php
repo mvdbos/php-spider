@@ -6,7 +6,7 @@ use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class UriFilter implements PreFetchFilterInterface
 {
@@ -20,7 +20,7 @@ class UriFilter implements PreFetchFilterInterface
         $this->regexes = $regexes;
     }
 
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         foreach ($this->regexes as $regex) {
             if (preg_match($regex, $uri->toString())) {

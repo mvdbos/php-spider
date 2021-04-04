@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
- * @copyright 2013 Matthijs van den Bos
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 
 namespace VDB\Spider;
@@ -24,7 +24,7 @@ class StatsHandler implements EventSubscriberInterface
 
     protected $failed = array();
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH => 'addToFiltered',
@@ -35,12 +35,12 @@ class StatsHandler implements EventSubscriberInterface
         );
     }
 
-    public function setSpiderId($spiderId)
+    public function setSpiderId(string $spiderId)
     {
         $this->spiderId = $spiderId;
     }
 
-    public function getSpiderId()
+    public function getSpiderId(): string
     {
         return $this->spiderId;
     }
@@ -68,7 +68,7 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * @return UriInterface[]
      */
-    public function getQueued()
+    public function getQueued(): array
     {
         return $this->queued;
     }
@@ -76,7 +76,7 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * @return UriInterface[]
      */
-    public function getPersisted()
+    public function getPersisted(): array
     {
         return $this->persisted;
     }
@@ -84,7 +84,7 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * @return FilterableInterface[]
      */
-    public function getFiltered()
+    public function getFiltered(): array
     {
         return $this->filtered;
     }
@@ -92,12 +92,12 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * @return array of form array($uriString, $reason)
      */
-    public function getFailed()
+    public function getFailed(): array
     {
         return $this->failed;
     }
 
-    public function toString()
+    public function toString(): string
     {
         $spiderId = $this->getSpiderId();
         $queued = $this->getQueued();

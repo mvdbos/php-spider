@@ -3,8 +3,8 @@
 namespace VDB\Spider\Uri;
 
 /**
- * @author Matthijs van den Bos
- * @copyright 2013 Matthijs van den Bos
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class DiscoveredUri extends UriDecorator
 {
@@ -14,7 +14,7 @@ class DiscoveredUri extends UriDecorator
     /**
      * @return int The depth this Uri was found on
      */
-    public function getDepthFound()
+    public function getDepthFound(): ?int
     {
         return $this->depthFound;
     }

@@ -2,6 +2,7 @@
 
 namespace VDB\Spider\Discoverer;
 
+use ErrorException;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
@@ -10,8 +11,8 @@ use VDB\Uri\Http;
 use VDB\Uri\Uri;
 
 /**
- * @author Matthijs van den Bos
- * @copyright 2013 Matthijs van den Bos
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterface
 {
@@ -21,21 +22,23 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
     /**
      * @param $selector
      */
-    public function __construct($selector)
+    public function __construct(string $selector)
     {
         $this->selector = $selector;
     }
 
     /**
+     * @param Resource $resource
      * @return Crawler
      */
-    abstract protected function getFilteredCrawler(Resource $resource);
+    abstract protected function getFilteredCrawler(Resource $resource): Crawler;
 
     /**
      * @param Resource $resource
      * @return DiscoveredUri[]
+     * @throws ErrorException
      */
-    public function discover(Resource $resource)
+    public function discover(Resource $resource): array
     {
         $crawler = $this->getFilteredCrawler($resource);
 

@@ -1,11 +1,12 @@
 <?php
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
- * @copyright 2013 Matthijs van den Bos
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 
 namespace VDB\Spider\PersistenceHandler;
 
+use Exception;
 use SplFileObject;
 use VDB\Spider\Resource;
 
@@ -23,8 +24,9 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
 
     /**
      * @return Resource
+     * @throws Exception
      */
-    public function current()
+    public function current(): Resource
     {
         return unserialize($this->getIterator()->current()->getContents());
     }

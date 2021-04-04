@@ -6,11 +6,11 @@ use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class AllowedSchemeFilter implements PreFetchFilterInterface
 {
-    private $allowedSchemes = array();
+    private $allowedSchemes;
 
     /**
      * @param string[] $schemes
@@ -21,9 +21,10 @@ class AllowedSchemeFilter implements PreFetchFilterInterface
     }
 
     /**
+     * @param UriInterface $uri
      * @return bool
      */
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri): bool
     {
         return !in_array($uri->getScheme(), $this->allowedSchemes);
     }
