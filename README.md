@@ -13,6 +13,7 @@ PHP-Spider Features
 - comes with a useful set of URI filters, such as Domain limiting
 - supports custom URI filters, both prefetch (URI) and postfetch (Resource content)
 - supports custom request handling logic
+- supports Basic, Digest and NTLM HTTP authentication. See [example](example/example_basic_auth.php).
 - comes with a useful set of persistence handlers (memory, file)
 - supports custom persistence handlers
 - collects statistics about the crawl for reporting
@@ -27,7 +28,7 @@ The easiest way to install PHP-Spider is with [composer](https://getcomposer.org
 
 Usage
 -----
-This is a very simple example. This code can be found in [example/example_simple.php](https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_simple.php). For a more complete example with some logging, caching and filters, see [example/example_complex.php](https://github.com/matthijsvandenbos/php-spider/blob/master/example/example_complex.php). That file contains a more real-world example.
+This is a very simple example. This code can be found in [example/example_simple.php](example/example_simple.php). For a more complete example with some logging, caching and filters, see [example/example_complex.php](example/example_complex.php). That file contains a more real-world example.
 
 First create the spider
 ```php

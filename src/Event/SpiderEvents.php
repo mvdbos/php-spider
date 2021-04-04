@@ -1,6 +1,8 @@
 <?php
 namespace VDB\Spider\Event;
 
+use VDB\Spider\RequestHandler\RequestHandlerInterface;
+
 /**
  * @author Matthijs van den Bos
  * @copyright 2013 Matthijs van den Bos
@@ -27,8 +29,21 @@ final class SpiderEvents
      */
     const SPIDER_CRAWL_FILTER_POSTFETCH = 'spider.crawl.filter.postfetch';
 
+    /**
+     * The spider.crawl.pre_request event fires before the Spider starts it crawl
+     */
+    const SPIDER_CRAWL_PRE_CRAWL = 'spider.crawl.pre_crawl';
+
+    /**
+     * The spider.crawl.pre_request event fires just before the [RequestHandlerInterface] executes
+     * the request for a specific URI
+     */
     const SPIDER_CRAWL_PRE_REQUEST = 'spider.crawl.pre_request';
 
+    /**
+     * The spider.crawl.post_request event fires immediately the [RequestHandlerInterface] executes
+     * the request for a specific URI
+     */
     const SPIDER_CRAWL_POST_REQUEST = 'spider.crawl.post_request';
 
     /**
