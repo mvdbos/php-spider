@@ -56,5 +56,6 @@ runCheck "phpmd 'src/'"        "vendor/bin/phpmd src/ text phpmd.xml"
 runCheck "phpmd 'tests/'"      "vendor/bin/phpmd tests/ text phpmd-tests.xml"
 runCheck "phpcpd 'src/'"       "vendor/bin/phpcpd --min-lines=7 --min-tokens=30  --fuzzy -v src/"
 runCheck "phpcpd 'tests/'"     "vendor/bin/phpcpd --min-lines=10 --min-tokens=100  --fuzzy tests/"
+runCheck "phan"                "PHAN_DISABLE_XDEBUG_WARN=1 vendor/bin/phan  --no-progress-bar"
 
 echo -e "\n\n\e[0;37;42mStatic analysis completed successfully.\e[0m\n"

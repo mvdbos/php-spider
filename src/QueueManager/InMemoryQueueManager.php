@@ -7,8 +7,6 @@
 namespace VDB\Spider\QueueManager;
 
 use LogicException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;

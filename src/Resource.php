@@ -2,7 +2,6 @@
 
 namespace VDB\Spider;
 
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Message;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;

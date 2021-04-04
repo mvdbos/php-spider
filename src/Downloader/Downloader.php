@@ -31,7 +31,7 @@ class Downloader implements DownloaderInterface
     private $postFetchFilters = array();
 
     /**
-     * @param int Maximum number of resources to download
+     * @param int $downloadLimit Maximum number of resources to download
      * @return $this
      */
     public function setDownloadLimit(int $downloadLimit): DownloaderInterface

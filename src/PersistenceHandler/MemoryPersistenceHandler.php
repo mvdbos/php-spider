@@ -35,7 +35,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource
+     * @return mixed Returns Resource or false
      */
     public function current(): Resource
     {
@@ -43,7 +43,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource|false
+     * @return void Any returned value is ignored.
      */
     public function next()
     {

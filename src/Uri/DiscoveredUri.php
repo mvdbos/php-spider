@@ -20,7 +20,7 @@ class DiscoveredUri extends UriDecorator
     }
 
     /**
-     * @param int The depth this Uri was found on
+     * @param int $depthFound The depth this Uri was found on
      */
     public function setDepthFound($depthFound)
     {
