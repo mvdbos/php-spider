@@ -30,5 +30,4 @@ trait DispatcherTrait
 
         return $this->dispatcher;
     }
-
 }

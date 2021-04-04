@@ -14,7 +14,7 @@ class DiscoveredUri extends UriDecorator
     /**
      * @return int The depth this Uri was found on
      */
-    public function getDepthFound(): int
+    public function getDepthFound(): ?int
     {
         return $this->depthFound;
     }
