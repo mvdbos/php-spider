@@ -9,9 +9,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // Create Spider
 $spider = new Spider('http://httpbin.org/basic-auth/foo/bar');
 
-// Set a custom request handler that does basic auth
 $requestHandler = new GuzzleRequestHandler();
-$requestHandler->setClient(new Client(['auth' => ['foo', 'bar'], 'http_errors' => false]));
+// Set a custom Guzzle client that does basic auth. See Guzzle docs on how to use other types of authentication.
+$requestHandler->setClient(new Client(['auth' => ['foo', 'bar', 'basic'], 'http_errors' => false]));
 $spider->getDownloader()->setRequestHandler($requestHandler);
 
 // Execute crawl
