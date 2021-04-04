@@ -11,8 +11,8 @@ use VDB\Uri\Http;
 use VDB\Uri\Uri;
 
 /**
- * @author Matthijs van den Bos
- * @copyright 2013 Matthijs van den Bos
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterface
 {

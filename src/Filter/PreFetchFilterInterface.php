@@ -5,7 +5,7 @@ namespace VDB\Spider\Filter;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 interface PreFetchFilterInterface
 {

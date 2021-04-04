@@ -10,7 +10,7 @@ use VDB\Uri\Uri;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class RestrictToBaseUriFilter implements PreFetchFilterInterface
 {

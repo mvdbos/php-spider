@@ -6,7 +6,7 @@ use VDB\Spider\Filter\PostFetchFilterInterface;
 use VDB\Spider\Resource;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class MimeTypeFilter implements PostFetchFilterInterface
 {

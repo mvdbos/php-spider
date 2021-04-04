@@ -6,7 +6,7 @@ use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Uri\UriInterface;
 
 /**
- * @author matthijs
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class UriWithQueryStringFilter implements PreFetchFilterInterface
 {
