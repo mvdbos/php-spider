@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class AllowedHostsFilterTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Filter\Prefetch\AllowedHostsFilter
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
      */
     public function testMatchFullHostname()
     {
@@ -37,7 +37,7 @@ class AllowedHostsFilterTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Filter\Prefetch\AllowedHostsFilter
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
      */
     public function testMatchSubdomain()
     {
@@ -55,7 +55,7 @@ class AllowedHostsFilterTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Filter\Prefetch\AllowedHostsFilter
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
      */
     public function testMatchMultipleDomainsAllowed()
     {

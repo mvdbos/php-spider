@@ -20,12 +20,11 @@ use VDB\Spider\Uri\DiscoveredUri;
 class DiscoveredUriTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Uri\DiscoveredUri
+     * @covers \VDB\Spider\Uri\DiscoveredUri
      */
     public function testDepthFound()
     {
-        $uri = new DiscoveredUri('http://example.org');
-        $uri->setDepthFound(12);
+        $uri = new DiscoveredUri('http://example.org', 12);
         $this->assertEquals(12, $uri->getDepthFound());
     }
 }

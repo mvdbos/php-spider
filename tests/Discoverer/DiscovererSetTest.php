@@ -35,7 +35,24 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     */
+    public function testMaxDepth()
+    {
+        $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+        $this->discovererSet->maxDepth = 1;
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(2, $uris);
+
+        $this->discovererSet->maxDepth = 0;
+        $urisAtDepth0 = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(0, $urisAtDepth0);
+    }
+
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testConstructor()
     {
@@ -46,7 +63,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testSetDiscoverer()
     {
@@ -58,7 +75,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testUriFilter()
     {
@@ -71,8 +88,8 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
-     * @covers VDB\Spider\Filter\Prefetch\AllowedPortsFilter
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedPortsFilter
      */
     public function testPortFilter()
     {
@@ -80,15 +97,14 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $this->discovererSet->addFilter(new AllowedPortsFilter([8080]));
 
-        /** @var DiscoveredUri[] $uris */
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(1, $uris);
         $this->assertEquals($this->uriInBody2, $uris[0]->toString());
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
-     * @covers VDB\Spider\Filter\Prefetch\AllowedHostsFilter
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
      */
     public function testHostFilter()
     {
@@ -98,5 +114,36 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(2, $uris);
+    }
+
+    public function testInvalidUriSkipped()
+    {
+        $resourceUri = new DiscoveredUri('http://php-spider.org/', 0);
+        $uriInBody1 = 'http://php-spider:org:8080:internal/';
+        $uriInBody2 = 'http://php-spider.org:8080/internal/';
+
+        // Setup DOM
+        $spiderResource = self::createResourceWithLinks($resourceUri, [$uriInBody1, $uriInBody2]);
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(1, $uris);
+    }
+
+    public function testAlreadySeenSkipped()
+    {
+        $resourceUri = new DiscoveredUri('http://php-spider.org:8080/internal/', 0);
+
+        // Setup DOM
+        $spiderResource = self::createResourceWithLinks(
+            $resourceUri,
+            ['http://php-spider.org:8080/internal/']
+        );
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(0, $uris);
     }
 }

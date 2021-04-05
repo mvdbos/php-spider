@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class AllowedPortsFilterTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Filter\Prefetch\AllowedPortsFilter
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedPortsFilter
      */
     public function testMatchPort()
     {

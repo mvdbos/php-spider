@@ -22,7 +22,7 @@ use VDB\Uri\Uri;
 class PolitenessPolicyListenerTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\EventListener\PolitenessPolicyListener
+     * @covers \VDB\Spider\EventListener\PolitenessPolicyListener
      */
     public function testOnCrawlPreRequestSameDomain()
     {
@@ -41,7 +41,7 @@ class PolitenessPolicyListenerTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\EventListener\PolitenessPolicyListener
+     * @covers \VDB\Spider\EventListener\PolitenessPolicyListener
      */
     public function testOnCrawlPreRequestDifferentDomain()
     {

@@ -12,10 +12,10 @@
 namespace VDB\Spider\Tests\Discoverer;
 
 use GuzzleHttp\Psr7\Response;
+use VDB\Spider\Filter\Postfetch\MimeTypeFilter;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Spider\Filter\Postfetch\MimeTypeFilter;
 use VDB\Uri\Uri;
 
 class MimeTypeFilterTest extends TestCase
@@ -28,7 +28,7 @@ class MimeTypeFilterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'));
+        $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'), 0);
 
         $this->spiderResource = new Resource(
             $this->uri,
@@ -37,7 +37,7 @@ class MimeTypeFilterTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Filter\Postfetch\MimeTypeFilter
+     * @covers \VDB\Spider\Filter\Postfetch\MimeTypeFilter
      */
     public function testMimeTypeFilter()
     {

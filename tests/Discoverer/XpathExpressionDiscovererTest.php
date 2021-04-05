@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use InvalidArgumentException;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 
 /**
@@ -19,11 +20,19 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 class XpathExpressionDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
      */
     public function testDiscover()
     {
         $discoverer = new XPathExpressionDiscoverer("//a");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverNoA()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $discoverer = new XPathExpressionDiscoverer("//b");
         $this->executeDiscoverer($discoverer);
     }
 }

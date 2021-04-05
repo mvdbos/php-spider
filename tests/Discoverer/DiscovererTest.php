@@ -19,7 +19,7 @@ use VDB\Spider\Tests\TestCase;
 class DiscovererTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Discoverer\Discoverer
+     * @covers \VDB\Spider\Discoverer\Discoverer
      */
     public function testGetName()
     {

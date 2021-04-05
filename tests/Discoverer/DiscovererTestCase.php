@@ -12,6 +12,7 @@
 namespace VDB\Spider\Tests\Discoverer;
 
 use DOMDocument;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
@@ -35,35 +36,25 @@ abstract class DiscovererTestCase extends TestCase
     /** @var DiscoveredUri */
     protected $uri;
 
+    /** @var string */
     protected $uriInBody1;
+
+    /** @var string */
     protected $uriInBody2;
+
+    /** @var string */
+    protected $resourceContent;
 
     protected function setUp(): void
     {
         $this->uriInBody1 = 'http://php-spider.org/contact/';
         $this->uriInBody2 = 'http://php-spider.org:8080/internal/';
 
-        // Setup DOM
-        $this->domDocument = new DOMDocument('1', 'UTF-8');
+        $this->uri = new DiscoveredUri('http://php-spider.org/', 0);
 
-        $html = $this->domDocument->createElement('html');
-        $this->domDocument->appendChild($html);
-
-        $this->domAnchor = $this->domDocument->createElement('a', 'fake');
-        $this->domAnchor->setAttribute('href', $this->uriInBody1);
-        $html->appendChild($this->domAnchor);
-
-        $this->domAnchor2 = $this->domDocument->createElement('a', 'fake2');
-        $this->domAnchor2->setAttribute('href', $this->uriInBody2);
-        $html->appendChild($this->domAnchor2);
-
-        // Setup Spider\Resource
-        $content = $this->domDocument->saveHTML();
-
-        $this->uri = new DiscoveredUri('http://php-spider.org/');
-        $this->spiderResource = new Resource(
+        $this->spiderResource = self::createResourceWithLinks(
             $this->uri,
-            new Response(200, [], $content)
+            [$this->uriInBody1, $this->uriInBody2]
         );
     }
 
@@ -74,5 +65,45 @@ abstract class DiscovererTestCase extends TestCase
 
         $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $uri);
         $this->assertEquals($this->uriInBody1, $uri->toString());
+    }
+    /**
+     * @param string[] $uris
+     * @return false|string
+     * @throws Exception
+     */
+    public static function createDocumentWithLinks(array $uris): string
+    {
+        $domDocument = new DOMDocument('1', 'UTF-8');
+        $html = $domDocument->createElement('html');
+        $domDocument->appendChild($html);
+
+        foreach ($uris as $i => $href) {
+            $domAnchor = $domDocument->createElement('a', 'fake' . $i);
+            $domAnchor->setAttribute('href', $href);
+            $html->appendChild($domAnchor);
+        }
+        $doc = $domDocument->saveHTML();
+        if ($doc == false) {
+            throw new Exception("Could not create DOM document");
+        }
+        return $doc;
+    }
+
+    /**
+     * @param DiscoveredUri $resourceUri
+     * @param string[] $uris
+     * @return Resource
+     * @throws Exception
+     */
+    public static function createResourceWithLinks(
+        DiscoveredUri $resourceUri,
+        array $uris
+    ): Resource {
+        $resourceContent = self::createDocumentWithLinks($uris);
+
+        return new Resource(
+            $resourceUri,
+            new Response(200, [], $resourceContent)
+        );
     }
 }

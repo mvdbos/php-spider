@@ -36,7 +36,7 @@ class TestCase extends PHPUnitTestCase
     protected function buildResourceFromFixture($fixturePath, $uriString)
     {
         return $this->getResource(
-            new DiscoveredUri(new Uri($uriString)),
+            new DiscoveredUri(new Uri($uriString), 0),
             new Response(200, [], $this->getFixtureContent($fixturePath))
         );
     }

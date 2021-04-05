@@ -44,16 +44,19 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
 
         $uris = array();
         foreach ($crawler as $node) {
+            /**@var $node \DOMElement */
             try {
+                $baseUri = $resource->getUri()->toString();
                 $href = $node->getAttribute('href');
+                $depthFound = $resource->getUri()->getDepthFound() + 1;
 
                 if (substr($href, 0, 4) === "http") {
-                    $uris[] = new DiscoveredUri(new Http($node->getAttribute('href'), $resource->getUri()->toString()));
+                    $uris[] = new DiscoveredUri(new Http($href, $baseUri), $depthFound);
                 } else {
-                    $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
+                    $uris[] = new DiscoveredUri(new Uri($href, $baseUri), $depthFound);
                 }
             } catch (UriSyntaxException $e) {
-                // do nothing. We simply ignore invalid URI's
+                // do nothing. We simply ignore invalid URIs, since we don't control what we crawl.
             }
         }
         return $uris;

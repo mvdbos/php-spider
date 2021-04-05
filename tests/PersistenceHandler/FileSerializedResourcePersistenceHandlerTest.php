@@ -37,8 +37,8 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
-     * @covers VDB\Spider\PersistenceHandler\FilePersistenceHandler
+     * @covers \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @covers \VDB\Spider\PersistenceHandler\FilePersistenceHandler
      *
      * @dataProvider persistenceProvider
      */
@@ -56,8 +56,8 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
-     * @covers VDB\Spider\PersistenceHandler\FilePersistenceHandler
+     * @covers \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
+     * @covers \VDB\Spider\PersistenceHandler\FilePersistenceHandler
      *
      * @dataProvider persistenceWithoutFilenameProvider
      */

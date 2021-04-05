@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class AllowedSchemeFilterTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Filter\Prefetch\AllowedSchemeFilter
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedSchemeFilter
      */
     public function testMatch()
     {

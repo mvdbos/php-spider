@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class UriWithHashFragmentFilterTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter
+     * @covers \VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter
      */
     public function testMatch()
     {

@@ -13,11 +13,10 @@ namespace VDB\Spider\Tests\Downloader;
 
 use Exception;
 use GuzzleHttp\Psr7\Response;
-use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Downloader\Downloader;
-use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\TestCase;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
 /**
@@ -44,7 +43,7 @@ class DownloaderTest extends TestCase
     {
         $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
         $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special', 'http://example.org')),
+            new DiscoveredUri(new Uri('/domains/special', 'http://example.org'), 0),
             new Response(200, [], $this->html)
         );
 
@@ -60,16 +59,27 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testDefaultRequestHandler()
+    {
+        $this->assertInstanceOf(
+            '\VDB\Spider\RequestHandler\GuzzleRequestHandler',
+            (new Downloader())->getRequestHandler()
+        );
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testDownload()
     {
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testDownloadFailed()
     {
@@ -80,13 +90,13 @@ class DownloaderTest extends TestCase
             ->will($this->throwException(new Exception));
         $this->downloader->setRequestHandler($requestHandler);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertFalse($resource);
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testFilterNotMatches()
     {
@@ -97,13 +107,23 @@ class DownloaderTest extends TestCase
             ->will($this->returnValue(false));
         $this->downloader->addPostFetchFilter($filterNeverMatch);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testDownloadLimit()
+    {
+        $this->downloader->setDownloadLimit(1);
+        $this->downloader->download(new DiscoveredUri('http://foobar.org', 0));
+        $this->assertTrue($this->downloader->isDownLoadLimitExceeded());
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testFilterMatches()
     {
@@ -114,7 +134,7 @@ class DownloaderTest extends TestCase
             ->will($this->returnValue(true));
         $this->downloader->addPostFetchFilter($filterAlwaysMatch);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertFalse($resource);
     }

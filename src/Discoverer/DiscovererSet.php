@@ -29,8 +29,8 @@ class DiscovererSet
 
     public function __construct(array $discoverers = array())
     {
-        foreach ($discoverers as $alias => $discoverer) {
-            $this->set($discoverer, is_int($alias) ? null : $alias);
+        foreach ($discoverers as $discoverer) {
+            $this->set($discoverer);
         }
     }
 
@@ -86,7 +86,6 @@ class DiscovererSet
         $discoveredUris = array_values($discoveredUris);
 
         foreach ($discoveredUris as $uri) {
-            $uri->setDepthFound($resource->getUri()->getDepthFound() + 1);
             $this->markSeen($uri);
         }
 
@@ -97,14 +96,10 @@ class DiscovererSet
      * Sets a discoverer.
      *
      * @param discovererInterface $discoverer The discoverer instance
-     * @param string|null $alias An alias
      */
-    public function set(DiscovererInterface $discoverer, ?string $alias = null)
+    public function set(DiscovererInterface $discoverer)
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
-        if (null !== $alias) {
-            $this->discoverers[$alias] = $discoverer;
-        }
     }
 
     /**
