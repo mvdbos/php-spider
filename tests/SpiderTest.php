@@ -2,8 +2,8 @@
 
 namespace VDB\Spider;
 
-use Exception;
 use ErrorException;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -12,7 +12,6 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Http;
-use VDB\Uri\Uri;
 
 class SpiderTest extends TestCase
 {
@@ -71,84 +70,7 @@ class SpiderTest extends TestCase
     protected $linkToResponseMap = [];
 
     /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     *
-     * Setting up the following structure:
-     *
-     * 0:        A
-     *          /|\
-     * 1:      B C E
-     *        /| | |
-     * 2:    D F G |
-     *         | _ |
-     *
-     * Note: E links to F.
-     * @throws UriSyntaxException
-     */
-    protected function setUp(): void
-    {
-        $this->spider = new Spider('http://php-spider.org/A');
-
-        $this->requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
-
-        $this->hrefA = 'http://php-spider.org/A';
-        $this->hrefB = 'http://php-spider.org/B';
-        $this->hrefC = 'http://php-spider.org/C';
-        $this->hrefD = 'http://php-spider.org/D';
-        $this->hrefE = 'http://php-spider.org/E';
-        $this->hrefF = 'http://php-spider.org/F';
-        $this->hrefG = 'http://php-spider.org/G';
-
-        $this->linkA = new DiscoveredUri(new Http($this->hrefA), 0);
-        $this->linkB = new DiscoveredUri(new Http($this->hrefB), 1);
-        $this->linkC = new DiscoveredUri(new Http($this->hrefC), 1);
-        $this->linkD = new DiscoveredUri(new Http($this->hrefD), 2);
-        $this->linkE = new DiscoveredUri(new Http($this->hrefE), 1);
-        $this->linkF = new DiscoveredUri(new Http($this->hrefF), 2);
-        $this->linkG = new DiscoveredUri(new Http($this->hrefG), 2);
-
-        $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
-        $this->responseA = new Response(200, [], $htmlA);
-
-        $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceB.html');
-        $this->responseB = new Response(200, [], $htmlB);
-
-        $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceC.html');
-        $this->responseC = new Response(200, [], $htmlC);
-
-        $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceD.html');
-        $this->responseD = new Response(200, [], $htmlD);
-
-        $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceE.html');
-        $this->responseE = new Response(200, [], $htmlE);
-
-        $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceF.html');
-        $this->responseF = new Response(200, [], $htmlF);
-
-        $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
-        $this->responseG = new Response(200, [], $htmlG);
-
-        $this->linkToResponseMap[$this->linkA->toString()] = $this->responseA;
-        $this->linkToResponseMap[$this->linkB->toString()] = $this->responseB;
-        $this->linkToResponseMap[$this->linkC->toString()] = $this->responseC;
-        $this->linkToResponseMap[$this->linkD->toString()] = $this->responseD;
-        $this->linkToResponseMap[$this->linkE->toString()] = $this->responseE;
-        $this->linkToResponseMap[$this->linkF->toString()] = $this->responseF;
-        $this->linkToResponseMap[$this->linkG->toString()] = $this->responseG;
-
-        $this->requestHandler
-            ->expects($this->any())
-            ->method('request')
-            ->will($this->returnCallback(array($this, 'doTestRequest')));
-
-        $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
-
-        $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
-    }
-
-    /**
-     * @return Resource
+     * @return \VDB\Spider\Resource
      * @throws \ErrorException
      */
     public function doTestRequest()
@@ -186,6 +108,13 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
+    private function compareUriArray($expected, $actual)
+    {
+        foreach ($actual as $index => $resource) {
+            $this->assertEquals($resource->getUri(), $expected[$index]);
+        }
+    }
+
     /**
      * @covers \VDB\Spider\Spider
      */
@@ -207,13 +136,6 @@ class SpiderTest extends TestCase
         );
 
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
-    }
-
-    private function compareUriArray($expected, $actual)
-    {
-        foreach ($actual as $index => $resource) {
-            $this->assertEquals($resource->getUri(), $expected[$index]);
-        }
     }
 
     /**
@@ -323,5 +245,82 @@ class SpiderTest extends TestCase
         $this->spider->crawl();
 
         $this->assertCount(0, $this->spider->getDownloader()->getPersistenceHandler(), 'Persisted count');
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * Setting up the following structure:
+     *
+     * 0:        A
+     *          /|\
+     * 1:      B C E
+     *        /| | |
+     * 2:    D F G |
+     *         | _ |
+     *
+     * Note: E links to F.
+     * @throws UriSyntaxException
+     */
+    protected function setUp(): void
+    {
+        $this->spider = new Spider('http://php-spider.org/A');
+
+        $this->requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
+
+        $this->hrefA = 'http://php-spider.org/A';
+        $this->hrefB = 'http://php-spider.org/B';
+        $this->hrefC = 'http://php-spider.org/C';
+        $this->hrefD = 'http://php-spider.org/D';
+        $this->hrefE = 'http://php-spider.org/E';
+        $this->hrefF = 'http://php-spider.org/F';
+        $this->hrefG = 'http://php-spider.org/G';
+
+        $this->linkA = new DiscoveredUri(new Http($this->hrefA), 0);
+        $this->linkB = new DiscoveredUri(new Http($this->hrefB), 1);
+        $this->linkC = new DiscoveredUri(new Http($this->hrefC), 1);
+        $this->linkD = new DiscoveredUri(new Http($this->hrefD), 2);
+        $this->linkE = new DiscoveredUri(new Http($this->hrefE), 1);
+        $this->linkF = new DiscoveredUri(new Http($this->hrefF), 2);
+        $this->linkG = new DiscoveredUri(new Http($this->hrefG), 2);
+
+        $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
+        $this->responseA = new Response(200, [], $htmlA);
+
+        $htmlB = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceB.html');
+        $this->responseB = new Response(200, [], $htmlB);
+
+        $htmlC = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceC.html');
+        $this->responseC = new Response(200, [], $htmlC);
+
+        $htmlD = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceD.html');
+        $this->responseD = new Response(200, [], $htmlD);
+
+        $htmlE = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceE.html');
+        $this->responseE = new Response(200, [], $htmlE);
+
+        $htmlF = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceF.html');
+        $this->responseF = new Response(200, [], $htmlF);
+
+        $htmlG = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceG.html');
+        $this->responseG = new Response(200, [], $htmlG);
+
+        $this->linkToResponseMap[$this->linkA->toString()] = $this->responseA;
+        $this->linkToResponseMap[$this->linkB->toString()] = $this->responseB;
+        $this->linkToResponseMap[$this->linkC->toString()] = $this->responseC;
+        $this->linkToResponseMap[$this->linkD->toString()] = $this->responseD;
+        $this->linkToResponseMap[$this->linkE->toString()] = $this->responseE;
+        $this->linkToResponseMap[$this->linkF->toString()] = $this->responseF;
+        $this->linkToResponseMap[$this->linkG->toString()] = $this->responseG;
+
+        $this->requestHandler
+            ->expects($this->any())
+            ->method('request')
+            ->will($this->returnCallback(array($this, 'doTestRequest')));
+
+        $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
+
+        $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
     }
 }
