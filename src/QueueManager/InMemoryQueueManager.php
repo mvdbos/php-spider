@@ -7,7 +7,6 @@
 namespace VDB\Spider\QueueManager;
 
 use InvalidArgumentException;
-use LogicException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
@@ -83,9 +82,9 @@ class InMemoryQueueManager implements QueueManagerInterface
     {
         $uri = null;
         if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
-            $uri =  array_pop($this->traversalQueue);
+            $uri = array_pop($this->traversalQueue);
         } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
-            $uri =  array_shift($this->traversalQueue);
+            $uri = array_shift($this->traversalQueue);
         }
         return $uri;
     }
