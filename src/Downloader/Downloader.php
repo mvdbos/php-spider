@@ -31,6 +31,27 @@ class Downloader implements DownloaderInterface
     private $postFetchFilters = array();
 
     /**
+     * Downloader constructor.
+     * @param PersistenceHandlerInterface|null $persistenceHandler
+     * @param RequestHandlerInterface|null $requestHandler
+     * @param PostFetchFilterInterface[] $postFetchFilters
+     * @param int $downloadLimit
+     */
+    public function __construct(
+        PersistenceHandlerInterface $persistenceHandler = null,
+        RequestHandlerInterface $requestHandler = null,
+        array $postFetchFilters = array(),
+        int $downloadLimit = 0
+    ) {
+        $this->setPersistenceHandler($persistenceHandler ?: new MemoryPersistenceHandler());
+        $this->setRequestHandler($requestHandler ?: new GuzzleRequestHandler());
+        foreach ($postFetchFilters as $filter) {
+            $this->addPostFetchFilter($filter);
+        }
+        $this->setDownloadLimit($downloadLimit);
+    }
+
+    /**
      * @param int $downloadLimit Maximum number of resources to download
      * @return $this
      */
@@ -151,10 +172,6 @@ class Downloader implements DownloaderInterface
      */
     public function getPersistenceHandler(): PersistenceHandlerInterface
     {
-        if (!$this->persistenceHandler) {
-            $this->persistenceHandler = new MemoryPersistenceHandler();
-        }
-
         return $this->persistenceHandler;
     }
 
@@ -171,10 +188,6 @@ class Downloader implements DownloaderInterface
      */
     public function getRequestHandler(): RequestHandlerInterface
     {
-        if (!$this->requestHandler) {
-            $this->requestHandler = new GuzzleRequestHandler();
-        }
-
         return $this->requestHandler;
     }
 }
