@@ -24,6 +24,7 @@
     <rule ref="rulesets/codesize.xml" >
         <exclude name="TooManyFields" />
         <exclude name="TooManyMethods" />
+        <exclude name="TooManyPublicMethods" />
     </rule>
 
     <rule ref="rulesets/controversial.xml" />
