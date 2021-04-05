@@ -20,7 +20,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 class DiscoveredUriTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Uri\DiscoveredUri
+     * @covers \VDB\Spider\Uri\DiscoveredUri
      */
     public function testDepthFound()
     {

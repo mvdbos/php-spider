@@ -11,11 +11,13 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
+use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
 /**
@@ -35,7 +37,24 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     */
+    public function testMaxDepth()
+    {
+        $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+        $this->discovererSet->maxDepth = 1;
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(2, $uris);
+
+        $this->discovererSet->maxDepth = 0;
+        $urisAtDepth0 = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(0, $urisAtDepth0);
+    }
+
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testConstructor()
     {
@@ -46,7 +65,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testSetDiscoverer()
     {
@@ -58,7 +77,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testUriFilter()
     {
@@ -71,8 +90,8 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
-     * @covers VDB\Spider\Filter\Prefetch\AllowedPortsFilter
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedPortsFilter
      */
     public function testPortFilter()
     {
@@ -87,8 +106,8 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers VDB\Spider\Discoverer\DiscovererSet
-     * @covers VDB\Spider\Filter\Prefetch\AllowedHostsFilter
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
      */
     public function testHostFilter()
     {

@@ -171,7 +171,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
@@ -195,7 +195,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      */
     public function testCrawlBFSDefaultBehaviour()
     {
@@ -225,7 +225,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      *
@@ -258,7 +258,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      */
     public function testCrawlBFSMaxDepthOne()
     {
@@ -278,7 +278,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      */
     public function testCrawlDFSMaxQueueSize()
     {
@@ -297,7 +297,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      */
     public function testCrawlBFSMaxQueueSize()
     {
@@ -317,7 +317,7 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Spider
+     * @covers \VDB\Spider\Spider
      */
     public function testCrawlFailedRequest()
     {

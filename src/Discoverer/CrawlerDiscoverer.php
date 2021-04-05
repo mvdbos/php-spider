@@ -52,9 +52,11 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
                 } else {
                     $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
                 }
+                // @codeCoverageIgnoreStart
             } catch (UriSyntaxException $e) {
-                // do nothing. We simply ignore invalid URI's
+                // do nothing. We simply ignore invalid URIs, since we don't control what we crawl.
             }
+            // @codeCoverageIgnoreEnd
         }
         return $uris;
     }

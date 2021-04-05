@@ -35,8 +35,14 @@ abstract class DiscovererTestCase extends TestCase
     /** @var DiscoveredUri */
     protected $uri;
 
+    /** @var string */
     protected $uriInBody1;
+
+    /** @var string */
     protected $uriInBody2;
+
+    /** @var string */
+    protected $resourceContent;
 
     protected function setUp(): void
     {
@@ -58,12 +64,12 @@ abstract class DiscovererTestCase extends TestCase
         $html->appendChild($this->domAnchor2);
 
         // Setup Spider\Resource
-        $content = $this->domDocument->saveHTML();
+        $this->resourceContent = $this->domDocument->saveHTML();
 
         $this->uri = new DiscoveredUri('http://php-spider.org/');
         $this->spiderResource = new Resource(
             $this->uri,
-            new Response(200, [], $content)
+            new Response(200, [], $this->resourceContent)
         );
     }
 

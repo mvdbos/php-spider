@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class RestrictToBaseUriFilterTest extends TestCase
 {
     /**
-     * @covers VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
+     * @covers \VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
      * @dataProvider matchURIProvider
      */
     public function testMatch($href, $expected)

@@ -37,7 +37,7 @@ class MimeTypeFilterTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Filter\Postfetch\MimeTypeFilter
+     * @covers \VDB\Spider\Filter\Postfetch\MimeTypeFilter
      */
     public function testMimeTypeFilter()
     {

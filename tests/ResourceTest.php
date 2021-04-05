@@ -30,7 +30,7 @@ class ResourceTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Resource
+     * @covers \VDB\Spider\Resource
      */
     public function testGetCrawler()
     {
@@ -38,7 +38,7 @@ class ResourceTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Resource
+     * @covers \VDB\Spider\Resource
      */
     public function testGetUri()
     {
@@ -47,7 +47,7 @@ class ResourceTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Resource
+     * @covers \VDB\Spider\Resource
      */
     public function testGetResponse()
     {
@@ -56,7 +56,7 @@ class ResourceTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Resource
+     * @covers \VDB\Spider\Resource
      */
     public function testSerialization()
     {

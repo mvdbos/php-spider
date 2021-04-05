@@ -43,7 +43,7 @@ class DiscoveredUri implements UriInterface
     /**
      * @param int $depthFound The depth this Uri was found on
      */
-    public function setDepthFound($depthFound)
+    public function setDepthFound(int $depthFound)
     {
         $this->depthFound = $depthFound;
     }

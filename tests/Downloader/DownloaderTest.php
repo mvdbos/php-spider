@@ -13,11 +13,10 @@ namespace VDB\Spider\Tests\Downloader;
 
 use Exception;
 use GuzzleHttp\Psr7\Response;
-use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Downloader\Downloader;
-use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\TestCase;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
 /**
@@ -60,7 +59,18 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testDefaultRequestHandler()
+    {
+        $this->assertInstanceOf(
+            '\VDB\Spider\RequestHandler\GuzzleRequestHandler',
+            (new Downloader())->getRequestHandler()
+        );
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testDownload()
     {
@@ -69,7 +79,7 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testDownloadFailed()
     {
@@ -86,7 +96,7 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testFilterNotMatches()
     {
@@ -103,7 +113,17 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testDownloadLimit()
+    {
+        $this->downloader->setDownloadLimit(1);
+        $this->downloader->download(new DiscoveredUri('http://foobar.org'));
+        $this->assertTrue($this->downloader->isDownLoadLimitExceeded());
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
      */
     public function testFilterMatches()
     {
