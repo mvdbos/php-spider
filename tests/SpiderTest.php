@@ -5,6 +5,7 @@ namespace VDB\Spider;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
@@ -70,8 +71,8 @@ class SpiderTest extends TestCase
     protected $linkToResponseMap = [];
 
     /**
-     * @return \VDB\Spider\Resource
-     * @throws \ErrorException
+     * @return Resource
+     * @throws ErrorException
      */
     public function doTestRequest()
     {
@@ -110,6 +111,8 @@ class SpiderTest extends TestCase
 
     private function compareUriArray($expected, $actual)
     {
+        $this->assertSameSize($expected, $actual);
+
         foreach ($actual as $index => $resource) {
             $this->assertEquals($resource->getUri(), $expected[$index]);
         }
@@ -233,6 +236,60 @@ class SpiderTest extends TestCase
     /**
      * @covers \VDB\Spider\Spider
      */
+    public function testMaxQueueSizeExceeded()
+    {
+        $qm = new InMemoryQueueManager();
+        $qm->maxQueueSize = 1;
+        $this->spider->setQueueManager($qm);
+
+        $this->spider->crawl();
+
+        $expected = array(
+            $this->linkA
+        );
+
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider
+     */
+    public function testInvalidSeedFails()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid seed');
+        new Spider('fdsfnsd:t4rgevjk lffdsn');
+    }
+
+
+    /**
+     * @covers \VDB\Spider\Spider
+     */
+    public function testEmptySeedFails()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Empty seed');
+        new Spider('');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider
+     */
+    public function testSpiderId()
+    {
+        $spider = new Spider(
+            'http://example.com',
+            null,
+            null,
+            null,
+            'MyID'
+        );
+        $this->assertEquals('MyID', $spider->getSpiderId());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider
+     */
     public function testCrawlFailedRequest()
     {
         $this->requestHandler
@@ -248,9 +305,6 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     *
      * Setting up the following structure:
      *
      * 0:        A
@@ -262,6 +316,7 @@ class SpiderTest extends TestCase
      *
      * Note: E links to F.
      * @throws UriSyntaxException
+     * @throws ErrorException
      */
     protected function setUp(): void
     {

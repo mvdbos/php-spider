@@ -241,4 +241,12 @@ class Spider
                 );
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getSpiderId(): string
+    {
+        return $this->spiderId;
+    }
 }
