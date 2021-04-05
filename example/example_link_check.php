@@ -12,7 +12,7 @@ use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
-use VDB\Spider\StatsHandler;
+use Example\StatsHandler;
 
 /*
  * This example is almost identical to example_complex, with one big difference:
@@ -24,7 +24,8 @@ use VDB\Spider\StatsHandler;
 require_once('example_complex_bootstrap.php');
 
 // The URI we want to start crawling with
-$seed = 'http://dmoztools.net/Computers/Internet/';
+$seed = 'http://dmoztools.net/';
+
 
 // We want to allow all subdomains of dmoz.org
 $allowSubDomains = true;
@@ -106,7 +107,6 @@ $guzzleClient->getConfig('handler')->push($tapMiddleware, 'timer');
 $result = $spider->crawl();
 
 // Report
-echo "\n\nSPIDER ID: " . $statsHandler->getSpiderId();
 echo "\n  ENQUEUED:  " . count($statsHandler->getQueued());
 echo "\n  SKIPPED:   " . count($statsHandler->getFiltered());
 echo "\n  FAILED:    " . count($statsHandler->getFailed());
@@ -129,7 +129,9 @@ $downloaded = $spider->getDownloader()->getPersistenceHandler();
 
 /** @var \VDB\Spider\Resource $resource */
 foreach ($downloaded as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $code = $resource->getResponse()->getStatusCode();
+    $reason = $resource->getResponse()->getReasonPhrase();
+    $title = $resource->getCrawler()->filterXpath('//title')->text("");
     $contentLength = (int)$resource->getResponse()->getHeaderLine('Content-Length');
     $contentLengthString = '';
     if ($contentLength >= 1024) {
@@ -138,6 +140,6 @@ foreach ($downloaded as $resource) {
         $contentLengthString = str_pad("[" . $contentLength, 5, ' ', STR_PAD_LEFT) . "B]";
     }
     $uri = $resource->getUri()->toString();
-    echo "\n - " . $contentLengthString . " $title ($uri)";
+    echo "\n - " . $contentLengthString . " $title ($uri) " .$code ." ". $reason;
 }
 echo "\n";

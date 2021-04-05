@@ -12,7 +12,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 
 class LinkCheckRequestHandler extends GuzzleRequestHandler
 {
-    public function request(DiscoveredUri $uri)
+    public function request(DiscoveredUri $uri): Resource
     {
         $response = $this->getClient()->get($uri->toString(), ['http_errors' => false]);
         return new Resource($uri, $response);

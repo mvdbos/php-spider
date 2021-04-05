@@ -1,6 +1,7 @@
 <?php
 
 use Example\LogHandler;
+use Example\StatsHandler;
 use GuzzleHttp\Middleware;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -10,9 +11,9 @@ use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
+use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\Spider;
-use VDB\Spider\StatsHandler;
 
 
 require_once('example_complex_bootstrap.php');
@@ -35,7 +36,8 @@ $queueManager = new InMemoryQueueManager();
 $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
 
-// Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
+// Set some sane defaults for this example.
+// We only visit the first level of http://dmoztools.net. We stop at 10 queued resources
 $spider->getDiscovererSet()->maxDepth = 1;
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
@@ -48,7 +50,7 @@ $spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-lis
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
-    new \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
+    new FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
 );
 
 // Add some prefetch filters. These are executed before a resource is requested.
@@ -58,7 +60,8 @@ $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $all
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
-// We add an eventlistener to the crawler that implements a politeness policy. We wait 450ms between every request to the same domain
+// We add an eventlistener to the crawler that implements a politeness policy.
+// We wait 100ms between every request to the same domain
 $politenessPolicyEventListener = new PolitenessPolicyListener(100);
 $spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
@@ -92,10 +95,9 @@ $tapMiddleware = Middleware::tap([$timerMiddleware, 'onRequest'], [$timerMiddlew
 $guzzleClient->getConfig('handler')->push($tapMiddleware, 'timer');
 
 // Execute the crawl
-$result = $spider->crawl();
+$spider->crawl();
 
 // Report
-echo "\n\nSPIDER ID: " . $statsHandler->getSpiderId();
 echo "\n  ENQUEUED:  " . count($statsHandler->getQueued());
 echo "\n  SKIPPED:   " . count($statsHandler->getFiltered());
 echo "\n  FAILED:    " . count($statsHandler->getFailed());
