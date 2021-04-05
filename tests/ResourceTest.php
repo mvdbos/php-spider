@@ -24,7 +24,7 @@ class ResourceTest extends TestCase
     {
         $this->html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
         $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special', 'http://example.org')),
+            new DiscoveredUri(new Uri('/domains/special', 'http://example.org'), 0),
             new Response(200, [], $this->html)
         );
     }

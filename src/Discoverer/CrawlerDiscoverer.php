@@ -46,11 +46,18 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
         foreach ($crawler as $node) {
             try {
                 $href = $node->getAttribute('href');
+                $depthFound = $resource->getUri()->getDepthFound() + 1;
 
                 if (substr($href, 0, 4) === "http") {
-                    $uris[] = new DiscoveredUri(new Http($node->getAttribute('href'), $resource->getUri()->toString()));
+                    $uris[] = new DiscoveredUri(
+                        new Http($node->getAttribute('href'), $resource->getUri()->toString()),
+                        $depthFound
+                    );
                 } else {
-                    $uris[] = new DiscoveredUri(new Uri($node->getAttribute('href'), $resource->getUri()->toString()));
+                    $uris[] = new DiscoveredUri(
+                        new Uri($node->getAttribute('href'), $resource->getUri()->toString()),
+                        $depthFound
+                    );
                 }
                 // @codeCoverageIgnoreStart
             } catch (UriSyntaxException $e) {

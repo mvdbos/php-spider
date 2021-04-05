@@ -70,8 +70,7 @@ class Spider
         }
         try {
             $seed = new Http($uri);
-            $this->seed = new DiscoveredUri($seed->normalize());
-            $this->seed->setDepthFound(0);
+            $this->seed = new DiscoveredUri($seed->normalize(), 0);
         } catch (Exception $e) {
             throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
         }

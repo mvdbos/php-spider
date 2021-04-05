@@ -100,21 +100,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new DiscoveredUri(new Http($this->hrefA));
-        $this->linkB = new DiscoveredUri(new Http($this->hrefB));
-        $this->linkC = new DiscoveredUri(new Http($this->hrefC));
-        $this->linkD = new DiscoveredUri(new Http($this->hrefD));
-        $this->linkE = new DiscoveredUri(new Http($this->hrefE));
-        $this->linkF = new DiscoveredUri(new Http($this->hrefF));
-        $this->linkG = new DiscoveredUri(new Http($this->hrefG));
-
-        $this->linkA->setDepthFound(0);
-        $this->linkB->setDepthFound(1);
-        $this->linkC->setDepthFound(1);
-        $this->linkD->setDepthFound(2);
-        $this->linkE->setDepthFound(1);
-        $this->linkF->setDepthFound(2);
-        $this->linkG->setDepthFound(2);
+        $this->linkA = new DiscoveredUri(new Http($this->hrefA), 0);
+        $this->linkB = new DiscoveredUri(new Http($this->hrefB), 1);
+        $this->linkC = new DiscoveredUri(new Http($this->hrefC), 1);
+        $this->linkD = new DiscoveredUri(new Http($this->hrefD), 2);
+        $this->linkE = new DiscoveredUri(new Http($this->hrefE), 1);
+        $this->linkF = new DiscoveredUri(new Http($this->hrefF), 2);
+        $this->linkG = new DiscoveredUri(new Http($this->hrefG), 2);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->responseA = new Response(200, [], $htmlA);

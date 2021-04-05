@@ -86,8 +86,6 @@ class DiscovererSet
         $discoveredUris = array_values($discoveredUris);
 
         foreach ($discoveredUris as $uri) {
-            /** @var $uri DiscoveredUri */
-            $uri->setDepthFound($resource->getUri()->getDepthFound() + 1);
             $this->markSeen($uri);
         }
 

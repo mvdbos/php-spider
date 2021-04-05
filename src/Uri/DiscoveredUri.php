@@ -19,34 +19,36 @@ class DiscoveredUri implements UriInterface
 
     /**
      * @param string|UriInterface $decorated
+     * @param int $depthFound
      *
      * @throws ErrorException
      * @throws UriSyntaxException
      */
-    public function __construct($decorated)
+    public function __construct($decorated, int $depthFound)
     {
         if (!$decorated instanceof UriInterface) {
             $decorated = new Uri($decorated);
         }
 
         $this->decorated = $decorated;
+        $this->depthFound = $depthFound;
     }
 
     /**
-     * @return ?int The depth this Uri was found on
+     * @return int The depth this Uri was found on
      */
-    public function getDepthFound(): ?int
+    public function getDepthFound(): int
     {
         return $this->depthFound;
     }
 
-    /**
-     * @param int $depthFound The depth this Uri was found on
-     */
-    public function setDepthFound(int $depthFound)
-    {
-        $this->depthFound = $depthFound;
-    }
+//    /**
+//     * @param int $depthFound The depth this Uri was found on
+//     */
+//    public function setDepthFound(int $depthFound)
+//    {
+//        $this->depthFound = $depthFound;
+//    }
 
     // @codeCoverageIgnoreStart
     // We ignore coverage for all proxy methods below:

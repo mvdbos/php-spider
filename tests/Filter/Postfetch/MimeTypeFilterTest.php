@@ -28,7 +28,7 @@ class MimeTypeFilterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'));
+       $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'), 0);
 
         $this->spiderResource = new Resource(
             $this->uri,

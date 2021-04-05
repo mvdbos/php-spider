@@ -43,7 +43,7 @@ class DownloaderTest extends TestCase
     {
         $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
         $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special', 'http://example.org')),
+            new DiscoveredUri(new Uri('/domains/special', 'http://example.org'), 0),
             new Response(200, [], $this->html)
         );
 
@@ -74,7 +74,7 @@ class DownloaderTest extends TestCase
      */
     public function testDownload()
     {
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
 
@@ -90,7 +90,7 @@ class DownloaderTest extends TestCase
             ->will($this->throwException(new Exception));
         $this->downloader->setRequestHandler($requestHandler);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertFalse($resource);
     }
@@ -107,7 +107,7 @@ class DownloaderTest extends TestCase
             ->will($this->returnValue(false));
         $this->downloader->addPostFetchFilter($filterNeverMatch);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
@@ -118,7 +118,7 @@ class DownloaderTest extends TestCase
     public function testDownloadLimit()
     {
         $this->downloader->setDownloadLimit(1);
-        $this->downloader->download(new DiscoveredUri('http://foobar.org'));
+        $this->downloader->download(new DiscoveredUri('http://foobar.org', 0));
         $this->assertTrue($this->downloader->isDownLoadLimitExceeded());
     }
 
@@ -134,7 +134,7 @@ class DownloaderTest extends TestCase
             ->will($this->returnValue(true));
         $this->downloader->addPostFetchFilter($filterAlwaysMatch);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org')));
+        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertFalse($resource);
     }

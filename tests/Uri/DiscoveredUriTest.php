@@ -24,8 +24,7 @@ class DiscoveredUriTest extends TestCase
      */
     public function testDepthFound()
     {
-        $uri = new DiscoveredUri('http://example.org');
-        $uri->setDepthFound(12);
+        $uri = new DiscoveredUri('http://example.org', 12);
         $this->assertEquals(12, $uri->getDepthFound());
     }
 }

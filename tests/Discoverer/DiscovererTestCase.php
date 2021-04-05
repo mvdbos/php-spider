@@ -66,7 +66,7 @@ abstract class DiscovererTestCase extends TestCase
         // Setup Spider\Resource
         $this->resourceContent = $this->domDocument->saveHTML();
 
-        $this->uri = new DiscoveredUri('http://php-spider.org/');
+        $this->uri = new DiscoveredUri('http://php-spider.org/', 0);
         $this->spiderResource = new Resource(
             $this->uri,
             new Response(200, [], $this->resourceContent)
