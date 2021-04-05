@@ -4,7 +4,7 @@
  * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 
-namespace VDB\Spider;
+namespace Example;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -33,16 +33,6 @@ class StatsHandler implements EventSubscriberInterface
             SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED => 'addToPersisted',
             SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST => 'addToFailed'
         );
-    }
-
-    public function setSpiderId(string $spiderId)
-    {
-        $this->spiderId = $spiderId;
-    }
-
-    public function getSpiderId(): string
-    {
-        return $this->spiderId;
     }
 
     public function addToQueued(GenericEvent $event)

@@ -28,7 +28,7 @@ class TestCase extends PHPUnitTestCase
      * @param Response $response
      * @return Resource
      */
-    protected function getResource(DiscoveredUri $uri, Response $response)
+    protected function getResource(DiscoveredUri $uri, Response $response): Resource
     {
         return new Resource($uri, $response);
     }

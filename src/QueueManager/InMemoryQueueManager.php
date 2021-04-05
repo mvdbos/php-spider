@@ -6,7 +6,7 @@
 
 namespace VDB\Spider\QueueManager;
 
-use LogicException;
+use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
@@ -31,12 +31,12 @@ class InMemoryQueueManager implements QueueManagerInterface
     private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
     /**
-     * @param int $traversalAlgorithm Choose from the class constants
-     * TODO: This should be extracted to a Strategy pattern
+     * InMemoryQueueManager constructor.
+     * @param int $traversalAlgorithm
      */
-    public function setTraversalAlgorithm(int $traversalAlgorithm)
+    public function __construct(int $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST)
     {
-        $this->traversalAlgorithm = $traversalAlgorithm;
+        $this->setTraversalAlgorithm($traversalAlgorithm);
     }
 
     /**
@@ -45,6 +45,18 @@ class InMemoryQueueManager implements QueueManagerInterface
     public function getTraversalAlgorithm(): int
     {
         return $this->traversalAlgorithm;
+    }
+
+    /**
+     * @param int $traversalAlgorithm Choose from the class constants
+     */
+    public function setTraversalAlgorithm(int $traversalAlgorithm)
+    {
+        if ($traversalAlgorithm != QueueManagerInterface::ALGORITHM_DEPTH_FIRST
+            && $traversalAlgorithm != QueueManagerInterface::ALGORITHM_BREADTH_FIRST) {
+            throw new InvalidArgumentException("Invalid traversal algorithm. See QueueManagerInterface for options.");
+        }
+        $this->traversalAlgorithm = $traversalAlgorithm;
     }
 
     /**
@@ -68,12 +80,12 @@ class InMemoryQueueManager implements QueueManagerInterface
 
     public function next(): ?DiscoveredUri
     {
+        $uri = null;
         if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
-            return array_pop($this->traversalQueue);
+            $uri = array_pop($this->traversalQueue);
         } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
-            return array_shift($this->traversalQueue);
-        } else {
-            throw new LogicException('No search algorithm set');
+            $uri = array_shift($this->traversalQueue);
         }
+        return $uri;
     }
 }

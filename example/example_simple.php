@@ -1,12 +1,12 @@
 <?php
 
+use Example\StatsHandler;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use Symfony\Contracts\EventDispatcher\Event;
 use VDB\Spider\Event\SpiderEvents;
-use VDB\Spider\StatsHandler;
 use VDB\Spider\Spider;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once('example_complex_bootstrap.php');
 
 // Create Spider
 $spider = new Spider('http://dmoztools.net');

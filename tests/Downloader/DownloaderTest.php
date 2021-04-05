@@ -132,9 +132,9 @@ class DownloaderTest extends TestCase
             ->expects($this->any())
             ->method('match')
             ->will($this->returnValue(true));
-        $this->downloader->addPostFetchFilter($filterAlwaysMatch);
+        $downloader = new Downloader(null, null, [$filterAlwaysMatch]);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
 
         $this->assertFalse($resource);
     }

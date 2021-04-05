@@ -12,14 +12,6 @@ trait DispatcherTrait
     private $dispatcher;
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
-     */
-    public function setDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->dispatcher = $eventDispatcher;
-    }
-
-    /**
      * @return EventDispatcherInterface
      */
     public function getDispatcher(): EventDispatcherInterface

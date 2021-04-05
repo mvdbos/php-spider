@@ -37,16 +37,23 @@ class Spider
 
     /**
      * @param string $seed the URI to start crawling
+     * @param DiscovererSet|null $discovererSet
+     * @param QueueManagerInterface|null $queueManager
+     * @param DownloaderInterface|null $downloader
      * @param string|null $spiderId
      */
-    public function __construct(string $seed, string $spiderId = null)
-    {
+    public function __construct(
+        string $seed,
+        DiscovererSet $discovererSet = null,
+        QueueManagerInterface $queueManager = null,
+        DownloaderInterface  $downloader = null,
+        string $spiderId = null
+    ) {
         $this->setSeed($seed);
-        if (null !== $spiderId) {
-            $this->spiderId = $spiderId;
-        } else {
-            $this->spiderId = md5($seed . microtime(true));
-        }
+        $this->setSpiderId($spiderId);
+        $this->setDiscovererSet($discovererSet ?: new DiscovererSet());
+        $this->setQueueManager($queueManager ?: new InMemoryQueueManager());
+        $this->setDownloader($downloader ?: new Downloader());
 
         // This makes the spider handle signals gracefully and allows us to do cleanup
         if (php_sapi_name() == 'cli') {
@@ -76,11 +83,19 @@ class Spider
         }
     }
 
+    private function setSpiderId(?string $spiderId)
+    {
+        if (null !== $spiderId) {
+            $this->spiderId = $spiderId;
+        } else {
+            $this->spiderId = md5($this->seed . microtime(true));
+        }
+    }
+
     /**
      * Starts crawling the URI provided on instantiation
      *
      * @return void
-     * @throws MaxQueueSizeExceededException
      */
     public function crawl()
     {
@@ -98,12 +113,8 @@ class Spider
     /**
      * @return QueueManagerInterface
      */
-    public function getQueueManager()
+    public function getQueueManager(): QueueManagerInterface
     {
-        if (!$this->queueManager) {
-            $this->queueManager = new InMemoryQueueManager();
-        }
-
         return $this->queueManager;
     }
 
@@ -119,11 +130,8 @@ class Spider
     /**
      * @return DownloaderInterface
      */
-    public function getDownloader()
+    public function getDownloader(): DownloaderInterface
     {
-        if (!$this->downloader) {
-            $this->downloader = new Downloader();
-        }
         return $this->downloader;
     }
 
@@ -203,10 +211,6 @@ class Spider
      */
     public function getDiscovererSet(): DiscovererSet
     {
-        if (!$this->discovererSet) {
-            $this->discovererSet = new DiscovererSet();
-        }
-
         return $this->discovererSet;
     }
 
@@ -219,6 +223,11 @@ class Spider
         $this->discovererSet = $discovererSet;
     }
 
+    /**
+     * @param $signal
+     *
+     * @codeCoverageIgnore
+     */
     public function handleSignal($signal)
     {
         switch ($signal) {
@@ -231,5 +240,13 @@ class Spider
                     SpiderEvents::SPIDER_CRAWL_USER_STOPPED
                 );
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getSpiderId(): string
+    {
+        return $this->spiderId;
     }
 }

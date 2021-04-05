@@ -131,6 +131,21 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
+    public function testDuplicatesRemoved()
+    {
+
+        // Setup DOM
+        $spiderResource = self::createResourceWithLinks(
+            new DiscoveredUri('http://php-spider.org/', 0),
+            ['http://php-spider.org:8080/internal/', 'http://php-spider.org:8080/internal/']
+        );
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(1, $uris);
+    }
+
     public function testAlreadySeenSkipped()
     {
         $resourceUri = new DiscoveredUri('http://php-spider.org:8080/internal/', 0);
