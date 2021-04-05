@@ -11,13 +11,11 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
-use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
 /**
@@ -99,7 +97,6 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $this->discovererSet->addFilter(new AllowedPortsFilter([8080]));
 
-        /** @var DiscoveredUri[] $uris */
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(1, $uris);
         $this->assertEquals($this->uriInBody2, $uris[0]->toString());
@@ -117,5 +114,36 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(2, $uris);
+    }
+
+    public function testInvalidUriSkipped()
+    {
+        $resourceUri = new DiscoveredUri('http://php-spider.org/', 0);
+        $uriInBody1 = 'http://php-spider:org:8080:internal/';
+        $uriInBody2 = 'http://php-spider.org:8080/internal/';
+
+        // Setup DOM
+        $spiderResource = self::createResourceWithLinks($resourceUri, [$uriInBody1, $uriInBody2]);
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(1, $uris);
+    }
+
+    public function testAlreadySeenSkipped()
+    {
+        $resourceUri = new DiscoveredUri('http://php-spider.org:8080/internal/', 0);
+
+        // Setup DOM
+        $spiderResource = self::createResourceWithLinks(
+            $resourceUri,
+            ['http://php-spider.org:8080/internal/']
+        );
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(0, $uris);
     }
 }
