@@ -80,11 +80,11 @@ The Symfony documentation contains an excellent guide for how to do that properl
 
 There a few requirements for a Pull Request to be accepted:
 - Follow the coding standards: PHP-Spider follows the coding standards defined in the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) Coding Style Guides;
-- Prove that the code works with unit tests and that coverage remains above 85%;
+- Prove that the code works with unit tests and that coverage remains 100%;
 
 > Note: An easy way to check if your code conforms to PHP-Spider is by running the script `bin/static-analysis`, which is part of this repo. This will run the following tools, configured for PHP-Spider: PHP CodeSniffer, PHP Mess Detector and PHP Copy/Paste Detector.  
 
-> Note: To run PHPUnit with coverage, and to check that coverage >= 85%, you can run `bin/coverage-enforce 85`.
+> Note: To run PHPUnit with coverage, and to check that coverage == 100%, you can run `bin/coverage-enforce`.
 
 Support
 -------

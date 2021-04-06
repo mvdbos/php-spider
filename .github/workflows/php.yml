@@ -45,7 +45,7 @@ jobs:
         run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
 
       - name: Run Tests
-        run: bin/coverage-enforce 85
+        run: bin/coverage-enforce 100
 
       - name: Run Static Analysis
         run: bin/static-analysis
