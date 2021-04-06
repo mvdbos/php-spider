@@ -55,10 +55,8 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         $this->handler->persist($resource1);
 
         $this->assertEquals(1, $this->handler->count());
-        // Check the file contents through iterator access and directly
         foreach ($this->handler as $path => $resource) {
             $this->assertStringEndsWith('/index.html', $path);
-
         }
     }
 
@@ -87,7 +85,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
                 $expectedFileContents,
                 $resource->getResponse()->getBody()
             );
-
         }
     }
 

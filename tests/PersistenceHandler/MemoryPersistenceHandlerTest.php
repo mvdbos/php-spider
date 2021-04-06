@@ -59,7 +59,6 @@ class MemoryPersistenceHandlerTest extends TestCase
                 $expectedResources[$path],
                 $resource
             );
-
         }
     }
 }

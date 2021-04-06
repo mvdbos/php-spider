@@ -19,6 +19,16 @@
     <rule ref="rulesets/unusedcode.xml">
         <!-- we turn this back on as soon as an exception for inherited/implemented methods is available-->
         <exclude name="UnusedFormalParameter"/>
+        <exclude name="UnusedLocalVariable"/>
+    </rule>
+    <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable">
+        <properties>
+            <property name="allow-unused-foreach-variables">
+                <value>
+                   true
+                </value>
+            </property>
+        </properties>
     </rule>
 
     <rule ref="rulesets/codesize.xml" >
