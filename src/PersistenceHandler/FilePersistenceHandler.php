@@ -141,7 +141,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function completePath(?string $path): string
     {
-        if ($path == null) {
+        if ($path == '') {
             $path = "/" . $this->defaultFilename;
         } elseif (substr($path, -1, 1) === '/') {
             $path .= $this->defaultFilename;
