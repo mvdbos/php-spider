@@ -22,6 +22,15 @@ class RestrictToBaseUriFilterTest extends TestCase
 {
     /**
      * @covers \VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
+     */
+    public function testInvalidUri()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new RestrictToBaseUriFilter('1gdf://fdsfds');
+    }
+
+    /**
+     * @covers \VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
      * @dataProvider matchURIProvider
      */
     public function testMatch($href, $expected)

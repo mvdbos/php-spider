@@ -107,11 +107,11 @@ class DiscoveredUri implements UriInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getPath(): ?string
+    public function getPath(): string
     {
-        return $this->decorated->getPath();
+        return $this->decorated->getPath() ?: '';
     }
 
     /**

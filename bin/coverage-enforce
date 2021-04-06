@@ -4,15 +4,18 @@
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 
-if ($argc < 2 || !is_numeric($argv[1])) {
-    exit("Usage: coverage-enforce <percentage> (e.g. 80)\n");
+if ($argc == 2 && is_numeric($argv[1])) {
+    $requiredLineCoverage = floatval($argv[1]);
+    if ($requiredLineCoverage > 100) {
+        exit("Usage: coverage-enforce <percentage> (percentage <= 100)\n");
+    }
+} else {
+    $requiredLineCoverage = 100;
 }
 
-$requiredLineCoverage = floatval($argv[1]);
-
-print "\n\e[0;37m############################################################\e[0m";
+print "\n\e[0;37m#############################################################\e[0m";
 print "\n\e[0;37m# Starting Unit Tests with code coverage. Requirement: {$requiredLineCoverage}% #\e[0m";
-print "\n\e[0;37m############################################################\n\n\e[0m";
+print "\n\e[0;37m#############################################################\n\n\e[0m";
 
 chdir(realpath(dirname(__FILE__) . '/../'));
 if (!file_exists("./build/coverage")) {
@@ -34,6 +37,6 @@ if ($percentage < $requiredLineCoverage) {
     print "\n\n\e[0;37;41mLine Coverage NOT OK (Actual coverage of {$percentage}% < requirement of {$requiredLineCoverage}%)\e[0m\n\n";
     exit(1);
 } else {
-    print "\n\n\e[0;37;42mUnit tests and line coverage OK (Actual coverage of {$percentage}% >= requirement of {$requiredLineCoverage}%)\e[0m\n\n";
+    print "\n\n\e[0;30;42mUnit tests and line coverage OK (Actual coverage of {$percentage}% >= requirement of {$requiredLineCoverage}%)\e[0m\n\n";
     exit(0);
 }
