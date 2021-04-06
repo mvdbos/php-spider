@@ -21,7 +21,7 @@ use VDB\Uri\Uri;
 class UriWithQueryStringFilterTest extends TestCase
 {
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter
+     * @covers \VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter
      */
     public function testMatch()
     {
