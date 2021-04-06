@@ -1,5 +1,5 @@
 ![Build Status](https://github.com/mvdbos/php-spider/workflows/PHP-Spider/badge.svg?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/vdb/php-spider/v/stable)](https://packagist.org/packages/vdb/php-spider)
+[![Latest Stable Version](https://poser.pugx.org/vdb/php-spider/v)](https://packagist.org/packages/vdb/php-spider)
 [![Total Downloads](https://poser.pugx.org/vdb/php-spider/downloads)](https://packagist.org/packages/vdb/php-spider)
 [![License](https://poser.pugx.org/vdb/php-spider/license)](https://packagist.org/packages/vdb/php-spider)
 
