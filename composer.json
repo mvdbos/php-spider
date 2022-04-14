@@ -14,16 +14,16 @@
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.3||^8.0",
         "ext-dom": "*",
         "ext-pcntl": "*",
         "guzzlehttp/guzzle": "^6.0.0||^7.0.0",
-        "symfony/css-selector": "^3.0.0||^4.0.0||^5.0.0",
-        "symfony/dom-crawler": "^3.0.0||^4.0.0||^5.0.0",
-        "symfony/finder": "^3.0.0||^4.0.0||^5.0.0",
-        "symfony/event-dispatcher": "^4.0.0||^5.0.0",
+        "symfony/css-selector": "^3.0.0||^4.0.0||^5.0.0||^6.0",
+        "symfony/dom-crawler": "^3.0.0||^4.0.0||^5.0.0||^6.0",
+        "symfony/finder": "^3.0.0||^4.0.0||^5.0.0||^6.0",
+        "symfony/event-dispatcher": "^4.0.0||^5.0.0||^6.0",
         "vdb/uri": "^0.2.3",
-        "phan/phan": "^4.0"
+        "phan/phan": "^4.0||^5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0.0",
