@@ -13,6 +13,7 @@ use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
+use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Spider;
 
 
@@ -41,7 +42,7 @@ $queueManager->getDispatcher()->addSubscriber($LogHandler);
 $spider->getDiscovererSet()->maxDepth = 1;
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
-$queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+$queueManager->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
 
 $spider->setQueueManager($queueManager);
 
@@ -60,7 +61,7 @@ $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $all
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
-// We add an eventlistener to the crawler that implements a politeness policy.
+// We add an event listener to the crawler that implements a politeness policy.
 // We wait 100ms between every request to the same domain
 $politenessPolicyEventListener = new PolitenessPolicyListener(100);
 $spider->getDownloader()->getDispatcher()->addListener(

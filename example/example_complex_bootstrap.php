@@ -1,11 +1,13 @@
 <?php
+
+use Composer\Autoload\ClassLoader;
 use Example\GuzzleTimerMiddleware;
 
 $start = microtime(true);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loader = new \Composer\Autoload\ClassLoader();
+$loader = new ClassLoader();
 
 // register classes with namespaces
 $loader->add('Example', __DIR__ . '/lib');
