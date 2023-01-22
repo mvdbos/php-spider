@@ -9,7 +9,8 @@ use VDB\Spider\Spider;
 require_once('example_complex_bootstrap.php');
 
 // Create Spider
-$spider = new Spider('http://dmoztools.net');
+$seed = 'https://www.dmoz-odp.org/';
+$spider = new Spider($seed);
 
 // Add a URI discoverer. Without it, the spider does nothing. In this case, we want <a> tags from a certain <div>
 $spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
