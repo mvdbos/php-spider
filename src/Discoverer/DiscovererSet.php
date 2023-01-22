@@ -12,20 +12,20 @@ class DiscovererSet
     /**
      * @var Discoverer[]
      */
-    private $discoverers = array();
+    private array $discoverers = array();
 
     /** @var PreFetchFilterInterface[] */
-    private $filters = array();
+    private array $filters = array();
 
     /**
      * @var int maximum crawl depth
      */
-    public $maxDepth = 3;
+    public int $maxDepth = 3;
 
     /**
      * @var array the list of already visited URIs with the depth they were discovered on as value
      */
-    private $alreadySeenUris = array();
+    private array $alreadySeenUris = array();
 
     public function __construct(array $discoverers = array())
     {
@@ -102,9 +102,6 @@ class DiscovererSet
         $this->discoverers[$discoverer->getName()] = $discoverer;
     }
 
-    /**
-     * @param PreFetchFilterInterface $filter
-     */
     public function addFilter(PreFetchFilterInterface $filter)
     {
         $this->filters[] = $filter;

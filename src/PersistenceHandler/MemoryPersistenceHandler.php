@@ -46,7 +46,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return void Any returned value is ignored.
      */
-    public function next()
+    public function next(): void
     {
         next($this->resources);
     }
@@ -70,7 +70,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->resources);
     }

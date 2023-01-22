@@ -1,7 +1,8 @@
 <?php
-
 namespace VDB\Spider\Discoverer;
 
+/* @phan-file-suppress PhanUnreferencedUseNormal */
+use DOMElement;
 use ErrorException;
 use Symfony\Component\DomCrawler\Crawler;
 use VDB\Spider\Resource;
@@ -44,7 +45,7 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
 
         $uris = array();
         foreach ($crawler as $node) {
-            /**@var $node \DOMElement */
+            /**@var $node DOMElement */
             try {
                 $baseUri = $resource->getUri()->toString();
                 $href = $node->getAttribute('href');
