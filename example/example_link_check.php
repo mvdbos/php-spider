@@ -24,8 +24,7 @@ use Example\StatsHandler;
 require_once('example_complex_bootstrap.php');
 
 // The URI we want to start crawling with
-$seed = 'http://dmoztools.net/';
-
+$seed = 'https://www.dmoz-odp.org/';
 
 // We want to allow all subdomains of dmoz.org
 $allowSubDomains = true;

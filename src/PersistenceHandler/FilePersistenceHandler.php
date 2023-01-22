@@ -104,6 +104,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @return integer|double|string|boolean|null
      * @throws Exception
      */
+    #[\ReturnTypeWillChange] // @phan-suppress-current-line PhanUndeclaredClassAttribute
     public function key()
     {
         return $this->getIterator()->key();
