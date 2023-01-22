@@ -81,8 +81,9 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     /**
      * @return void
+     * @throws Exception
      */
-    public function next()
+    public function next(): void
     {
         $this->getIterator()->next();
     }
@@ -121,7 +122,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @return void
      * @throws Exception
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->getIterator()->rewind();
     }

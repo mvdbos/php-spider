@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="[CHECK] Phan" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/vendor/bin/phan" scriptParameters=" --no-progress-bar">
+    <CommandLine workingDirectory="$PROJECT_DIR$/">
+      <envs>
+        <env name="PHAN_DISABLE_XDEBUG_WARN" value="1" />
+      </envs>
+    </CommandLine>
+    <method v="2" />
+  </configuration>
+</component>
