@@ -3,7 +3,6 @@
 [![Total Downloads](https://poser.pugx.org/vdb/php-spider/downloads)](https://packagist.org/packages/vdb/php-spider)
 [![License](https://poser.pugx.org/vdb/php-spider/license)](https://packagist.org/packages/vdb/php-spider)
 
-> Note on backwards compatibility break: since v0.5.0, Symfony EventDispatcher v3 is no longer supported and PHP Spider requires v4 or v5. If you are stuck with v3, you can still use PHP Spider v0.4.x. The reason for this is because of a BC break in the EventDispatcher v5, which we needed to support to keep up with modern frameworks.
 
 PHP-Spider Features
 ======
@@ -29,6 +28,8 @@ The easiest way to install PHP-Spider is with [composer](https://getcomposer.org
 Usage
 -----
 This is a very simple example. This code can be found in [example/example_simple.php](example/example_simple.php). For a more complete example with some logging, caching and filters, see [example/example_complex.php](example/example_complex.php). That file contains a more real-world example.
+
+>> Note that by default, the spider stops processing when it encounters a 4XX or 5XX error responses. To set the spider up to keep processing, please see [the link checker example](https://github.com/mvdbos/php-spider/blob/master/example/example_link_check.php). It uses a custom request handler, that configures the default Guzzle request handler to not fail on 4XX and 5XX responses. 
 
 First create the spider
 ```php
