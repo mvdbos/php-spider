@@ -17,9 +17,11 @@ use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
+use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
+use VDB\Uri\FileUri;
 
 /**
  *
@@ -84,6 +86,31 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(1, $uris);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     * @covers \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     * @throws Exception
+     */
+    public function testRobotsTxtDisallowFilter()
+    {
+        $baseUri = "file://" . __DIR__;
+        $resourceUri = new DiscoveredUri($baseUri, 0);
+        $uriInBody1 = $baseUri . '/internal';
+        $uriInBody2 = $baseUri . '/foo';
+
+        $spiderResource = self::createResourceWithLinks($resourceUri, [$uriInBody1, $uriInBody2]);
+
+        $discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
+        $discovererSet->addFilter(new RobotsTxtDisallowFilter($baseUri));
+
+        $uris = $discovererSet->discover($spiderResource);
+        $this->assertCount(1, $uris);
+        $this->assertNotContains((new FileUri($uriInBody2))->toString(), array_map(fn($uri): string => (new FileUri($uri->toString()))->toString(), $uris));
     }
 
     /**

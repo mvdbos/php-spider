@@ -9,22 +9,14 @@ use VDB\Uri\UriInterface;
 
 class DiscoveredUri implements UriInterface
 {
-    /**
-     * @var UriInterface
-     */
-    protected $decorated;
-
-    /** @var int */
+    protected string|UriInterface $decorated;
     private int $depthFound;
 
     /**
-     * @param string|UriInterface $decorated
-     * @param int $depthFound
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */
-    public function __construct($decorated, int $depthFound)
+    public function __construct(UriInterface|string $decorated, int $depthFound)
     {
         if (!$decorated instanceof UriInterface) {
             $decorated = new Uri($decorated);
@@ -41,14 +33,6 @@ class DiscoveredUri implements UriInterface
     {
         return $this->depthFound;
     }
-
-//    /**
-//     * @param int $depthFound The depth this Uri was found on
-//     */
-//    public function setDepthFound(int $depthFound)
-//    {
-//        $this->depthFound = $depthFound;
-//    }
 
     // @codeCoverageIgnoreStart
     // We ignore coverage for all proxy methods below:

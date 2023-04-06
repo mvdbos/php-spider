@@ -9,7 +9,7 @@ PHP-Spider Features
 - supports two traversal algorithms: breadth-first and depth-first
 - supports crawl depth limiting, queue size limiting and max downloads limiting
 - supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP
-- comes with a useful set of URI filters, such as Domain limiting
+- comes with a useful set of URI filters, such as robots.txt and Domain limiting
 - supports custom URI filters, both prefetch (URI) and postfetch (Resource content)
 - supports custom request handling logic
 - supports Basic, Digest and NTLM HTTP authentication. See [example](example/example_basic_auth.php).
@@ -24,6 +24,10 @@ This Spider does not support Javascript.
 Installation
 ------------
 The easiest way to install PHP-Spider is with [composer](https://getcomposer.org/).  Find it on [Packagist](https://packagist.org/packages/vdb/php-spider).
+
+```bash
+$ composer require vdb/php-spider
+```
 
 Usage
 -----

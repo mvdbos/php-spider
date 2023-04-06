@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /foo
+
+User-agent: PHP-Spider
+Disallow: /bar

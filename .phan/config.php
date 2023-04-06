@@ -342,6 +342,7 @@ return [
     // your application should be included in this list.
     'directory_list' => [
         'src',
+        'vendor/spatie/robots-txt/src',
         'vendor/guzzlehttp/guzzle/src',
         'vendor/guzzlehttp/psr7/src',
         'vendor/psr/http-client',
