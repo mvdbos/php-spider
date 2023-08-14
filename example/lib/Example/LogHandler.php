@@ -20,7 +20,7 @@ class LogHandler implements EventSubscriberInterface
         $this->debug = $debug;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH => 'logFiltered',

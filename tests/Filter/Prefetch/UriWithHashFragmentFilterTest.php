@@ -11,8 +11,10 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use ErrorException;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Tests\TestCase;
+use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
 /**
@@ -22,6 +24,9 @@ class UriWithHashFragmentFilterTest extends TestCase
 {
     /**
      * @covers \VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
     public function testMatch()
     {

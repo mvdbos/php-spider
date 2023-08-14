@@ -1,10 +1,12 @@
 <?php
 namespace VDB\Spider\Tests;
 
+use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
-use VDB\Uri\Uri;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
+use VDB\Uri\Uri;
 
 /**
  */
@@ -13,13 +15,17 @@ class ResourceTest extends TestCase
     /**
      * @var Resource
      */
-    protected $resource;
+    protected Resource $resource;
 
     /**
      * @var string
      */
     protected $html;
 
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     */
     protected function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
@@ -61,13 +67,13 @@ class ResourceTest extends TestCase
     public function testSerialization()
     {
         $serialized = serialize($this->resource);
-        $unserialized = unserialize($serialized);
+        $deserialized = unserialize($serialized);
 
-        $this->assertInstanceOf('VDB\\Spider\\Resource', $unserialized);
-        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $unserialized->getResponse());
-        $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $unserialized->getUri());
-        $this->assertEquals($this->resource->getUri()->__toString(), $unserialized->getUri()->__toString());
-        $this->assertEquals($this->html, $unserialized->getResponse()->getBody()->__toString());
-        $this->assertEquals($this->resource->getCrawler()->html(), $unserialized->getCrawler()->html());
+        $this->assertInstanceOf('VDB\\Spider\\Resource', $deserialized);
+        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $deserialized->getResponse());
+        $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $deserialized->getUri());
+        $this->assertEquals($this->resource->getUri()->__toString(), $deserialized->getUri()->__toString());
+        $this->assertEquals($this->html, $deserialized->getResponse()->getBody()->__toString());
+        $this->assertEquals($this->resource->getCrawler()->html(), $deserialized->getCrawler()->html());
     }
 }

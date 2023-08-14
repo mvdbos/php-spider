@@ -8,15 +8,14 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 trait DispatcherTrait
 {
-    /** @var EventDispatcherInterface */
-    private $dispatcher;
+    private ?EventDispatcherInterface $dispatcher = null;
 
     /**
      * @return EventDispatcherInterface
      */
     public function getDispatcher(): EventDispatcherInterface
     {
-        if (!$this->dispatcher) {
+        if ($this->dispatcher == null) {
             $this->dispatcher = new EventDispatcher();
         }
 

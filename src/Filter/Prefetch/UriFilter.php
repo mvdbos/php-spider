@@ -13,7 +13,7 @@ class UriFilter implements PreFetchFilterInterface
     /**
      * @var array An array of regexes
      */
-    public $regexes = array();
+    public array $regexes = array();
 
     public function __construct(array $regexes = array())
     {

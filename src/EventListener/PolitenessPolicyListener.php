@@ -10,13 +10,12 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class PolitenessPolicyListener
 {
-    /** @var string */
-    private $previousHostname;
+    private ?string $previousHostname = null;
 
     /** @var int the delay in microseconds between requests to the same domain */
-    private $requestDelay;
+    private int $requestDelay;
 
-    public $totalDelay = 0;
+    public int $totalDelay = 0;
 
     /**
      * @param int $requestDelay the delay in milliseconds between requests to the same domain
@@ -29,7 +28,7 @@ class PolitenessPolicyListener
     /**
      * @param GenericEvent $event
      */
-    public function onCrawlPreRequest(GenericEvent $event)
+    public function onCrawlPreRequest(GenericEvent $event): void
     {
         $currentHostname = $event->getArgument('uri')->getHost();
 

@@ -11,12 +11,14 @@
 
 namespace VDB\Spider\Tests\Downloader;
 
+use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
 /**
@@ -24,21 +26,14 @@ use VDB\Uri\Uri;
  */
 class DownloaderTest extends TestCase
 {
-    /**
-     * @var Downloader
-     */
-    private $downloader;
+    private Downloader $downloader;
+    protected Resource $resource;
+    protected string $html;
 
     /**
-     * @var Resource
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
-    protected $resource;
-
-    /**
-     * @var string
-     */
-    protected $html;
-
     public function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
@@ -71,6 +66,9 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
     public function testDownload()
     {
@@ -80,6 +78,9 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
     public function testDownloadFailed()
     {
@@ -97,6 +98,9 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
     public function testFilterNotMatches()
     {
@@ -114,6 +118,9 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     *
+     * @throws UriSyntaxException
+     * @throws ErrorException
      */
     public function testDownloadLimit()
     {

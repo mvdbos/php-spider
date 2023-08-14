@@ -34,7 +34,7 @@ class UriFilterTest extends TestCase
      * @throws ErrorException
      * @throws UriSyntaxException
      */
-    public function testMatch($regexes, $href, $expected)
+    public function testMatch(array $regexes, string $href, bool $expected)
     {
         $filter = new UriFilter($regexes);
         $uri = new Uri($href);

@@ -13,7 +13,7 @@ class AllowedPortsFilter implements PreFetchFilterInterface
     /**
      * @var array
      */
-    private $allowedPorts;
+    private array $allowedPorts;
 
     /**
      * The whitelist of allowed ports

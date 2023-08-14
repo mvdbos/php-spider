@@ -20,20 +20,11 @@ class Spider
 {
     use DispatcherTrait;
 
-    /** @var DownloaderInterface */
-    private $downloader;
-
-    /** @var QueueManagerInterface */
-    private $queueManager;
-
-    /** @var DiscovererSet */
-    private $discovererSet;
-
-    /** @var DiscoveredUri The URI of the site to spider */
-    private $seed;
-
-    /** @var string the unique id of this spider instance */
-    private $spiderId;
+    private DownloaderInterface $downloader;
+    private QueueManagerInterface $queueManager;
+    private DiscovererSet $discovererSet;
+    private DiscoveredUri $seed;
+    private string $spiderId;
 
     /**
      * @param string $seed the URI to start crawling
@@ -70,7 +61,7 @@ class Spider
     /**
      * @param string $uri
      */
-    private function setSeed(string $uri)
+    private function setSeed(string $uri): void
     {
         if (strlen($uri) == 0) {
             throw new InvalidArgumentException("Empty seed");
@@ -83,7 +74,7 @@ class Spider
         }
     }
 
-    private function setSpiderId(?string $spiderId)
+    private function setSpiderId(?string $spiderId): void
     {
         if (null !== $spiderId) {
             $this->spiderId = $spiderId;
@@ -97,7 +88,7 @@ class Spider
      *
      * @return void
      */
-    public function crawl()
+    public function crawl(): void
     {
         $this->getQueueManager()->addUri($this->seed);
         $this->getDownloader()->getPersistenceHandler()->setSpiderId($this->spiderId);
@@ -122,7 +113,7 @@ class Spider
      * param QueueManagerInterface $queueManager
      * @param QueueManagerInterface $queueManager
      */
-    public function setQueueManager(QueueManagerInterface $queueManager)
+    public function setQueueManager(QueueManagerInterface $queueManager): void
     {
         $this->queueManager = $queueManager;
     }
@@ -152,7 +143,7 @@ class Spider
      * @param GenericEvent $event
      * @param string $eventName
      */
-    private function dispatch(GenericEvent $event, string $eventName)
+    private function dispatch(GenericEvent $event, string $eventName): void
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
@@ -176,7 +167,7 @@ class Spider
      *
      * @SuppressWarnings(PHPMD.IfStatementAssignment)
      */
-    private function doCrawl()
+    private function doCrawl(): void
     {
         while ($currentUri = $this->getQueueManager()->next()) {
             if ($this->getDownloader()->isDownLoadLimitExceeded()) {
@@ -218,7 +209,7 @@ class Spider
      * param DiscovererSet $discovererSet
      * @param DiscovererSet $discovererSet
      */
-    public function setDiscovererSet(DiscovererSet $discovererSet)
+    public function setDiscovererSet(DiscovererSet $discovererSet): void
     {
         $this->discovererSet = $discovererSet;
     }
@@ -228,7 +219,7 @@ class Spider
      *
      * @codeCoverageIgnore
      */
-    public function handleSignal($signal)
+    public function handleSignal($signal): void
     {
         switch ($signal) {
             case SIGTERM:

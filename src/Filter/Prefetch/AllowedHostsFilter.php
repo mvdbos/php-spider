@@ -11,9 +11,9 @@ use VDB\Uri\UriInterface;
 class AllowedHostsFilter implements PreFetchFilterInterface
 {
     /** @var array The hostnames to filter links with */
-    private $allowedHosts;
+    private array $allowedHosts;
 
-    private $allowSubDomains;
+    private bool $allowSubDomains;
 
     /**
      * @param string[] $seeds

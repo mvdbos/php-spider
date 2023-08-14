@@ -17,11 +17,10 @@ use VDB\Uri\Uri;
  */
 abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterface
 {
-    /** @var string */
-    protected $selector;
+    protected string $selector;
 
     /**
-     * @param $selector
+     * @param string $selector
      */
     public function __construct(string $selector)
     {

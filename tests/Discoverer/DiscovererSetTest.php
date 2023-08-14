@@ -11,23 +11,22 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use ErrorException;
+use Exception;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  *
  */
 class DiscovererSetTest extends DiscovererTestCase
 {
-    /**
-     * @var DiscovererSet
-     */
-    private $discovererSet;
-
+    private DiscovererSet $discovererSet;
 
     public function setUp(): void
     {
@@ -116,6 +115,11 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(2, $uris);
     }
 
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     * @throws Exception
+     */
     public function testInvalidUriSkipped()
     {
         $resourceUri = new DiscoveredUri('http://php-spider.org/', 0);
@@ -131,6 +135,11 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     * @throws Exception
+     */
     public function testDuplicatesRemoved()
     {
 
@@ -146,6 +155,11 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     * @throws Exception
+     */
     public function testAlreadySeenSkipped()
     {
         $resourceUri = new DiscoveredUri('http://php-spider.org:8080/internal/', 0);

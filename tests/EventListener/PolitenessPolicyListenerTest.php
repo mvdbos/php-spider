@@ -10,10 +10,10 @@
 
 namespace VDB\Spider\Tests\EventListener;
 
-use VDB\Spider\Tests\TestCase;
-use VDB\Spider\EventListener\PolitenessPolicyListener;
-use VDB\Spider\Event\SpiderEvents;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\EventListener\PolitenessPolicyListener;
+use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
 /**

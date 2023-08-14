@@ -10,7 +10,7 @@ use VDB\Uri\UriInterface;
  */
 class AllowedSchemeFilter implements PreFetchFilterInterface
 {
-    private $allowedSchemes;
+    private array $allowedSchemes;
 
     /**
      * @param string[] $schemes

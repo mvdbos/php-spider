@@ -15,7 +15,7 @@ class DiscoveredUri implements UriInterface
     protected $decorated;
 
     /** @var int */
-    private $depthFound;
+    private int $depthFound;
 
     /**
      * @param string|UriInterface $decorated

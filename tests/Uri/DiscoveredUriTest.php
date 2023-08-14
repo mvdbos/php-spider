@@ -10,9 +10,10 @@
 
 namespace VDB\Spider\Tests\Uri;
 
+use ErrorException;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  *
@@ -21,6 +22,9 @@ class DiscoveredUriTest extends TestCase
 {
     /**
      * @covers \VDB\Spider\Uri\DiscoveredUri
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
      */
     public function testDepthFound()
     {

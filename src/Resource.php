@@ -13,17 +13,10 @@ use VDB\Spider\Uri\DiscoveredUri;
  */
 class Resource
 {
-    /** @var DiscoveredUri */
-    protected $uri;
-
-    /** @var ResponseInterface */
-    protected $response;
-
-    /** @var Crawler */
-    protected $crawler;
-
-    /** @var string */
-    protected $body;
+    protected DiscoveredUri $uri;
+    protected ResponseInterface $response;
+    protected ?Crawler $crawler = null;
+    protected string $body;
 
     /**
      * @param DiscoveredUri $uri
@@ -41,7 +34,7 @@ class Resource
      */
     public function getCrawler(): Crawler
     {
-        if (!$this->crawler instanceof Crawler) {
+        if ($this->crawler == null) {
             $this->crawler = new Crawler('', $this->getUri()->toString());
             $this->crawler->addContent(
                 $this->getResponse()->getBody()->__toString(),

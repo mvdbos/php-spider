@@ -12,7 +12,7 @@ interface FilterableInterface
      * @param string $reason
      * @return void
      */
-    public function setFiltered($filtered = true, $reason = '');
+    public function setFiltered(bool $filtered = true, string $reason = ''): void;
 
     /**
      * @return boolean whether the item matched a filter

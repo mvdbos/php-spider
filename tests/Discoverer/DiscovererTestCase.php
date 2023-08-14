@@ -12,39 +12,32 @@
 namespace VDB\Spider\Tests\Discoverer;
 
 use DOMDocument;
+use DomElement;
+use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 
 abstract class DiscovererTestCase extends TestCase
 {
-    /** @var \DomDocument */
-    protected $domDocument;
+    protected DomDocument $domDocument;
+    protected DomElement $domAnchor;
+    protected DomElement $domAnchor2;
+    protected Resource $spiderResource;
+    protected DiscoveredUri $uri;
+    protected string $uriInBody1;
+    protected string $uriInBody2;
+    protected string $resourceContent;
 
-    /** @var \DomElement */
-    protected $domAnchor;
-
-    /** @var \DomElement */
-    protected $domAnchor2;
-
-    /** @var Resource */
-    protected $spiderResource;
-
-    /** @var DiscoveredUri */
-    protected $uri;
-
-    /** @var string */
-    protected $uriInBody1;
-
-    /** @var string */
-    protected $uriInBody2;
-
-    /** @var string */
-    protected $resourceContent;
-
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         $this->uriInBody1 = 'http://php-spider.org/contact/';
@@ -83,7 +76,7 @@ abstract class DiscovererTestCase extends TestCase
             $html->appendChild($domAnchor);
         }
         $doc = $domDocument->saveHTML();
-        if ($doc == false) {
+        if (!$doc) {
             throw new Exception("Could not create DOM document");
         }
         return $doc;

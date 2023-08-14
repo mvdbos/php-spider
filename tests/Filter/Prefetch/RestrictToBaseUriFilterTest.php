@@ -42,7 +42,7 @@ class RestrictToBaseUriFilterTest extends TestCase
         $this->assertEquals($expected, $filter->match($uri));
     }
 
-    public function matchURIProvider()
+    public function matchURIProvider(): array
     {
         return array(
             array('http://example.org', true),

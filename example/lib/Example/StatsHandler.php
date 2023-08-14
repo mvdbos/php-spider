@@ -14,15 +14,15 @@ use VDB\Uri\UriInterface;
 class StatsHandler implements EventSubscriberInterface
 {
     /** @var string */
-    protected $spiderId;
+    protected string $spiderId;
 
-    protected $persisted = array();
+    protected array $persisted = array();
 
-    protected $queued = array();
+    protected array $queued = array();
 
-    protected $filtered = array();
+    protected array $filtered = array();
 
-    protected $failed = array();
+    protected array $failed = array();
 
     public static function getSubscribedEvents(): array
     {

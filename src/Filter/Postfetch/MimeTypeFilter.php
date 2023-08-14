@@ -10,7 +10,7 @@ use VDB\Spider\Resource;
  */
 class MimeTypeFilter implements PostFetchFilterInterface
 {
-    protected $allowedMimeType = '';
+    protected string $allowedMimeType = '';
 
     public function __construct($allowedMimeType)
     {
