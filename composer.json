@@ -23,7 +23,7 @@
         "symfony/finder": "^3.0.0||^4.0.0||^5.0.0||^6.0",
         "symfony/event-dispatcher": "^4.0.0||^5.0.0||^6.0",
         "vdb/uri": "^0.3.2",
-        "spatie/robots-txt": "^1.0",
+        "spatie/robots-txt": "^2.0",
         "phan/phan": "^4.0||^5.0"
     },
     "require-dev": {
