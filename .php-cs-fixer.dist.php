@@ -3,8 +3,8 @@
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__ . '/src/');
 
-return PhpCsFixer\Config::create()
-    ->setRules([
+$fixer = new PhpCsFixer\Config();
+return $fixer->setRules([
         '@PSR2' => true
     ])
     ->setFinder($finder);
