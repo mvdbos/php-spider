@@ -9,6 +9,7 @@ use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
+use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
@@ -36,6 +37,7 @@ $queueManager = new InMemoryQueueManager();
 
 $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
+$spider->getDownloader()->getDispatcher()->addSubscriber($statsHandler);
 
 // Set some sane defaults for this example.
 // We only visit the first level of http://dmoztools.net. We stop at 10 queued resources
@@ -47,7 +49,7 @@ $queueManager->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FI
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
@@ -60,6 +62,7 @@ $spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http', 'ht
 $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
+$spider->getDiscovererSet()->addFilter(new RobotsTxtDisallowFilter($seed, 'PHP-Spider'));
 
 // We add an event listener to the crawler that implements a politeness policy.
 // We wait 100ms between every request to the same domain
@@ -131,3 +134,8 @@ foreach ($downloaded as $resource) {
     echo "\n - " . $contentLengthString . " $title ($uri)";
 }
 echo "\n";
+
+echo "\nFAILED RESOURCES: ";
+foreach ($statsHandler->getFailed() as $uri => $message) {
+    echo "\n - " . $uri . " failed because: " . $message;
+}

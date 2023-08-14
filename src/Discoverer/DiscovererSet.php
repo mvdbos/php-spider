@@ -42,7 +42,7 @@ class DiscovererSet
      * If it already exists, it is not overwritten, since we want to keep the
      * first depth it was found at.
      */
-    private function markSeen(DiscoveredUri $uri)
+    private function markSeen(DiscoveredUri $uri): void
     {
         $uriString = $uri->normalize()->toString();
         if (!array_key_exists($uriString, $this->alreadySeenUris)) {
@@ -97,12 +97,12 @@ class DiscovererSet
      *
      * @param discovererInterface $discoverer The discoverer instance
      */
-    public function set(DiscovererInterface $discoverer)
+    public function set(DiscovererInterface $discoverer): void
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
     }
 
-    public function addFilter(PreFetchFilterInterface $filter)
+    public function addFilter(PreFetchFilterInterface $filter): void
     {
         $this->filters[] = $filter;
     }
@@ -110,7 +110,7 @@ class DiscovererSet
     /**
      * @param UriInterface[] $discoveredUris
      */
-    private function normalize(array &$discoveredUris)
+    private function normalize(array &$discoveredUris): void
     {
         /** @var DiscoveredUri[] $discoveredUris */
         foreach ($discoveredUris as $k => $uri) {
@@ -121,7 +121,7 @@ class DiscovererSet
     /**
      * @param UriInterface[] $discoveredUris
      */
-    private function filterAlreadySeen(array &$discoveredUris)
+    private function filterAlreadySeen(array &$discoveredUris): void
     {
         foreach ($discoveredUris as $k => $uri) {
             if (array_key_exists($uri->toString(), $this->alreadySeenUris)) {
@@ -134,7 +134,7 @@ class DiscovererSet
      * Filter out any URI that matches any of the filters
      * @param UriInterface[] $discoveredUris
      */
-    private function filter(array &$discoveredUris)
+    private function filter(array &$discoveredUris): void
     {
         foreach ($discoveredUris as $k => $uri) {
             foreach ($this->filters as $filter) {
@@ -148,7 +148,7 @@ class DiscovererSet
     /**
      * @param UriInterface[] $discoveredUris
      */
-    private function removeDuplicates(array &$discoveredUris)
+    private function removeDuplicates(array &$discoveredUris): void
     {
         // make sure there are no duplicates in the list
         $tmp = array();

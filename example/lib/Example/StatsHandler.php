@@ -35,22 +35,22 @@ class StatsHandler implements EventSubscriberInterface
         );
     }
 
-    public function addToQueued(GenericEvent $event)
+    public function addToQueued(GenericEvent $event): void
     {
         $this->queued[] = $event->getArgument('uri');
     }
 
-    public function addToPersisted(GenericEvent $event)
+    public function addToPersisted(GenericEvent $event): void
     {
         $this->persisted[] = $event->getArgument('uri');
     }
 
-    public function addToFiltered(GenericEvent $event)
+    public function addToFiltered(GenericEvent $event): void
     {
         $this->filtered[] = $event->getArgument('uri');
     }
 
-    public function addToFailed(GenericEvent $event)
+    public function addToFailed(GenericEvent $event): void
     {
         $this->failed[$event->getArgument('uri')->toString()] = $event->getArgument('message');
     }
