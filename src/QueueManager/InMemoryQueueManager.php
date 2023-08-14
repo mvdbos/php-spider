@@ -18,17 +18,17 @@ class InMemoryQueueManager implements QueueManagerInterface
     use DispatcherTrait;
 
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
-    public $maxQueueSize = 0;
+    public int $maxQueueSize = 0;
 
     /** @var int the amount of times a Resource was enqueued */
-    private $currentQueueSize = 0;
+    private int $currentQueueSize = 0;
 
     /** @var DiscoveredUri[] the list of URIs to process */
-    private $traversalQueue = array();
+    private array $traversalQueue = array();
 
     /** @var int The traversal algorithm to use. Choose from the class constants
      */
-    private $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
+    private int $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST;
 
     /**
      * InMemoryQueueManager constructor.
@@ -50,7 +50,7 @@ class InMemoryQueueManager implements QueueManagerInterface
     /**
      * @param int $traversalAlgorithm Choose from the class constants
      */
-    public function setTraversalAlgorithm(int $traversalAlgorithm)
+    public function setTraversalAlgorithm(int $traversalAlgorithm): void
     {
         if ($traversalAlgorithm != QueueManagerInterface::ALGORITHM_DEPTH_FIRST
             && $traversalAlgorithm != QueueManagerInterface::ALGORITHM_BREADTH_FIRST) {
@@ -63,14 +63,14 @@ class InMemoryQueueManager implements QueueManagerInterface
      * @param DiscoveredUri $uri
      * @throws MaxQueueSizeExceededException
      */
-    public function addUri(DiscoveredUri $uri)
+    public function addUri(DiscoveredUri $uri): void
     {
         if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
             throw new MaxQueueSizeExceededException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
         }
 
         $this->currentQueueSize++;
-        array_push($this->traversalQueue, $uri);
+        $this->traversalQueue[] = $uri;
 
         $this->getDispatcher()->dispatch(
             new GenericEvent($this, array('uri' => $uri)),

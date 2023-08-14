@@ -14,7 +14,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 class GuzzleRequestHandler implements RequestHandlerInterface
 {
     /** @var Client */
-    private $client;
+    private Client $client;
 
     /**
      * GuzzleRequestHandler constructor.

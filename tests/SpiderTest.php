@@ -1,6 +1,6 @@
 <?php
 
-namespace VDB\Spider;
+namespace VDB\Spider\Tests;
 
 use ErrorException;
 use Exception;
@@ -9,61 +9,46 @@ use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
-use VDB\Spider\Tests\TestCase;
+use VDB\Spider\QueueManager\QueueManagerInterface;
+use VDB\Spider\Resource;
+use VDB\Spider\Spider;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Http;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class SpiderTest extends TestCase
 {
-    /**
-     * @var Spider
-     */
-    protected $spider;
+    protected Spider $spider;
+    protected MockObject $requestHandler;
 
-    /**
-     * @var MockObject
-     */
-    protected $requestHandler;
+    protected DiscoveredUri $linkA;
+    protected DiscoveredUri $linkB;
+    protected DiscoveredUri $linkC;
+    protected DiscoveredUri $linkD;
+    protected DiscoveredUri $linkE;
+    protected DiscoveredUri $linkF;
+    protected DiscoveredUri $linkG;
 
-    /** @var DiscoveredUri */
-    protected $linkA;
-    /** @var DiscoveredUri */
-    protected $linkB;
-    /** @var DiscoveredUri */
-    protected $linkC;
-    /** @var DiscoveredUri */
-    protected $linkD;
-    /** @var DiscoveredUri */
-    protected $linkE;
-    /** @var DiscoveredUri */
-    protected $linkF;
-    /** @var DiscoveredUri */
-    protected $linkG;
+    protected Response $responseA;
+    protected Response $responseB;
+    protected Response $responseC;
+    protected Response $responseD;
+    protected Response $responseE;
+    protected Response $responseF;
+    protected Response $responseG;
 
-    /** @var Response */
-    protected $responseA;
-    /** @var Response */
-    protected $responseB;
-    /** @var Response */
-    protected $responseC;
-    /** @var Response */
-    protected $responseD;
-    /** @var Response */
-    protected $responseE;
-    /** @var Response */
-    protected $responseF;
-    /** @var Response */
-    protected $responseG;
-
-    /** @var string */
-    protected $hrefA;
-    protected $hrefB;
-    protected $hrefC;
-    protected $hrefD;
-    protected $hrefE;
-    protected $hrefF;
-    protected $hrefG;
+    protected string $hrefA;
+    protected string $hrefB;
+    protected string $hrefC;
+    protected string $hrefD;
+    protected string $hrefE;
+    protected string $hrefF;
+    protected string $hrefG;
 
     /**
      * @var array An associative array, containing a map of $this->linkX to $this->responseX.
@@ -74,7 +59,7 @@ class SpiderTest extends TestCase
      * @return Resource
      * @throws ErrorException
      */
-    public function doTestRequest()
+    public function doTestRequest(): Resource
     {
         $link = func_get_arg(0);
 
@@ -123,7 +108,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlBFSDefaultBehaviour()
     {
-        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
         $this->spider->getDiscovererSet()->maxDepth = 1000;
 
         $this->spider->crawl();
@@ -179,7 +164,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlBFSMaxDepthOne()
     {
-        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
         $this->spider->getDiscovererSet()->maxDepth = 1;
 
         $this->spider->crawl();
@@ -218,7 +203,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlBFSMaxQueueSize()
     {
-        $this->spider->getQueueManager()->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
+        $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
         $this->spider->getDiscovererSet()->maxDepth = 1000;
         $this->spider->getDownloader()->setDownloadLimit(3);
 

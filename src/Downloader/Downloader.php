@@ -19,16 +19,16 @@ class Downloader implements DownloaderInterface
     use DispatcherTrait;
 
     /** @var PersistenceHandlerInterface */
-    private $persistenceHandler;
+    private PersistenceHandlerInterface $persistenceHandler;
 
     /** @var RequestHandlerInterface */
-    private $requestHandler;
+    private RequestHandlerInterface $requestHandler;
 
     /** @var int the maximum number of downloaded resources. 0 means no limit */
-    private $downloadLimit = 0;
+    private int $downloadLimit = 0;
 
     /** @var PostFetchFilterInterface[] */
-    private $postFetchFilters = array();
+    private array $postFetchFilters = array();
 
     /**
      * Downloader constructor.
@@ -72,7 +72,7 @@ class Downloader implements DownloaderInterface
     /**
      * @param PostFetchFilterInterface $filter
      */
-    public function addPostFetchFilter(PostFetchFilterInterface $filter)
+    public function addPostFetchFilter(PostFetchFilterInterface $filter): void
     {
         $this->postFetchFilters[] = $filter;
     }
@@ -81,7 +81,7 @@ class Downloader implements DownloaderInterface
      * @param DiscoveredUri $uri
      * @return false|Resource
      */
-    public function download(DiscoveredUri $uri)
+    public function download(DiscoveredUri $uri): Resource|false
     {
         $resource = $this->fetchResource($uri);
 
@@ -109,7 +109,7 @@ class Downloader implements DownloaderInterface
      * @param GenericEvent $event
      * @param string $eventName
      */
-    private function dispatch(GenericEvent $event, string $eventName)
+    private function dispatch(GenericEvent $event, string $eventName): void
     {
         $this->getDispatcher()->dispatch($event, $eventName);
     }
@@ -118,7 +118,7 @@ class Downloader implements DownloaderInterface
      * @param DiscoveredUri $uri
      * @return Resource|false
      */
-    protected function fetchResource(DiscoveredUri $uri)
+    protected function fetchResource(DiscoveredUri $uri): Resource|false
     {
         $resource = false;
 
@@ -162,7 +162,7 @@ class Downloader implements DownloaderInterface
     /**
      * @param PersistenceHandlerInterface $persistenceHandler
      */
-    public function setPersistenceHandler(PersistenceHandlerInterface $persistenceHandler)
+    public function setPersistenceHandler(PersistenceHandlerInterface $persistenceHandler): void
     {
         $this->persistenceHandler = $persistenceHandler;
     }
@@ -178,7 +178,7 @@ class Downloader implements DownloaderInterface
     /**
      * @param RequestHandlerInterface $requestHandler
      */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler)
+    public function setRequestHandler(RequestHandlerInterface $requestHandler): void
     {
         $this->requestHandler = $requestHandler;
     }

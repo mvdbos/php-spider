@@ -13,7 +13,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
     /**
      * @var Resource[]
      */
-    private $resources = array();
+    private array $resources = array();
 
     /**
      * @param string $spiderId
@@ -29,7 +29,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
         return count($this->resources);
     }
 
-    public function persist(Resource $resource)
+    public function persist(Resource $resource): void
     {
         $this->resources[] = $resource;
     }

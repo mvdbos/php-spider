@@ -8,6 +8,7 @@ namespace VDB\Spider\PersistenceHandler;
 
 use Exception;
 use Iterator;
+use ReturnTypeWillChange; // @phan-suppress-current-line PhanUnreferencedUseNormal
 use Symfony\Component\Finder\Finder;
 use VDB\Spider\Resource;
 
@@ -17,20 +18,18 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @var string the path where all spider results should be persisted.
      *             The results will be grouped in a directory by spider ID.
      */
-    protected $path = '';
+    protected string $path = '';
 
-    protected $spiderId = '';
+    protected string $spiderId = '';
 
-    protected $totalSizePersisted = 0;
+    protected int $totalSizePersisted = 0;
 
-    /** @var Iterator */
-    protected $iterator;
+    protected ?Iterator $iterator = null;
 
-    /** @var Finder */
-    protected $finder;
+    protected ?Finder $finder = null;
 
     /** @var string The filename that will be appended for resources that end with a slash */
-    protected $defaultFilename = 'index.html';
+    protected string $defaultFilename = 'index.html';
 
     /**
      * @param string $path the path where all spider results should be persisted.
@@ -41,7 +40,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         $this->path = $path;
     }
 
-    public function setSpiderId(string $spiderId)
+    public function setSpiderId(string $spiderId): void
     {
         $this->spiderId = $spiderId;
 
@@ -66,7 +65,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function getFinder(): Finder
     {
-        if (!$this->finder instanceof Finder) {
+        if ($this->finder == null) {
             $this->finder = Finder::create()->files()->in($this->getResultPath());
         }
         return $this->finder;
@@ -94,7 +93,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function getIterator(): Iterator
     {
-        if (!$this->iterator instanceof Iterator) {
+        if ($this->iterator == null) {
             $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;
@@ -104,8 +103,8 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @return integer|double|string|boolean|null
      * @throws Exception
      */
-    #[\ReturnTypeWillChange] // @phan-suppress-current-line PhanUndeclaredClassAttribute
-    public function key()
+    #[ReturnTypeWillChange] // @phan-suppress-current-line PhanUndeclaredClassAttribute
+    public function key(): float|bool|int|string|null
     {
         return $this->getIterator()->key();
     }
@@ -136,7 +135,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @param $path
+     * @param string|null $path
      * @return string The path that was provided with a default filename appended if it is
      *         a path ending in a /. This is because we don't want to persist
      *         the directories as files. This is similar to wget behaviour.

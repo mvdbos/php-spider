@@ -11,23 +11,25 @@
 
 namespace VDB\Spider\Tests\PersistenceHandler;
 
+use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Uri\Exception\UriSyntaxException;
 
 /**
- *
+ * @SuppressWarnings(PHPMD.LongClassName)
  */
 class FileSerializedResourcePersistenceHandlerTest extends TestCase
 {
     /**
      * @var FileSerializedResourcePersistenceHandler
      */
-    protected $handler;
+    protected FileSerializedResourcePersistenceHandler $handler;
 
-    protected $persistenceRootPath;
+    protected ?string $persistenceRootPath = null;
 
 
     public function setUp(): void
@@ -42,6 +44,9 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     /**
      * @covers       \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
      * @covers       \VDB\Spider\PersistenceHandler\FilePersistenceHandler
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
      */
     public function testPathExtension()
     {
@@ -55,6 +60,7 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         $this->handler->persist($resource1);
 
         $this->assertEquals(1, $this->handler->count());
+        /** @SuppressWarnings(PHPMD.UnusedLocalVariable) */
         foreach ($this->handler as $path => $resource) {
             $this->assertStringEndsWith('/index.html', $path);
         }
@@ -133,7 +139,11 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         return $data;
     }
 
-    protected function buildPersistenceProviderRecord($fixturePath, $uriString)
+    /**
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     */
+    protected function buildPersistenceProviderRecord($fixturePath, $uriString): array
     {
         $resource = $this->buildResourceFromFixture(
             $fixturePath,
@@ -145,7 +155,7 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         return [$resource, $expectedFilePath, $expectedFileContents];
     }
 
-    protected function buildExpectedFilePath($uriString)
+    protected function buildExpectedFilePath($uriString): string
     {
         $expectedFilePath = $this->persistenceRootPath . parse_url($uriString)['host'] . parse_url($uriString)['path'];
         if (substr($expectedFilePath, -1, 1) === '/') {
@@ -157,6 +167,9 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
     /**
      * @return array
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
      */
     public function persistenceProvider(): array
     {

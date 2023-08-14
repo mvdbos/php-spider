@@ -23,7 +23,7 @@ if (!file_exists("./build/coverage")) {
 }
 require './vendor/autoload.php';
 
-passthru("XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --coverage-php build/coverage/coverage.php", $status);
+passthru("XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --coverage-php build/coverage/coverage.php  --coverage-text=build/coverage/coverage.txt --coverage-html build/coverage/html", $status);
 if ($status != 0) {
     exit($status);
 }

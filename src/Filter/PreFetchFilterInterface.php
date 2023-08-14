@@ -10,6 +10,7 @@ use VDB\Uri\UriInterface;
 interface PreFetchFilterInterface
 {
     /**
+     * Returns true of the URI should be filtered out, i.e. NOT be crawled.
      * @param UriInterface $uri
      * @return boolean
      */

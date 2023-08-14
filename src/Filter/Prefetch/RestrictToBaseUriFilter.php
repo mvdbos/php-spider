@@ -15,7 +15,7 @@ use VDB\Uri\UriInterface;
 class RestrictToBaseUriFilter implements PreFetchFilterInterface
 {
     /** @var Uri */
-    private $seed;
+    private Uri $seed;
 
     /**
      * @param string $seed

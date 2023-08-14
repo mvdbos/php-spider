@@ -11,8 +11,10 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use ErrorException;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\Tests\TestCase;
+use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
 /**
@@ -22,6 +24,9 @@ class UriWithQueryStringFilterTest extends TestCase
 {
     /**
      * @covers \VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
      */
     public function testMatch()
     {
