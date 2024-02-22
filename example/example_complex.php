@@ -21,7 +21,7 @@ use VDB\Spider\Spider;
 require_once('example_complex_bootstrap.php');
 
 // The URI we want to start crawling with
-$seed = 'https://www.dmoz-odp.org/Computers/Internet/';
+$seed = 'https://crawler-test.com/';
 
 // We want to allow all subdomains of dmoz.org
 $allowSubDomains = true;
