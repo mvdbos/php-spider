@@ -17,11 +17,11 @@ interface PersistenceHandlerInterface extends Iterator, Countable
      *
      * @return void
      */
-    public function setSpiderId(string $spiderId);
+    public function setSpiderId(string $spiderId): void;
 
     /**
      * @param Resource $resource
-     * @return void
+     * @return bool
      */
-    public function persist(Resource $resource);
+    public function persist(Resource $resource): bool;
 }

@@ -122,7 +122,9 @@ echo "\n  PROCESSING TIME:      " . ($totalTime - $timerMiddleware->getTotal() -
 echo "\n\nDOWNLOADED RESOURCES: ";
 $downloaded = $spider->getDownloader()->getPersistenceHandler();
 foreach ($downloaded as $resource) {
-    $title = $resource->getCrawler()->filterXpath('//title')->text();
+    $titleNode = $resource->getCrawler()->filterXpath('//title');
+    $title = "UNKNOWN";
+    if ($titleNode->count() > 0) $title = $titleNode->text();
     $contentLength = (int)$resource->getResponse()->getHeaderLine('Content-Length');
     $contentLengthString = '';
     if ($contentLength >= 1024) {
