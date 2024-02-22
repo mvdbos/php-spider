@@ -1,0 +1,20 @@
+name: PHP Spider
+author: Matthijs van den Bos <matthijs@vandenbos.org>
+description: Defined test scenario for used in Green Coding automated tests.
+version: 1
+
+services:
+  php-spider:
+    image: php-spider
+    build:
+        context: .
+        dockerfile: Dockerfile
+    folder-destination: /usr/src/myapp
+
+flow:
+  - name: Run PHP Spider crawl
+    container: php-spider
+    commands:
+      - type: console
+        command: php example/example_complex.php
+        note: Starting Crawl
