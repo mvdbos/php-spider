@@ -19,7 +19,7 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
      * @param string $spiderId
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function setSpiderId(string $spiderId)
+    public function setSpiderId(string $spiderId): void
     {
         // memory handler ignores this. Only interesting for true persistence as some kind of key or prefix
     }
@@ -29,9 +29,10 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
         return count($this->resources);
     }
 
-    public function persist(Resource $resource): void
+    public function persist(Resource $resource): bool
     {
         $this->resources[] = $resource;
+        return true;
     }
 
     /**

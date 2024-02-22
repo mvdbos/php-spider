@@ -93,7 +93,9 @@ class Downloader implements DownloaderInterface
             return false;
         }
 
-        $this->getPersistenceHandler()->persist($resource);
+        if(!$this->getPersistenceHandler()->persist($resource)) {
+            return false;
+        }
 
         return $resource;
     }

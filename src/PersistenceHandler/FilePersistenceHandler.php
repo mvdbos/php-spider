@@ -71,7 +71,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         return $this->finder;
     }
 
-    abstract public function persist(Resource $resource);
+    abstract public function persist(Resource $resource): bool;
 
     /**
      * @return Resource
