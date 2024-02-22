@@ -9,7 +9,7 @@ use VDB\Spider\Spider;
 require_once('example_complex_bootstrap.php');
 
 // Create Spider
-$seed = 'https://www.dmoz-odp.org/';
+$seed = 'https://crawler-test.com/';
 $spider = new Spider($seed);
 
 // Add a URI discoverer. Without it, the spider does nothing. In this case, we want <a> tags from a certain <div>
