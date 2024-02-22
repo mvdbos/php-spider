@@ -28,7 +28,7 @@ $allowSubDomains = true;
 
 // Create spider
 $spider = new Spider($seed);
-$spider->getDownloader()->setDownloadLimit(1000);
+$spider->getDownloader()->setDownloadLimit(100);
 
 $statsHandler = new StatsHandler();
 $LogHandler = new LogHandler();
