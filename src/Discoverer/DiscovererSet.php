@@ -2,13 +2,17 @@
 
 namespace VDB\Spider\Discoverer;
 
+use Psr\Log\LoggerInterface;
 use VDB\Spider\Filter\PreFetchFilterInterface;
+use VDB\Spider\Logging\LoggingTrait;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\UriInterface;
 
 class DiscovererSet
 {
+    use LoggingTrait;
+
     /**
      * @var Discoverer[]
      */
@@ -27,8 +31,12 @@ class DiscovererSet
      */
     private array $alreadySeenUris = array();
 
-    public function __construct(array $discoverers = array())
+    public function __construct(array $discoverers = array(), LoggerInterface $logger = null)
     {
+        if ($logger !== null) {
+            $this->setLogger($logger);
+        }
+
         foreach ($discoverers as $discoverer) {
             $this->set($discoverer);
         }
@@ -92,11 +100,6 @@ class DiscovererSet
         return $discoveredUris;
     }
 
-    /**
-     * Sets a discoverer.
-     *
-     * @param discovererInterface $discoverer The discoverer instance
-     */
     public function set(DiscovererInterface $discoverer): void
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;

@@ -15,8 +15,10 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
     public function persist(Resource $resource): bool
     {
         $path = $this->getResultPath() . $this->getFileSystemPath($resource);
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
+        if (!is_dir($path) && !file_exists($path)) {
+            if (!mkdir($path, 0777, true)) {
+                print "Failed to create directory: $path\n";
+            }
         }
         try {
             $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');

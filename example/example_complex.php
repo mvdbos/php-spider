@@ -23,12 +23,12 @@ require_once('example_complex_bootstrap.php');
 // The URI we want to start crawling with
 $seed = 'https://crawler-test.com/';
 
-// We want to allow all subdomains of dmoz.org
+// We want to allow all subdomains of the seed URI
 $allowSubDomains = true;
 
 // Create spider
-$spider = new Spider($seed);
-$spider->getDownloader()->setDownloadLimit(100);
+$spider = new Spider($seed, null, null, null, null);
+$spider->getDownloader()->setDownloadLimit(1000);
 
 $statsHandler = new StatsHandler();
 $LogHandler = new LogHandler();

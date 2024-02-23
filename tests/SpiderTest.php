@@ -243,7 +243,7 @@ class SpiderTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid seed');
-        new Spider('fdsfnsd:t4rgevjk lffdsn');
+        new Spider('fdsfnsd:t4rgevjk lffdsn', null, null, null, null);
     }
 
 
@@ -254,7 +254,7 @@ class SpiderTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Empty seed');
-        new Spider('');
+        new Spider('', null, null, null, null);
     }
 
     /**
@@ -264,10 +264,7 @@ class SpiderTest extends TestCase
     {
         $spider = new Spider(
             'http://example.com',
-            null,
-            null,
-            null,
-            'MyID'
+            spiderId: 'MyID'
         );
         $this->assertEquals('MyID', $spider->getSpiderId());
     }
@@ -305,7 +302,7 @@ class SpiderTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->spider = new Spider('http://php-spider.org/A');
+        $this->spider = new Spider('http://php-spider.org/A', null, null, null, null);
 
         $this->requestHandler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
 
