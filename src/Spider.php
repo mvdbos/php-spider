@@ -4,6 +4,7 @@ namespace VDB\Spider;
 
 use Exception;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Downloader\Downloader;
@@ -11,14 +12,20 @@ use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
+use VDB\Spider\Logging\LoggingTrait;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Http;
 
+/**
+ * Unavoidable complexity due to the nature of the library, connecting many different components.
+ * This could possibly be refactored to use a DI container, but that would be overkill for this library.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Spider
 {
-    use DispatcherTrait;
+    use DispatcherTrait, LoggingTrait;
 
     private DownloaderInterface $downloader;
     private QueueManagerInterface $queueManager;
@@ -32,19 +39,24 @@ class Spider
      * @param QueueManagerInterface|null $queueManager
      * @param DownloaderInterface|null $downloader
      * @param string|null $spiderId
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         string $seed,
         ?DiscovererSet $discovererSet = null,
         ?QueueManagerInterface $queueManager = null,
-        ?DownloaderInterface  $downloader = null,
-        ?string $spiderId = null
+        ?DownloaderInterface $downloader = null,
+        ?string $spiderId = null,
+        LoggerInterface $logger = null,
     ) {
+        if (null !== $logger) {
+            $this->setLogger($logger);
+        }
         $this->setSeed($seed);
         $this->setSpiderId($spiderId);
-        $this->setDiscovererSet($discovererSet ?: new DiscovererSet());
-        $this->setQueueManager($queueManager ?: new InMemoryQueueManager());
-        $this->setDownloader($downloader ?: new Downloader());
+        $this->setDiscovererSet($discovererSet ?: new DiscovererSet(logger: $this->getLogger()));
+        $this->setQueueManager($queueManager ?: new InMemoryQueueManager(logger: $this->getLogger()));
+        $this->setDownloader($downloader ?: new Downloader(logger: $this->getLogger()));
 
         // This makes the spider handle signals gracefully and allows us to do cleanup
         if (php_sapi_name() == 'cli') {
@@ -135,17 +147,6 @@ class Spider
         $this->downloader = $downloader;
 
         return $this;
-    }
-
-    /**
-     * A shortcut for EventDispatcher::dispatch()
-     *
-     * @param GenericEvent $event
-     * @param string $eventName
-     */
-    private function dispatch(GenericEvent $event, string $eventName): void
-    {
-        $this->getDispatcher()->dispatch($event, $eventName);
     }
 
     /**

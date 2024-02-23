@@ -5,6 +5,7 @@ namespace VDB\Spider\Event;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 trait DispatcherTrait
 {
@@ -20,5 +21,16 @@ trait DispatcherTrait
         }
 
         return $this->dispatcher;
+    }
+
+    /**
+     * A shortcut for EventDispatcher::dispatch()
+     *
+     * @param GenericEvent $event
+     * @param string $eventName
+     */
+    public function dispatch(GenericEvent $event, string $eventName): void
+    {
+        $this->getDispatcher()->dispatch($event, $eventName);
     }
 }

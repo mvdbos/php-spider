@@ -262,7 +262,9 @@ return [
 
     // Add any issue types (such as `'PhanUndeclaredMethod'`)
     // to this list to inhibit them from being reported.
-    'suppress_issue_types' => [],
+    'suppress_issue_types' => [
+//        'PhanUndeclaredTypeParameter' // This is a false positive for non-fully-qualified types that are imported via `use` statements
+    ],
 
     // A regular expression to match files to be excluded
     // from parsing and analysis and will not be read at all.
@@ -342,17 +344,7 @@ return [
     // your application should be included in this list.
     'directory_list' => [
         'src',
-        'vendor/spatie/robots-txt/src',
-        'vendor/guzzlehttp/guzzle/src',
-        'vendor/guzzlehttp/psr7/src',
-        'vendor/psr/http-client',
-        'vendor/psr/http-message',
-        'vendor/symfony/css-selector',
-        'vendor/symfony/dom-crawler',
-        'vendor/symfony/event-dispatcher',
-        'vendor/symfony/event-dispatcher-contracts',
-        'vendor/symfony/finder',
-        'vendor/vdb/uri/src',
+        'vendor',
     ],
 
     // A list of individual files to include in analysis

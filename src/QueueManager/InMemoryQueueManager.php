@@ -7,15 +7,17 @@
 namespace VDB\Spider\QueueManager;
 
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
+use VDB\Spider\Logging\LoggingTrait;
 use VDB\Spider\Uri\DiscoveredUri;
 
 class InMemoryQueueManager implements QueueManagerInterface
 {
-    use DispatcherTrait;
+    use DispatcherTrait, LoggingTrait;
 
     /** @var int The maximum size of the process queue for this spider. 0 means infinite */
     public int $maxQueueSize = 0;
@@ -34,8 +36,11 @@ class InMemoryQueueManager implements QueueManagerInterface
      * InMemoryQueueManager constructor.
      * @param int $traversalAlgorithm
      */
-    public function __construct(int $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST)
+    public function __construct(int $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST, LoggerInterface $logger = null)
     {
+        if (null !== $logger) {
+            $this->setLogger($logger);
+        }
         $this->setTraversalAlgorithm($traversalAlgorithm);
     }
 

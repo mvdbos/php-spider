@@ -3,10 +3,12 @@
 namespace VDB\Spider\Downloader;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Filter\PostFetchFilterInterface;
+use VDB\Spider\Logging\LoggingTrait;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
 use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\RequestHandler\GuzzleRequestHandler;
@@ -16,7 +18,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 
 class Downloader implements DownloaderInterface
 {
-    use DispatcherTrait;
+    use DispatcherTrait, LoggingTrait;
 
     /** @var PersistenceHandlerInterface */
     private PersistenceHandlerInterface $persistenceHandler;
@@ -30,19 +32,16 @@ class Downloader implements DownloaderInterface
     /** @var PostFetchFilterInterface[] */
     private array $postFetchFilters = array();
 
-    /**
-     * Downloader constructor.
-     * @param PersistenceHandlerInterface|null $persistenceHandler
-     * @param RequestHandlerInterface|null $requestHandler
-     * @param PostFetchFilterInterface[] $postFetchFilters
-     * @param int $downloadLimit
-     */
     public function __construct(
         ?PersistenceHandlerInterface $persistenceHandler = null,
         ?RequestHandlerInterface $requestHandler = null,
         array $postFetchFilters = array(),
-        int $downloadLimit = 0
+        int $downloadLimit = 0,
+        LoggerInterface $logger = null,
     ) {
+        if ($logger !== null) {
+            $this->setLogger($logger);
+        }
         $this->setPersistenceHandler($persistenceHandler ?: new MemoryPersistenceHandler());
         $this->setRequestHandler($requestHandler ?: new GuzzleRequestHandler());
         foreach ($postFetchFilters as $filter) {
@@ -51,36 +50,17 @@ class Downloader implements DownloaderInterface
         $this->setDownloadLimit($downloadLimit);
     }
 
-    /**
-     * @param int $downloadLimit Maximum number of resources to download
-     * @return $this
-     */
     public function setDownloadLimit(int $downloadLimit): DownloaderInterface
     {
         $this->downloadLimit = $downloadLimit;
         return $this;
     }
 
-    /**
-     * @return int Maximum number of resources to download
-     */
-    public function getDownloadLimit(): int
-    {
-        return $this->downloadLimit;
-    }
-
-    /**
-     * @param PostFetchFilterInterface $filter
-     */
     public function addPostFetchFilter(PostFetchFilterInterface $filter): void
     {
         $this->postFetchFilters[] = $filter;
     }
 
-    /**
-     * @param DiscoveredUri $uri
-     * @return false|Resource
-     */
     public function download(DiscoveredUri $uri): Resource|false
     {
         $resource = $this->fetchResource($uri);
@@ -93,7 +73,7 @@ class Downloader implements DownloaderInterface
             return false;
         }
 
-        if(!$this->getPersistenceHandler()->persist($resource)) {
+        if (!$this->getPersistenceHandler()->persist($resource)) {
             return false;
         }
 
@@ -102,19 +82,9 @@ class Downloader implements DownloaderInterface
 
     public function isDownLoadLimitExceeded(): bool
     {
-        return $this->getDownloadLimit() !== 0 && $this->getPersistenceHandler()->count() >= $this->getDownloadLimit();
+        return $this->downloadLimit !== 0 && $this->getPersistenceHandler()->count() >= $this->downloadLimit;
     }
 
-    /**
-     * A shortcut for EventDispatcher::dispatch()
-     *
-     * @param GenericEvent $event
-     * @param string $eventName
-     */
-    private function dispatch(GenericEvent $event, string $eventName): void
-    {
-        $this->getDispatcher()->dispatch($event, $eventName);
-    }
 
     /**
      * @param DiscoveredUri $uri

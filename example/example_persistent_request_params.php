@@ -7,7 +7,7 @@ use VDB\Spider\Spider;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Create Spider
-$spider = new Spider('http://httpbin.org/basic-auth/foo/bar');
+$spider = new Spider('http://httpbin.org/basic-auth/foo/bar', null, null, null, null);
 
 $requestHandler = new GuzzleRequestHandler();
 // Set a custom Guzzle client that does basic auth. See Guzzle docs on how to use other types of authentication.

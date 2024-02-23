@@ -10,7 +10,7 @@ require_once('example_complex_bootstrap.php');
 
 // Create Spider
 $seed = 'https://crawler-test.com/';
-$spider = new Spider($seed);
+$spider = new Spider($seed, null, null, null, null);
 
 // Add a URI discoverer. Without it, the spider does nothing. In this case, we want <a> tags from a certain <div>
 $spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
