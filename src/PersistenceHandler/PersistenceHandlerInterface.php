@@ -20,8 +20,8 @@ interface PersistenceHandlerInterface extends Iterator, Countable
     public function setSpiderId(string $spiderId): void;
 
     /**
+     * Throws an exception if persistence failed.
      * @param Resource $resource
-     * @return bool
      */
-    public function persist(Resource $resource): bool;
+    public function persist(Resource $resource): void;
 }

@@ -2,10 +2,6 @@
 
 namespace VDB\Spider\Logging;
 
-use Analog\Analog;
-use Analog\Handler\EchoConsole;
-use Analog\Handler\Multi;
-use Analog\Handler\Stderr;
 use Analog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -24,16 +20,8 @@ class DefaultLoggerFactory
     private static function createDefaultLogger(): LoggerInterface
     {
         $log = new Logger();
-
-        $handler = Multi::init(array(
-            Analog::WARNING => array(
-                Stderr::init(),
-                EchoConsole::init()
-            ),
-            Analog::DEBUG => EchoConsole::init(),
-        ));
-        $log->handler($handler);
-
+        $log->handler(new DefaultLogHandler());
+        $log->format("\n" . '%2$s - [%3$s] - %4$s');
         return $log;
     }
 }

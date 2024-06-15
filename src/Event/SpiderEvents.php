@@ -62,6 +62,8 @@ final class SpiderEvents
 
     const SPIDER_CRAWL_RESOURCE_PERSISTED = 'spider.crawl.resource.persisted';
 
+    const SPIDER_CRAWL_ERROR_PERSIST = 'spider.crawl.error.persist';
+
     /**
      * The spider.crawl.user.stopped event fires when the spider was stopped by a user action
      *

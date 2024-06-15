@@ -29,10 +29,9 @@ class MemoryPersistenceHandler implements PersistenceHandlerInterface
         return count($this->resources);
     }
 
-    public function persist(Resource $resource): bool
+    public function persist(Resource $resource): void
     {
         $this->resources[] = $resource;
-        return true;
     }
 
     /**

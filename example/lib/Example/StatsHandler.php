@@ -31,7 +31,8 @@ class StatsHandler implements EventSubscriberInterface
             SpiderEvents::SPIDER_CRAWL_FILTER_PREFETCH => 'addToFiltered',
             SpiderEvents::SPIDER_CRAWL_POST_ENQUEUE => 'addToQueued',
             SpiderEvents::SPIDER_CRAWL_RESOURCE_PERSISTED => 'addToPersisted',
-            SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST => 'addToFailed'
+            SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST => 'addToFailed',
+            SpiderEvents::SPIDER_CRAWL_ERROR_PERSIST => 'addToFailed'
         );
     }
 

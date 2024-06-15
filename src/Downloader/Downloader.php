@@ -73,11 +73,26 @@ class Downloader implements DownloaderInterface
             return false;
         }
 
-        if (!$this->getPersistenceHandler()->persist($resource)) {
+        if (!$this->persist($resource)) {
             return false;
         }
 
         return $resource;
+    }
+
+    private function persist(Resource $resource): bool
+    {
+        try {
+            $this->getPersistenceHandler()->persist($resource);
+        } catch (Exception $e) {
+            $this->getLogger()->error('Failed to persist: ' . $resource->getUri() . ' - ' . $e->getMessage());
+            $this->dispatch(
+                new GenericEvent($this, array('uri' => $resource->getUri(), 'message' => $e->getMessage())),
+                SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST
+            );
+            return false;
+        }
+        return true;
     }
 
     public function isDownLoadLimitExceeded(): bool
@@ -92,6 +107,8 @@ class Downloader implements DownloaderInterface
      */
     protected function fetchResource(DiscoveredUri $uri): Resource|false
     {
+        $this->getLogger()->debug('Downloading: ' . $uri);
+
         $resource = false;
 
         $this->dispatch(new GenericEvent($this, array('uri' => $uri)), SpiderEvents::SPIDER_CRAWL_PRE_REQUEST);
@@ -99,6 +116,7 @@ class Downloader implements DownloaderInterface
         try {
             $resource = $this->getRequestHandler()->request($uri);
         } catch (Exception $e) {
+            $this->getLogger()->error('Failed to download: ' . $uri . ' - ' . $e->getMessage());
             $this->dispatch(
                 new GenericEvent($this, array('uri' => $uri, 'message' => $e->getMessage())),
                 SpiderEvents::SPIDER_CRAWL_ERROR_REQUEST
@@ -121,6 +139,7 @@ class Downloader implements DownloaderInterface
     {
         foreach ($this->postFetchFilters as $filter) {
             if ($filter->match($resource)) {
+                $this->getLogger()->debug('Resource matches post fetch filter: ' . $resource->getUri());
                 $this->dispatch(
                     new GenericEvent($this, array('uri' => $resource->getUri())),
                     SpiderEvents::SPIDER_CRAWL_FILTER_POSTFETCH

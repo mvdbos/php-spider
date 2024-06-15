@@ -12,21 +12,16 @@ use VDB\Spider\Resource;
 
 class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler implements PersistenceHandlerInterface
 {
-    public function persist(Resource $resource): bool
+    public function persist(Resource $resource): void
     {
         $path = $this->getResultPath() . $this->getFileSystemPath($resource);
-        if (!is_dir($path) && !file_exists($path)) {
+        if (!file_exists($path)) {
             if (!mkdir($path, 0777, true)) {
-                print "Failed to create directory: $path\n";
+                $this->getLogger()->warning("Failed to create directory: $path");
             }
         }
-        try {
-            $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
-            $this->totalSizePersisted += $file->fwrite(serialize($resource));
-        } catch (Exception $e) {
-            return false;
-        }
-        return true;
+        $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
+        $this->totalSizePersisted += $file->fwrite(serialize($resource));
     }
 
     /**

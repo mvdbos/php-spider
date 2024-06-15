@@ -1,7 +1,11 @@
 <?php
 
+global $timerMiddleware, $start;
+
 use Example\LogHandler;
 use Example\StatsHandler;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -93,10 +97,12 @@ $spider->getDownloader()->getDispatcher()->addListener(
     }
 );
 
-// Set up some caching, logging and profiling on the HTTP client of the spider
-$guzzleClient = $spider->getDownloader()->getRequestHandler()->getClient();
 $tapMiddleware = Middleware::tap([$timerMiddleware, 'onRequest'], [$timerMiddleware, 'onResponse']);
-$guzzleClient->getConfig('handler')->push($tapMiddleware, 'timer');
+$requestHandler = $spider->getDownloader()->getRequestHandler();
+$handlerStack = HandlerStack::create();
+$handlerStack->push($tapMiddleware, 'timer');
+$guzzleClient = new Client(['handler' => $handlerStack, 'timeout' => 5]);
+$requestHandler->setClient($guzzleClient);
 
 // Execute the crawl
 $spider->crawl();

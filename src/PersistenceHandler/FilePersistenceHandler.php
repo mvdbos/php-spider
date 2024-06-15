@@ -8,12 +8,16 @@ namespace VDB\Spider\PersistenceHandler;
 
 use Exception;
 use Iterator;
+use Psr\Log\LoggerInterface;
 use ReturnTypeWillChange; // @phan-suppress-current-line PhanUnreferencedUseNormal
 use Symfony\Component\Finder\Finder;
+use VDB\Spider\Logging\LoggingTrait;
 use VDB\Spider\Resource;
 
 abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 {
+    use LoggingTrait;
+
     /**
      * @var string the path where all spider results should be persisted.
      *             The results will be grouped in a directory by spider ID.
@@ -35,8 +39,11 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      * @param string $path the path where all spider results should be persisted.
      *        The results will be grouped in a directory by spider ID.
      */
-    public function __construct(string $path)
+    public function __construct(string $path, LoggerInterface $logger = null)
     {
+        if (null !== $logger) {
+            $this->setLogger($logger);
+        }
         $this->path = $path;
     }
 
@@ -71,7 +78,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
         return $this->finder;
     }
 
-    abstract public function persist(Resource $resource): bool;
+    abstract public function persist(Resource $resource): void;
 
     /**
      * @return Resource
