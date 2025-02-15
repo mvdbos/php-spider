@@ -35,10 +35,10 @@ class Spider
      */
     public function __construct(
         string $seed,
-        DiscovererSet $discovererSet = null,
-        QueueManagerInterface $queueManager = null,
-        DownloaderInterface  $downloader = null,
-        string $spiderId = null
+        ?DiscovererSet $discovererSet = null,
+        ?QueueManagerInterface $queueManager = null,
+        ?DownloaderInterface  $downloader = null,
+        ?string $spiderId = null
     ) {
         $this->setSeed($seed);
         $this->setSpiderId($spiderId);

@@ -27,7 +27,7 @@ class RobotsTxtDisallowFilter implements PreFetchFilterInterface
      * @throws ErrorException
      * @throws UriSyntaxException
      */
-    public function __construct(string $seedUrl, string $userAgent = null)
+    public function __construct(string $seedUrl, ?string $userAgent = null)
     {
         $this->seedUri = new Uri($seedUrl);
         $this->seedUri->normalize();
