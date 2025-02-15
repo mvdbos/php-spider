@@ -38,8 +38,8 @@ class Downloader implements DownloaderInterface
      * @param int $downloadLimit
      */
     public function __construct(
-        PersistenceHandlerInterface $persistenceHandler = null,
-        RequestHandlerInterface $requestHandler = null,
+        ?PersistenceHandlerInterface $persistenceHandler = null,
+        ?RequestHandlerInterface $requestHandler = null,
         array $postFetchFilters = array(),
         int $downloadLimit = 0
     ) {

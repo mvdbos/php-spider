@@ -20,7 +20,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
      * GuzzleRequestHandler constructor.
      * @param Client|null $client
      */
-    public function __construct(Client $client = null)
+    public function __construct(?Client $client = null)
     {
         $this->setClient($client ?: new Client());
     }
