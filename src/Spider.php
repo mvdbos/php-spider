@@ -25,7 +25,7 @@ use VDB\Uri\Http;
  */
 class Spider
 {
-    use DispatcherTrait, LoggingTrait;
+     use DispatcherTrait, LoggingTrait;
 
     private DownloaderInterface $downloader;
     private QueueManagerInterface $queueManager;
