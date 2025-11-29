@@ -35,7 +35,7 @@ class Resource
     public function getCrawler(): Crawler
     {
         if ($this->crawler == null) {
-            $this->crawler = new Crawler('', $this->getUri()->toString());
+            $this->crawler = new Crawler(null, $this->getUri()->toString());
             $this->crawler->addContent(
                 $this->getResponse()->getBody()->__toString(),
                 $this->getResponse()->getHeaderLine('Content-Type')
