@@ -33,7 +33,7 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
     public function setUp(): void
     {
         $this->tmpDir = sys_get_temp_dir() . '/spider-test-' . uniqid();
-        mkdir($this->tmpDir, 0777, true);
+        mkdir($this->tmpDir, 0700, true);
 
         $this->handler = new JsonHealthCheckPersistenceHandler($this->tmpDir);
         $this->handler->setSpiderId('test-spider');
@@ -203,5 +203,42 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
     public function testCountEmpty()
     {
         $this->assertEquals(0, $this->handler->count());
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     */
+    public function testWriteToFileHandlesFailure()
+    {
+        // Create a directory and make the JSON file read-only to simulate write failure
+        $testDir = sys_get_temp_dir() . '/spider-test-readonly-' . uniqid();
+        mkdir($testDir, 0700, true);
+
+        $handler = new JsonHealthCheckPersistenceHandler($testDir);
+        $handler->setSpiderId('test-readonly');
+
+        // Create the JSON file and make it read-only
+        $jsonFile = $testDir . '/test-readonly_health_check.json';
+        file_put_contents($jsonFile, '[]');
+        chmod($jsonFile, 0444); // Read-only
+
+        $resource = new Resource(
+            new DiscoveredUri("http://example.com/test", 0),
+            new Response(200, [], "Test Body")
+        );
+
+        try {
+            $this->expectException(\RuntimeException::class);
+            $this->expectExceptionMessage('Failed to write JSON file');
+
+            $handler->persist($resource);
+        } finally {
+            // Clean up - restore write permissions before deleting
+            chmod($jsonFile, 0644);
+            unlink($jsonFile);
+            rmdir($testDir);
+        }
     }
 }

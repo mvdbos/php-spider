@@ -27,6 +27,9 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
      */
     protected string $path = '';
 
+    /**
+     * @var string unique identifier for this spider instance
+     */
     protected string $spiderId = '';
 
     /**
@@ -83,11 +86,17 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
 
     /**
      * Write the current results to the JSON file
+     *
+     * @throws \RuntimeException if file writing fails
      */
     protected function writeToFile(): void
     {
         $jsonData = json_encode($this->results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        file_put_contents($this->getJsonFilePath(), $jsonData);
+
+        $bytesWritten = @file_put_contents($this->getJsonFilePath(), $jsonData);
+        if ($bytesWritten === false) {
+            throw new \RuntimeException('Failed to write JSON file: ' . $this->getJsonFilePath());
+        }
     }
 
     public function count(): int
