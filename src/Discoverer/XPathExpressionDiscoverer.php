@@ -8,16 +8,16 @@ use VDB\Spider\Resource;
 
 /**
  * XPath discoverer that supports advanced XPath expressions including predicates (square-bracket notation).
- * 
+ *
  * This discoverer validates that the selector targets anchor elements as the final selected element,
  * but allows for more complex XPath expressions such as:
  * - //a[starts-with(@href, '/')]
  * - //div[@id='content']//a
  * - //a[@class='internal']
- * 
+ *
  * For selectors where the anchor element has no predicates (for example, //div[@id='content']//a),
  * you may also use SimpleXPathExpressionDiscoverer.
- * 
+ *
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
@@ -28,7 +28,7 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
      *
      * This selector should look for `a` elements so that the Discoverer can
      * extract their `href` attribute for further crawling.
-     * 
+     *
      * Supports XPath predicates (square-bracket notation) such as:
      * - //a[starts-with(@href, '/')]
      * - //div[@id='content']//a[@class='link']
@@ -54,18 +54,18 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
 
     /**
      * Validates that the selector targets anchor elements as the final selected element.
-     * 
+     *
      * Accepts selectors that:
      * - End with '//a' (simple case)
      * - End with '//a[...]' (with predicates on the anchor)
-     * 
+     *
      * Rejects selectors where anchor is not the final element:
      * - '//a//span' (selects span, not anchor)
      * - '//a/text()' (selects text node, not anchor)
-     * 
+     *
      * Note: XPath predicates containing nested brackets (e.g., //a[contains(@href, '[test]')])
      * are not supported due to regex limitations. This is an extremely rare edge case.
-     * 
+     *
      * @param string $selector
      * @return bool
      */

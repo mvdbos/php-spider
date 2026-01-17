@@ -8,10 +8,10 @@ use VDB\Spider\Resource;
 
 /**
  * Simple XPath discoverer that only accepts selectors ending with '/a'.
- * 
+ *
  * For XPath expressions with predicates on anchor elements (square-bracket
  * notation on the anchor), use XPathExpressionDiscoverer instead.
- * 
+ *
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
  */
