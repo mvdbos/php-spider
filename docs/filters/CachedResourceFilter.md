@@ -94,7 +94,7 @@ $cacheFilter = new CachedResourceFilter($resultsPath, $spiderId, $maxAge);
 
 // ✗ Wrong: Auto-generated spider ID (different each run)
 $spider = new Spider($seed); // Spider ID is random each time
-$cacheFilter = new CachedResourceFilter($resultsPath, $spiderId, $maxAge); // Won't find cache
+$cacheFilter = new CachedResourceFilter($resultsPath, 'some-other-id', $maxAge); // Won't find cache from previous run
 ```
 
 ### Persistence Handler Compatibility
