@@ -43,8 +43,27 @@ class CachedResourceFilter implements PreFetchFilterInterface
      */
     public function match(UriInterface $uri): bool
     {
-        $filePath = $this->getFilePath($uri);
-        
+        // Build the file path for the URI
+        $hostname = $uri->getHost();
+        $path = $uri->getPath() ?: '';
+
+        // Complete path with default filename if needed
+        if ($path === '') {
+            $path = "/" . $this->defaultFilename;
+        } elseif (substr($path, -1, 1) === '/') {
+            $path .= $this->defaultFilename;
+        }
+
+        // Build the directory structure: {basePath}/{spiderId}/{hostname}{dirname}
+        $directory = $this->basePath . DIRECTORY_SEPARATOR .
+                    $this->spiderId . DIRECTORY_SEPARATOR .
+                    $hostname . dirname($path);
+
+        // The filename is URL-encoded
+        $filename = urlencode(basename($path));
+
+        $filePath = $directory . DIRECTORY_SEPARATOR . $filename;
+
         if (!file_exists($filePath)) {
             return false;
         }
@@ -66,48 +85,5 @@ class CachedResourceFilter implements PreFetchFilterInterface
 
         // Return true if file is younger than max age (skip download)
         return $age < $this->maxAgeSeconds;
-    }
-
-    /**
-     * Build the file path for a given URI, mirroring the FilePersistenceHandler logic.
-     *
-     * @param UriInterface $uri
-     * @return string
-     */
-    private function getFilePath(UriInterface $uri): string
-    {
-        $hostname = $uri->getHost();
-        $path = $uri->getPath() ?: '';
-        
-        // Complete path with default filename if needed
-        $fullPath = $this->completePath($path);
-        
-        // Build the directory structure: {basePath}/{spiderId}/{hostname}{dirname}
-        $directory = $this->basePath . DIRECTORY_SEPARATOR .
-                    $this->spiderId . DIRECTORY_SEPARATOR .
-                    $hostname . dirname($fullPath);
-        
-        // The filename is URL-encoded
-        $filename = urlencode(basename($fullPath));
-        
-        return $directory . DIRECTORY_SEPARATOR . $filename;
-    }
-
-    /**
-     * Complete a path with default filename if it ends with a slash.
-     * This mirrors the FilePersistenceHandler::completePath() logic.
-     *
-     * @param string $path
-     * @return string
-     */
-    private function completePath(string $path): string
-    {
-        if ($path === '') {
-            $path = "/" . $this->defaultFilename;
-        } elseif (substr($path, -1, 1) === '/') {
-            $path .= $this->defaultFilename;
-        }
-
-        return $path;
     }
 }

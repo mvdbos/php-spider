@@ -41,13 +41,14 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchReturnsFalseWhenFileDoesNotExist()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
         $uri = new Uri('http://example.com/page.html');
-        
+
         $this->assertFalse($filter->match($uri));
     }
 
@@ -103,10 +104,24 @@ class CachedResourceFilterTest extends TestCase
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
         $uri = new Uri('http://example.com/');
-        
+
         // Create the cached file (should be stored as index.html)
         $this->createCachedFile($uri, 'test content');
-        
+
+        $this->assertTrue($filter->match($uri));
+    }
+
+    /**
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     */
+    public function testMatchHandlesRootWithoutTrailingSlash()
+    {
+        $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
+        $uri = new Uri('http://example.com');
+
+        // Create the cached file (should be stored as index.html for empty path)
+        $this->createCachedFile($uri, 'test content');
+
         $this->assertTrue($filter->match($uri));
     }
 
@@ -198,6 +213,23 @@ class CachedResourceFilterTest extends TestCase
         
         // File doesn't exist, so no filemtime() call
         $this->assertFalse($filter->match($uri));
+    }
+
+    /**
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     */
+    public function testConstructorHandlesTrailingSlashInBasePath()
+    {
+        // Test that constructor properly handles basePath with trailing slash
+        $basePathWithSlash = $this->testCacheDir . DIRECTORY_SEPARATOR;
+        $filter = new CachedResourceFilter($basePathWithSlash, $this->testSpiderId, 3600);
+        $uri = new Uri('http://example.com/page.html');
+
+        // Create the cached file
+        $this->createCachedFile($uri, 'test content');
+
+        // Should still match even with trailing slash in constructor
+        $this->assertTrue($filter->match($uri));
     }
 
     /**
