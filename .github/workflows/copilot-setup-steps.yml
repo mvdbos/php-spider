@@ -1,0 +1,51 @@
+name: "Copilot Setup Steps"
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+      - .actrc
+      - bin/act
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+      - .actrc
+      - bin/act
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository (optional)
+        uses: actions/checkout@v5
+
+      - name: Prepare act cache directories
+        run: |
+          mkdir -p .cache/act/artifacts .cache/act/cache
+
+      - name: Cache act local caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/act/artifacts
+            .cache/act/cache
+          key: act-cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.actrc') }}
+          restore-keys: |
+            act-cache-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Install dependencies for act
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl tar
+
+      - name: Install nektos/act
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+          ./bin/act --version

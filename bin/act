@@ -1,0 +1,45 @@
+#!/bin/bash
+# Run GitHub Actions locally with nektos/act
+# Usage: ./bin/act [event] [options]
+# Examples:
+#   ./bin/act              # Run all workflows on push event
+#   ./bin/act pull_request # Run workflows on PR event
+#   ./bin/act -j build     # Run specific job
+#   ./bin/act -l           # List workflows
+#   ./bin/act --pull       # Force pull latest image
+
+set -e
+
+# Ensure we're in the project root
+cd "$(dirname "$0")/.."
+
+# Create cache directories in the project (gitignored)
+mkdir -p .cache/act/artifacts .cache/act/cache
+
+# Check if act is installed
+if ! command -v act &> /dev/null; then
+    echo "❌ act is not installed!"
+    echo "Install it with: brew install act"
+    exit 1
+fi
+
+# Check if Docker is running
+if ! docker info &> /dev/null; then
+    echo "❌ Docker is not running!"
+    echo "Please start Docker Desktop and try again."
+    exit 1
+fi
+
+# Default to push event if no event specified
+EVENT="${1:-push}"
+
+# If first arg starts with -, pass all args to act
+if [[ "$1" == -* ]]; then
+    echo "🚀 Running: act $@"
+    act "$@"
+else
+    # Shift to remove event and pass rest as options
+    shift 2>/dev/null || true
+    echo "🚀 Running: act $EVENT $@"
+    act "$EVENT" "$@"
+fi

@@ -13,13 +13,12 @@
 - HTTP handling: default Guzzle handler throws on 4XX/5XX; to keep crawling on errors, supply a custom `RequestHandlerInterface` (see link-checker example referenced in [README](README.md)). Signals (SIGTERM/SIGINT/etc.) trigger `spider.crawl.user.stopped` when running in CLI.
 - Key tuning knobs: `DiscovererSet::$maxDepth`, `QueueManager::$maxQueueSize`, `Downloader::setDownloadLimit()`, traversal algorithm, request delay via politeness listener, robots.txt user-agent.
 - Coding standards: PSR-0/1/2; codebase targets PHP >= 8.0. Autoload via PSR-4 `VDB\Spider\` from `src/`.
-- Tests: run `./vendor/bin/phpunit` or `bin/coverage-enforce [percentage]` (requires XDEBUG_MODE=coverage) to enforce coverage (default 100%). Coverage artifacts land in `build/coverage/`.
-- Static analysis: `bin/static-analysis` runs lint, phpcs (PSR2), phpmd (with [phpmd.xml](phpmd.xml) and [phpmd-tests.xml](phpmd-tests.xml)), and phan. Pass `false` as arg to not fail-fast on first error.
-- Formatting: `bin/fix-style` runs phpcbf (PSR2 on src/tests) then php-cs-fixer with repo config.
-- Common workflow: `composer install`, adjust examples in [example/*.php](example), wire filters/discoverers/listeners, run `bin/static-analysis`, run `bin/coverage-enforce` or `./vendor/bin/phpunit`, iterate.
+- Tests: For quick validation of specific unit tests, use `./vendor/bin/phpunit [test-file]` directly. However, full validation must use `./bin/act --matrix php-versions:8.0` (or the convenience wrapper `./bin/check`) to run the complete CI workflow with the lowest supported PHP version (8.0).
+- Static analysis: The full CI workflow includes lint, phpcs (PSR2), phpmd (with [phpmd.xml](phpmd.xml) and [phpmd-tests.xml](phpmd-tests.xml)), phan, and coverage enforcement. Run via `./bin/act --matrix php-versions:8.0` (or `./bin/check`).
+- Common workflow: `composer install`, make code changes, run `./vendor/bin/phpunit` for quick feedback on specific tests, then run `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to validate the entire workflow locally before pushing changes.
 - When adding features: wire new events through `DispatcherTrait`, keep discovery depth/visited tracking in sync (normalize URIs), and ensure new persistence handlers implement Iterator + Countable to align with Downloader expectations.
 - Testing patterns: examples drive expected behaviors (queue, filters, stats). Add unit tests under [tests/](tests) to keep coverage at 100% and satisfy CI scripts.
-- **Validation workflow for code changes**: After making any modifications to the codebase, you **must** run both validation commands to ensure code quality and test coverage:
-  - `./bin/static-analysis` — validates code style (PSR2), syntax, and quality (phpcs, phpmd, phan)
-  - `./bin/coverage-enforce 100` — enforces 100% test coverage (requires `XDEBUG_MODE=coverage`). If coverage is insufficient, add tests to [tests/](tests) until 100% is achieved.
-  - Both commands must pass before considering code changes complete. These checks are enforced by CI and failure will block merges.
+- **Validation workflow for code changes**: After making any modifications to the codebase, you **must** run the full CI workflow locally before concluding your work:
+  - Use `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to run the complete GitHub Actions workflow with PHP 8.0 (lowest supported version only). This validates code style (PSR2), syntax, quality (phpcs, phpmd, phan), and enforces 100% test coverage. Do not run the entire matrix—CI will handle testing across all supported versions.
+  - For faster iteration on specific tests during development, use `./vendor/bin/phpunit [test-path]` directly.
+  - The `./bin/act --matrix php-versions:8.0` (or `./bin/check`) workflow must pass before considering code changes complete. These checks are enforced by CI and failure will block merges.
