@@ -255,4 +255,43 @@ class ExternalRedirectFilterTest extends TestCase
         $filter = new ExternalRedirectFilter();
         $this->assertFalse($filter->match($resource));
     }
+
+    /**
+     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     */
+    public function testLocalhostWithSubdomainsEnabled()
+    {
+        // Test with single-label hosts like 'localhost' when allowSubDomains is enabled
+        $resource = new Resource(
+            new DiscoveredUri(new Uri('http://localhost/page'), 0),
+            new Response(200, [
+                'X-Guzzle-Redirect-History' => ['http://otherhost/page']
+            ], 'content')
+        );
+
+        $filter = new ExternalRedirectFilter(true);
+        // Different single-label hosts should be filtered
+        $this->assertTrue($filter->match($resource));
+    }
+
+    /**
+     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
+     * @throws UriSyntaxException
+     * @throws ErrorException
+     */
+    public function testSameLocalhostWithSubdomainsEnabled()
+    {
+        // Same single-label host should not be filtered (handled by exact match check)
+        $resource = new Resource(
+            new DiscoveredUri(new Uri('http://localhost/page'), 0),
+            new Response(200, [
+                'X-Guzzle-Redirect-History' => ['http://localhost/newpage']
+            ], 'content')
+        );
+
+        $filter = new ExternalRedirectFilter(true);
+        $this->assertFalse($filter->match($resource));
+    }
 }

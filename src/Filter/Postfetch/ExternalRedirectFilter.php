@@ -11,6 +11,12 @@ use VDB\Spider\Resource;
  * This filter requires the Guzzle client to be configured with redirect tracking:
  * $client = new Client(['allow_redirects' => ['track_redirects' => true]]);
  *
+ * Note: When allowSubDomains is enabled, this filter uses a simple heuristic to extract
+ * the base domain (last two parts of the hostname). This works for most common TLDs
+ * (e.g., example.com, example.org) but may not work correctly with complex TLDs like
+ * .co.uk or .com.au. For more precise domain matching, consider using a library that
+ * understands the Public Suffix List.
+ *
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class ExternalRedirectFilter implements PostFetchFilterInterface
@@ -65,12 +71,17 @@ class ExternalRedirectFilter implements PostFetchFilterInterface
     /**
      * Extract the base domain (last two parts) from a hostname.
      *
+     * For hosts with fewer than 2 parts (e.g., 'localhost'), returns the original host.
+     *
      * @param string $host
      * @return string
      */
     private function getBaseDomain(string $host): string
     {
         $parts = explode('.', $host);
+        if (count($parts) < 2) {
+            return $host;
+        }
         return implode('.', array_slice($parts, -2));
     }
 }
