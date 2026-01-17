@@ -13,6 +13,24 @@
 - HTTP handling: default Guzzle handler throws on 4XX/5XX; to keep crawling on errors, supply a custom `RequestHandlerInterface` (see link-checker example referenced in [README](README.md)). Signals (SIGTERM/SIGINT/etc.) trigger `spider.crawl.user.stopped` when running in CLI.
 - Key tuning knobs: `DiscovererSet::$maxDepth`, `QueueManager::$maxQueueSize`, `Downloader::setDownloadLimit()`, traversal algorithm, request delay via politeness listener, robots.txt user-agent.
 - Coding standards: PSR-0/1/2; codebase targets PHP >= 8.0. Autoload via PSR-4 `VDB\Spider\` from `src/`.
+- Tests: For quick validation of specific unit tests, use `./vendor/bin/phpunit [test-file]` directly. However, full validation must use `./bin/act --matrix php-versions:8.0` (or the convenience wrapper `./bin/check`) to run the complete CI workflow with the lowest supported PHP version (8.0).
+- Static analysis: The full CI workflow includes lint, phpcs (PSR2), phpmd (with [phpmd.xml](phpmd.xml) and [phpmd-tests.xml](phpmd-tests.xml)), phan, and coverage enforcement. Run via `./bin/act --matrix php-versions:8.0` (or `./bin/check`).
+- Common workflow: `composer install`, make code changes, run `./vendor/bin/phpunit` for quick feedback on specific tests, then **run `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to validate the entire workflow locally before pushing changes (MANDATORY before PR)**.
+- When adding features: wire new events through `DispatcherTrait`, keep discovery depth/visited tracking in sync (normalize URIs), and ensure new persistence handlers implement Iterator + Countable to align with Downloader expectations.
+- Testing patterns: examples drive expected behaviors (queue, filters, stats). Add unit tests under [tests/](tests) to keep coverage at 100% and satisfy CI scripts.
+- **Code Coverage Requirements**: This project **requires 100% line coverage** for all code. This is non-negotiable and enforced by CI:
+  - **ALWAYS** ensure your code changes maintain 100% coverage before submitting.
+  - If you encounter pre-existing coverage gaps (code that was not at 100% before your changes), you **MUST** fix those gaps as well, even if you didn't introduce them.
+  - Run `./bin/coverage-enforce 100` to verify coverage meets the requirement.
+  - Use `XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html build/coverage` to generate HTML reports for identifying uncovered lines.
+  - **Never** submit code that reduces overall project coverage below 100%, regardless of whether the uncovered code is yours or pre-existing.
+  - Write comprehensive tests that cover all code paths: normal cases, edge cases, error conditions, and boundary conditions.
+  - **Before submitting ANY PR:** Run `./bin/check` and ensure ALL CI checks pass locally
+- **Validation workflow for code changes**: After making any modifications to the codebase, you **must** run the full CI workflow locally before concluding your work:
+  - Use `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to run the complete GitHub Actions workflow with PHP 8.0 (lowest supported version only). This validates code style (PSR2), syntax, quality (phpcs, phpmd, phan), and enforces 100% test coverage. Do not run the entire matrix—CI will handle testing across all supported versions.
+  - For faster iteration on specific tests during development, use `./vendor/bin/phpunit [test-path]` directly.
+  - The `./bin/act --matrix php-versions:8.0` (or `./bin/check`) workflow must pass before considering code changes complete. These checks are enforced by CI and failure will block merges.
+  - **Coverage validation is mandatory**: The build will fail if line coverage is not exactly 100%.
 
 ## PR Submission Requirements (MANDATORY)
 
@@ -46,21 +64,3 @@
 
 - **For iterative development:** Use `./vendor/bin/phpunit [test-file]` for fast feedback during coding
 - **For final PR validation:** **ALWAYS** use `./bin/check` before creating/updating any PR
-- Tests: For quick validation of specific unit tests, use `./vendor/bin/phpunit [test-file]` directly. However, full validation must use `./bin/act --matrix php-versions:8.0` (or the convenience wrapper `./bin/check`) to run the complete CI workflow with the lowest supported PHP version (8.0).
-- Static analysis: The full CI workflow includes lint, phpcs (PSR2), phpmd (with [phpmd.xml](phpmd.xml) and [phpmd-tests.xml](phpmd-tests.xml)), phan, and coverage enforcement. Run via `./bin/act --matrix php-versions:8.0` (or `./bin/check`).
-- Common workflow: `composer install`, make code changes, run `./vendor/bin/phpunit` for quick feedback on specific tests, then **run `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to validate the entire workflow locally before pushing changes (MANDATORY before PR)**.
-- When adding features: wire new events through `DispatcherTrait`, keep discovery depth/visited tracking in sync (normalize URIs), and ensure new persistence handlers implement Iterator + Countable to align with Downloader expectations.
-- Testing patterns: examples drive expected behaviors (queue, filters, stats). Add unit tests under [tests/](tests) to keep coverage at 100% and satisfy CI scripts.
-- **Code Coverage Requirements**: This project **requires 100% line coverage** for all code. This is non-negotiable and enforced by CI:
-  - **ALWAYS** ensure your code changes maintain 100% coverage before submitting.
-  - If you encounter pre-existing coverage gaps (code that was not at 100% before your changes), you **MUST** fix those gaps as well, even if you didn't introduce them.
-  - Run `./bin/coverage-enforce 100` to verify coverage meets the requirement.
-  - Use `XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html build/coverage` to generate HTML reports for identifying uncovered lines.
-  - **Never** submit code that reduces overall project coverage below 100%, regardless of whether the uncovered code is yours or pre-existing.
-  - Write comprehensive tests that cover all code paths: normal cases, edge cases, error conditions, and boundary conditions.
-  - **Before submitting ANY PR:** Run `./bin/check` and ensure ALL CI checks pass locally
-- **Validation workflow for code changes**: After making any modifications to the codebase, you **must** run the full CI workflow locally before concluding your work:
-  - Use `./bin/act --matrix php-versions:8.0` (or `./bin/check`) to run the complete GitHub Actions workflow with PHP 8.0 (lowest supported version only). This validates code style (PSR2), syntax, quality (phpcs, phpmd, phan), and enforces 100% test coverage. Do not run the entire matrix—CI will handle testing across all supported versions.
-  - For faster iteration on specific tests during development, use `./vendor/bin/phpunit [test-path]` directly.
-  - The `./bin/act --matrix php-versions:8.0` (or `./bin/check`) workflow must pass before considering code changes complete. These checks are enforced by CI and failure will block merges.
-  - **Coverage validation is mandatory**: The build will fail if line coverage is not exactly 100%.
