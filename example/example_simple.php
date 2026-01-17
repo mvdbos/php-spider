@@ -1,7 +1,7 @@
 <?php
 
 use Example\StatsHandler;
-use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer;
 use Symfony\Contracts\EventDispatcher\Event;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\Spider;
@@ -13,7 +13,7 @@ $seed = 'https://www.dmoz-odp.org/';
 $spider = new Spider($seed);
 
 // Add a URI discoverer. Without it, the spider does nothing. In this case, we want <a> tags from a certain <div>
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
+$spider->getDiscovererSet()->set(new SimpleXPathExpressionDiscoverer("//div[@id='catalogs']//a"));
 
 // Set some sane options for this example. In this case, we only get the first 10 items from the start page.
 $spider->getDiscovererSet()->maxDepth = 1;

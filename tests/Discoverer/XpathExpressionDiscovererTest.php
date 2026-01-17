@@ -11,8 +11,12 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use Exception;
+use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Resource;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  *
@@ -20,7 +24,7 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 class XpathExpressionDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      */
     public function testDiscover()
     {
@@ -28,11 +32,112 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
         $this->executeDiscoverer($discoverer);
     }
 
+    /**
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
+     */
+    public function testDiscoverWithBrackets()
+    {
+        // Test that bracket notation is now supported
+        $discoverer = new XPathExpressionDiscoverer("//a[starts-with(@href, 'http')]");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
+     */
+    public function testDiscoverWithOrPredicate()
+    {
+        // Test XPath with or condition
+        $discoverer = new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
+     * @throws Exception
+     */
+    public function testDiscoverWithPath()
+    {
+        // Create test with div structure
+        $uri = new DiscoveredUri('http://php-spider.org/', 0);
+        $uriInBody = 'http://php-spider.org/contact/';
+        
+        $html = '<html><div id="content"><a href="' . $uriInBody . '">Link</a></div></html>';
+        $resource = new Resource($uri, new Response(200, [], $html));
+        
+        $discoverer = new XPathExpressionDiscoverer("//div[@id='content']//a");
+        $uris = $discoverer->discover($resource);
+        
+        $this->assertCount(1, $uris);
+        $this->assertEquals($uriInBody, $uris[0]->toString());
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
+     * @throws Exception
+     */
+    public function testDiscoverWithMultiplePredicates()
+    {
+        // Create test with complex structure
+        $uri = new DiscoveredUri('http://php-spider.org/', 0);
+        $uriInBody = 'http://php-spider.org/internal/';
+        
+        $html = '<html><div id="content"><a href="' . $uriInBody . '" class="link">Link</a></div></html>';
+        $resource = new Resource($uri, new Response(200, [], $html));
+        
+        // Test complex XPath with multiple predicates
+        $discoverer = new XPathExpressionDiscoverer("//div[@id='content']//a[@class='link']");
+        $uris = $discoverer->discover($resource);
+        
+        $this->assertCount(1, $uris);
+        $this->assertEquals($uriInBody, $uris[0]->toString());
+    }
+
     public function testDiscoverNoA()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
 
         $discoverer = new XPathExpressionDiscoverer("//b");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithDivOnly()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        $discoverer = new XPathExpressionDiscoverer("//div[@id='content']");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithAnchorFollowedByDescendant()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects descendants of anchor, not the anchor itself
+        $discoverer = new XPathExpressionDiscoverer("//a[@class='link']//span");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithAnchorText()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects text node, not the anchor element
+        $discoverer = new XPathExpressionDiscoverer("//a/text()");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithAnchorAttribute()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects attribute, not the anchor element
+        $discoverer = new XPathExpressionDiscoverer("//a/@href");
         $this->executeDiscoverer($discoverer);
     }
 }
