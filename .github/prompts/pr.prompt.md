@@ -1,3 +1,4 @@
+---
 description: Create a pull request on GitHub using GitHub CLI (gh)
 name: pr
 agent: agent
