@@ -17,6 +17,8 @@ use VDB\Uri\Uri;
 
 /**
  * Test for CachedResourceFilter
+ *
+ * @coversDefaultClass \VDB\Spider\Filter\Prefetch\CachedResourceFilter
  */
 class CachedResourceFilterTest extends TestCase
 {
@@ -41,8 +43,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
      */
     public function testMatchReturnsFalseWhenFileDoesNotExist()
     {

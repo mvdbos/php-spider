@@ -45,10 +45,10 @@ class CachedResourceFilter implements PreFetchFilterInterface
     {
         // Build the file path for the URI
         $hostname = $uri->getHost();
-        $path = $uri->getPath() ?: '';
+        $path = $uri->getPath();
 
         // Complete path with default filename if needed
-        if ($path === '') {
+        if (empty($path)) {
             $path = "/" . $this->defaultFilename;
         } elseif (substr($path, -1, 1) === '/') {
             $path .= $this->defaultFilename;
