@@ -7,13 +7,13 @@ use VDB\Uri\UriInterface;
 
 /**
  * Filter to skip downloading resources that are already cached and younger than max age.
- * 
+ *
  * This filter checks if a resource has been previously downloaded and persisted to disk.
  * If the cached file exists and its modification time is within the specified max age,
  * the filter returns true to skip re-downloading.
- * 
+ *
  * Note: This requires using the same spider ID across runs to share the cache directory.
- * 
+ *
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class CachedResourceFilter implements PreFetchFilterInterface
@@ -37,7 +37,7 @@ class CachedResourceFilter implements PreFetchFilterInterface
 
     /**
      * Returns true if the URI should be filtered out (already cached and fresh).
-     * 
+     *
      * @param UriInterface $uri
      * @return bool
      */
@@ -70,7 +70,7 @@ class CachedResourceFilter implements PreFetchFilterInterface
 
     /**
      * Build the file path for a given URI, mirroring the FilePersistenceHandler logic.
-     * 
+     *
      * @param UriInterface $uri
      * @return string
      */
@@ -83,8 +83,8 @@ class CachedResourceFilter implements PreFetchFilterInterface
         $fullPath = $this->completePath($path);
         
         // Build the directory structure: {basePath}/{spiderId}/{hostname}{dirname}
-        $directory = $this->basePath . DIRECTORY_SEPARATOR . 
-                    $this->spiderId . DIRECTORY_SEPARATOR . 
+        $directory = $this->basePath . DIRECTORY_SEPARATOR .
+                    $this->spiderId . DIRECTORY_SEPARATOR .
                     $hostname . dirname($fullPath);
         
         // The filename is URL-encoded
@@ -96,7 +96,7 @@ class CachedResourceFilter implements PreFetchFilterInterface
     /**
      * Complete a path with default filename if it ends with a slash.
      * This mirrors the FilePersistenceHandler::completePath() logic.
-     * 
+     *
      * @param string $path
      * @return string
      */

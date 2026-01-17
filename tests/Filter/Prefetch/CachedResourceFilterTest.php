@@ -224,8 +224,8 @@ class CachedResourceFilterTest extends TestCase
         }
         
         // Build the directory structure
-        $directory = $this->testCacheDir . DIRECTORY_SEPARATOR . 
-                    $spiderId . DIRECTORY_SEPARATOR . 
+        $directory = $this->testCacheDir . DIRECTORY_SEPARATOR .
+                    $spiderId . DIRECTORY_SEPARATOR .
                     $hostname . dirname($path);
         
         // Create directory if it doesn't exist
