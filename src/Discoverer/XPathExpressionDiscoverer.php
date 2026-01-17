@@ -63,6 +63,9 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
      * - '//a//span' (selects span, not anchor)
      * - '//a/text()' (selects text node, not anchor)
      * 
+     * Note: XPath predicates containing nested brackets (e.g., //a[contains(@href, '[test]')])
+     * are not supported due to regex limitations. This is an extremely rare edge case.
+     * 
      * @param string $selector
      * @return bool
      */
