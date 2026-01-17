@@ -70,6 +70,27 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
     }
 
     /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
+     */
+    public function testGetJsonFilePath()
+    {
+        $path = sys_get_temp_dir() . '/spider-path-test';
+        $handler = new JsonHealthCheckPersistenceHandler($path);
+        $handler->setSpiderId('test-id');
+
+        // Use reflection to call protected method
+        $reflection = new ReflectionClass($handler);
+        $method = $reflection->getMethod('getJsonFilePath');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($handler);
+        $expected = $path . DIRECTORY_SEPARATOR . 'test-id_health_check.json';
+        
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::count
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
