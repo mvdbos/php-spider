@@ -13,6 +13,7 @@ namespace VDB\Spider\Tests\PersistenceHandler;
 
 use GuzzleHttp\Psr7\Response;
 use ReflectionClass;
+use RuntimeException;
 use VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
@@ -251,7 +252,7 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         );
 
         try {
-            $this->expectException(\RuntimeException::class);
+            $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage('Failed to write JSON file');
 
             $handler->persist($resource);

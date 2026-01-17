@@ -6,6 +6,7 @@
 
 namespace VDB\Spider\PersistenceHandler;
 
+use RuntimeException;
 use VDB\Spider\Resource;
 
 /**
@@ -87,7 +88,8 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
     /**
      * Write the current results to the JSON file
      *
-     * @throws \RuntimeException if file writing fails
+     * @throws RuntimeException if file writing fails
+     * @SuppressWarnings(PHPMD.ErrorControlOperator)
      */
     protected function writeToFile(): void
     {
@@ -95,7 +97,7 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
 
         $bytesWritten = @file_put_contents($this->getJsonFilePath(), $jsonData);
         if ($bytesWritten === false) {
-            throw new \RuntimeException('Failed to write JSON file: ' . $this->getJsonFilePath());
+            throw new RuntimeException('Failed to write JSON file: ' . $this->getJsonFilePath());
         }
     }
 
