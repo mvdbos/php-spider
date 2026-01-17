@@ -1,0 +1,162 @@
+<?php
+/**
+ * @author Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2026 Matthijs van den Bos <matthijs@vandenbos.org>
+ */
+
+namespace VDB\Spider\PersistenceHandler;
+
+use RuntimeException;
+use VDB\Spider\Resource;
+
+/**
+ * A persistence handler that stores link health check results in a JSON file.
+ * This handler is designed for use cases where you want to check if pages are healthy
+ * (not returning 404 or other errors) without storing the full page content.
+ *
+ * The JSON output contains:
+ * - uri: The URL that was checked
+ * - status_code: HTTP status code (200, 404, 500, etc.)
+ * - reason_phrase: HTTP reason phrase ("OK", "Not Found", etc.)
+ * - timestamp: When the check was performed
+ * - depth: The depth at which this URI was discovered
+ *
+ * Behavioral notes:
+ * - The JSON file is fully rewritten on every {@see persist()} call. This makes results
+ *   durable during long-running crawls, but may be expensive for very large result sets.
+ * - All results are kept in memory in the {@see $results} array for the lifetime of the
+ *   handler, and are written out to disk as a whole; nothing is streamed from disk.
+ * - The handler implements a rewindable iterator: you can iterate over the results multiple
+ *   times, and {@see rewind()} resets the internal position back to the first element.
+ */
+class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
+{
+    /**
+     * @var string the path where the JSON file should be stored
+     */
+    protected string $path = '';
+
+    /**
+     * @var string unique identifier for this spider instance
+     */
+    protected string $spiderId = '';
+
+    /**
+     * @var array Array of health check results
+     */
+    private array $results = [];
+
+    /**
+     * @var int Current position in the results array for iteration
+     */
+    private int $position = 0;
+
+    /**
+     * @param string $path the path where the JSON file should be stored
+     */
+    public function __construct(string $path)
+    {
+        $this->path = $path;
+    }
+
+    public function setSpiderId(string $spiderId): void
+    {
+        $this->spiderId = $spiderId;
+
+        // Create the directory if it doesn't exist
+        if (!file_exists($this->path)) {
+            mkdir($this->path, 0700, true);
+        }
+    }
+
+    /**
+     * Get the full path to the JSON file
+     */
+    protected function getJsonFilePath(): string
+    {
+        return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . '_health_check.json';
+    }
+
+    public function persist(Resource $resource): void
+    {
+        $result = [
+            'uri' => $resource->getUri()->toString(),
+            'status_code' => $resource->getResponse()->getStatusCode(),
+            'reason_phrase' => $resource->getResponse()->getReasonPhrase(),
+            'timestamp' => date('c'),
+            'depth' => $resource->getUri()->getDepthFound()
+        ];
+
+        $this->results[] = $result;
+
+        // Write to JSON file after each persist to ensure data is saved even if script is interrupted
+        $this->writeToFile();
+    }
+
+    /**
+     * Write the current results to the JSON file
+     *
+     * @throws RuntimeException if JSON encoding or file writing fails
+     * @SuppressWarnings(PHPMD.ErrorControlOperator)
+     */
+    protected function writeToFile(): void
+    {
+        $jsonData = json_encode($this->results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($jsonData === false) {
+            throw new RuntimeException(
+                'Failed to encode results to JSON: ' . json_last_error_msg()
+            );
+        }
+
+        $bytesWritten = @file_put_contents($this->getJsonFilePath(), $jsonData);
+        if ($bytesWritten === false) {
+            throw new RuntimeException('Failed to write JSON file: ' . $this->getJsonFilePath());
+        }
+    }
+
+    public function count(): int
+    {
+        return count($this->results);
+    }
+
+    /**
+     * @return mixed Health check result array containing uri, status_code, reason_phrase, timestamp, and depth,
+     *               or false if the current position is invalid
+     */
+    public function current(): mixed
+    {
+        return $this->results[$this->position] ?? false;
+    }
+
+    /**
+     * @return void
+     */
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    /**
+     * @return int
+     */
+    public function key(): int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function valid(): bool
+    {
+        return isset($this->results[$this->position]);
+    }
+
+    /**
+     * @return void
+     */
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+}
