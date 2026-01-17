@@ -12,6 +12,7 @@
 namespace VDB\Spider\Tests\PersistenceHandler;
 
 use GuzzleHttp\Psr7\Response;
+use ReflectionClass;
 use VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
@@ -61,7 +62,7 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $handler = new JsonHealthCheckPersistenceHandler($path);
 
         // Using reflection to check the path was set
-        $reflection = new \ReflectionClass($handler);
+        $reflection = new ReflectionClass($handler);
         $pathProperty = $reflection->getProperty('path');
         $pathProperty->setAccessible(true);
 
