@@ -49,7 +49,8 @@ $queueManager->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FI
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
+// Here we demonstrate the new bracket notation support for more precise link selection
+$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
