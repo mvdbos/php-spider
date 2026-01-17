@@ -14,7 +14,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Create cache directories in the project (gitignored)
-mkdir -p .cache/act/artifacts .cache/act/cache .cache/composer
+mkdir -p .cache/act/artifacts .cache/act/cache
 
 # Check if act is installed
 if ! command -v act &> /dev/null; then
