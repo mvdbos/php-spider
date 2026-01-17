@@ -10,7 +10,7 @@ use VDB\Uri\UriInterface;
 class DiscovererSet
 {
     /**
-     * @var Discoverer[]
+     * @var array<string, DiscovererInterface>
      */
     private array $discoverers = array();
 
