@@ -80,9 +80,11 @@ class CachedResourceFilter implements PreFetchFilterInterface
 
         $fileModTime = filemtime($filePath);
         if ($fileModTime === false) {
+            // @codeCoverageIgnoreStart
             // File exists but cannot read modification time (permissions issue)
             // Don't skip - allow re-download
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $currentTime = time();
