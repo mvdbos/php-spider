@@ -24,7 +24,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected int $totalSizePersisted = 0;
 
-    protected ?Iterator $iterator = null;
+    protected Iterator $iterator;
 
     protected ?Finder $finder = null;
 
@@ -93,7 +93,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function getIterator(): Iterator
     {
-        if ($this->iterator == null) {
+        if (!isset($this->iterator)) {
             $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;

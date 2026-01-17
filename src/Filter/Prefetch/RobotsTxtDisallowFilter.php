@@ -63,7 +63,7 @@ class RobotsTxtDisallowFilter implements PreFetchFilterInterface
     {
         $uri = new Uri($seedUrl);
         if (in_array($uri->getScheme(), FileUri::$allowedSchemes)) {
-            return new FileUri($seedUrl . '/robots.txt');
+            return (new FileUri($seedUrl . '/robots.txt'))->toString();
         } elseif (in_array($uri->getScheme(), Http::$allowedSchemes)) {
             return $uri->toBaseUri()->toString() . '/robots.txt';
         } else {
