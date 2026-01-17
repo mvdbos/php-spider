@@ -145,4 +145,33 @@ class DownloaderTest extends TestCase
 
         $this->assertFalse($resource);
     }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testGetDownloadLimit()
+    {
+        $this->downloader->setDownloadLimit(10);
+        $this->assertEquals(10, $this->downloader->getDownloadLimit());
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testSetAndGetPersistenceHandler()
+    {
+        $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
+        $this->downloader->setPersistenceHandler($handler);
+        $this->assertSame($handler, $this->downloader->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader
+     */
+    public function testSetAndGetRequestHandler()
+    {
+        $handler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
+        $this->downloader->setRequestHandler($handler);
+        $this->assertSame($handler, $this->downloader->getRequestHandler());
+    }
 }
