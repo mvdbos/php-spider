@@ -66,12 +66,12 @@ $spider->getDownloader()->setDownloadLimit(10);
 $spider->getDownloader()->setRequestHandler(new \Example\LinkCheckRequestHandler());
 
 $statsHandler = new StatsHandler();
-$LogHandler = new LogHandler();
+$logHandler = new LogHandler();
 
 $queueManager = new InMemoryQueueManager();
 
 $queueManager->getDispatcher()->addSubscriber($statsHandler);
-$queueManager->getDispatcher()->addSubscriber($LogHandler);
+$queueManager->getDispatcher()->addSubscriber($logHandler);
 
 // Set some sane defaults for this example. We only visit the first level.
 // We stop at 10 queued resources
@@ -107,7 +107,7 @@ $spider->getDownloader()->getDispatcher()->addListener(
 );
 
 $spider->getDispatcher()->addSubscriber($statsHandler);
-$spider->getDispatcher()->addSubscriber($LogHandler);
+$spider->getDispatcher()->addSubscriber($logHandler);
 
 // Let's add something to enable us to stop the script
 $spider->getDispatcher()->addListener(

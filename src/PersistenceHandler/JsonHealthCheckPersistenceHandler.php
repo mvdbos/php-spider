@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
- * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
+ * @copyright 2026 Matthijs van den Bos <matthijs@vandenbos.org>
  */
 
 namespace VDB\Spider\PersistenceHandler;
@@ -20,6 +20,14 @@ use VDB\Spider\Resource;
  * - reason_phrase: HTTP reason phrase ("OK", "Not Found", etc.)
  * - timestamp: When the check was performed
  * - depth: The depth at which this URI was discovered
+ *
+ * Behavioral notes:
+ * - The JSON file is fully rewritten on every {@see persist()} call. This makes results
+ *   durable during long-running crawls, but may be expensive for very large result sets.
+ * - All results are kept in memory in the {@see $results} array for the lifetime of the
+ *   handler, and are written out to disk as a whole; nothing is streamed from disk.
+ * - The handler implements a rewindable iterator: you can iterate over the results multiple
+ *   times, and {@see rewind()} resets the internal position back to the first element.
  */
 class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
 {
@@ -88,12 +96,17 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
     /**
      * Write the current results to the JSON file
      *
-     * @throws RuntimeException if file writing fails
+     * @throws RuntimeException if JSON encoding or file writing fails
      * @SuppressWarnings(PHPMD.ErrorControlOperator)
      */
     protected function writeToFile(): void
     {
         $jsonData = json_encode($this->results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($jsonData === false) {
+            throw new RuntimeException(
+                'Failed to encode results to JSON: ' . json_last_error_msg()
+            );
+        }
 
         $bytesWritten = @file_put_contents($this->getJsonFilePath(), $jsonData);
         if ($bytesWritten === false) {
@@ -107,7 +120,8 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return mixed Array element or false
+     * @return mixed Health check result array containing uri, status_code, reason_phrase, timestamp, and depth,
+     *               or false if the current position is invalid
      */
     public function current(): mixed
     {

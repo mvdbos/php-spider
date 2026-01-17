@@ -73,6 +73,7 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
     /**
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::__construct
      */
     public function testGetJsonFilePath()
     {
@@ -251,10 +252,10 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
             new Response(200, [], "Test Body")
         );
 
-        try {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Failed to write JSON file');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to write JSON file');
 
+        try {
             $handler->persist($resource);
         } finally {
             // Clean up - restore write permissions before deleting
@@ -262,5 +263,34 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
             unlink($jsonFile);
             rmdir($testDir);
         }
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     */
+    public function testWriteToFileWithJsonEncodingFailure()
+    {
+        // Create a handler and use reflection to inject invalid data that will fail JSON encoding
+        $handler = new JsonHealthCheckPersistenceHandler(sys_get_temp_dir());
+        $handler->setSpiderId('test-json-failure');
+
+        // Use reflection to inject data with invalid UTF-8 that will cause json_encode to fail
+        $reflection = new ReflectionClass($handler);
+        $resultsProperty = $reflection->getProperty('results');
+        $resultsProperty->setAccessible(true);
+        
+        // Inject invalid UTF-8 data
+        $resultsProperty->setValue($handler, [
+            ['data' => "\xB1\x31"] // Invalid UTF-8 sequence
+        ]);
+
+        // Use reflection to call writeToFile
+        $method = $reflection->getMethod('writeToFile');
+        $method->setAccessible(true);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to encode results to JSON');
+
+        $method->invoke($handler);
     }
 }
