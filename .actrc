@@ -1,6 +1,6 @@
 -P ubuntu-latest=shivammathur/node:latest
 --container-daemon-socket -
 --pull=false
---use-gitignore=false
+--use-gitignore=true
 --artifact-server-path .cache/act/artifacts
 --cache-server-path .cache/act/cache
