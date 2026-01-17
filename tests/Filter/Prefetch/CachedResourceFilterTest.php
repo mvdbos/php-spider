@@ -233,6 +233,7 @@ class CachedResourceFilterTest extends TestCase
         new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, -1);
     }
 
+    
     /**
      * Helper method to create a cached file for testing
      */
@@ -299,3 +300,4 @@ class CachedResourceFilterTest extends TestCase
         rmdir($dir);
     }
 }
+

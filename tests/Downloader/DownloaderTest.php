@@ -197,4 +197,40 @@ class DownloaderTest extends TestCase
         $this->downloader->setRequestHandler($handler);
         $this->assertSame($handler, $this->downloader->getRequestHandler());
     }
+    /**
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::matchesPostfetchFilter
+     * @covers \VDB\Spider\Downloader\Downloader::dispatch
+     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
+     */
+    public function testFilterMatchesWithDispatchEvent()
+    {
+        // Test that when a postfetch filter matches, it dispatches the event and returns false
+        $filterAlwaysMatch = $this->getMockBuilder('VDB\Spider\Filter\PostFetchFilterInterface')->getMock();
+        $filterAlwaysMatch
+            ->expects($this->once())
+            ->method('match')
+            ->will($this->returnValue(true));
+        
+        // Create a mock event dispatcher to verify the event is dispatched
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $dispatcher
+            ->expects($this->atLeastOnce()) // pre-request, post-request, and postfetch events
+            ->method('dispatch');
+        
+        $downloader = new Downloader();
+        $downloader->setRequestHandler($this->downloader->getRequestHandler());
+        
+        // Use reflection to inject mock dispatcher
+        $reflection = new \ReflectionClass($downloader);
+        $property = $reflection->getProperty('dispatcher');
+        $property->setAccessible(true);
+        $property->setValue($downloader, $dispatcher);
+        
+        $downloader->addPostFetchFilter($filterAlwaysMatch);
+
+        $resource = $downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+
+        $this->assertFalse($resource);
+    }
 }
