@@ -19,3 +19,7 @@
 - Common workflow: `composer install`, adjust examples in [example/*.php](example), wire filters/discoverers/listeners, run `bin/static-analysis`, run `bin/coverage-enforce` or `./vendor/bin/phpunit`, iterate.
 - When adding features: wire new events through `DispatcherTrait`, keep discovery depth/visited tracking in sync (normalize URIs), and ensure new persistence handlers implement Iterator + Countable to align with Downloader expectations.
 - Testing patterns: examples drive expected behaviors (queue, filters, stats). Add unit tests under [tests/](tests) to keep coverage at 100% and satisfy CI scripts.
+- **Validation workflow for code changes**: After making any modifications to the codebase, you **must** run both validation commands to ensure code quality and test coverage:
+  - `./bin/static-analysis` — validates code style (PSR2), syntax, and quality (phpcs, phpmd, phan)
+  - `./bin/coverage-enforce 100` — enforces 100% test coverage (requires `XDEBUG_MODE=coverage`). If coverage is insufficient, add tests to [tests/](tests) until 100% is achieved.
+  - Both commands must pass before considering code changes complete. These checks are enforced by CI and failure will block merges.
