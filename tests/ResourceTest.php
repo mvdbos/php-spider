@@ -76,4 +76,71 @@ class ResourceTest extends TestCase
         $this->assertEquals($this->html, $deserialized->getResponse()->getBody()->__toString());
         $this->assertEquals($this->resource->getCrawler()->html(), $deserialized->getCrawler()->html());
     }
+
+    /**
+     * @covers \VDB\Spider\Resource::getEffectiveUri
+     */
+    public function testGetEffectiveUriWithoutRedirects()
+    {
+        // When no redirects occurred, should return the original URI
+        $this->assertEquals('http://example.org/domains/special', $this->resource->getEffectiveUri());
+    }
+
+    /**
+     * @covers \VDB\Spider\Resource::getEffectiveUri
+     * @throws ErrorException
+     * @throws UriSyntaxException
+     */
+    public function testGetEffectiveUriWithRedirects()
+    {
+        // Simulate Guzzle redirect tracking headers
+        $resource = new Resource(
+            new DiscoveredUri(new Uri('http://original.com/page'), 0),
+            new Response(200, [
+                'X-Guzzle-Redirect-History' => [
+                    'http://original.com/redirect1',
+                    'http://final.com/destination'
+                ]
+            ], 'content')
+        );
+
+        // Should return the last URI in the redirect history
+        $this->assertEquals('http://final.com/destination', $resource->getEffectiveUri());
+    }
+
+    /**
+     * @covers \VDB\Spider\Resource::getEffectiveUri
+     * @throws ErrorException
+     * @throws UriSyntaxException
+     */
+    public function testGetEffectiveUriWithSingleRedirect()
+    {
+        // Simulate a single redirect
+        $resource = new Resource(
+            new DiscoveredUri(new Uri('http://original.com/page'), 0),
+            new Response(200, [
+                'X-Guzzle-Redirect-History' => ['http://redirected.com/final']
+            ], 'content')
+        );
+
+        $this->assertEquals('http://redirected.com/final', $resource->getEffectiveUri());
+    }
+
+    /**
+     * @covers \VDB\Spider\Resource::getEffectiveUri
+     * @throws ErrorException
+     * @throws UriSyntaxException
+     */
+    public function testGetEffectiveUriWithEmptyRedirectHistory()
+    {
+        // When redirect history header is empty, should return original URI
+        $resource = new Resource(
+            new DiscoveredUri(new Uri('http://original.com/page'), 0),
+            new Response(200, [
+                'X-Guzzle-Redirect-History' => []
+            ], 'content')
+        );
+
+        $this->assertEquals('http://original.com/page', $resource->getEffectiveUri());
+    }
 }
