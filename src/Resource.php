@@ -60,6 +60,31 @@ class Resource
         return $this->response;
     }
 
+    /**
+     * Returns the effective (final) URI after any redirects.
+     *
+     * If the Guzzle client was configured with 'track_redirects' => true in the
+     * 'allow_redirects' option, this method returns the final URI after following
+     * all redirects. Otherwise, it returns the original URI.
+     *
+     * To enable redirect tracking, configure your GuzzleRequestHandler with:
+     * $client = new Client(['allow_redirects' => ['track_redirects' => true]]);
+     *
+     * @return string The effective URI after redirects, or the original URI if no redirects occurred
+     */
+    public function getEffectiveUri(): string
+    {
+        $redirectHistory = $this->response->getHeader('X-Guzzle-Redirect-History');
+
+        if (!empty($redirectHistory)) {
+            // Return the last URI in the redirect history (the final destination)
+            return end($redirectHistory);
+        }
+
+        // No redirects occurred or tracking is not enabled - return original URI
+        return $this->uri->toString();
+    }
+
     public function __sleep(): array
     {
         /*
