@@ -17,31 +17,32 @@ use Example\StatsHandler;
 /*
  * Health Check Example
  * ====================
- * 
+ *
  * This example is designed for checking if pages on a website are healthy (not returning 404 or errors).
  * It differs from other examples in several key ways:
- * 
+ *
  * 1. USES CUSTOM REQUEST HANDLER: Like the link checker example, this uses LinkCheckRequestHandler
  *    that does not throw exceptions on failed requests (4XX/5XX responses). This allows the spider
  *    to continue crawling even when it encounters error pages.
- * 
- * 2. USES JSON PERSISTENCE: Instead of storing full page content in binary files (FileSerializedResourcePersistenceHandler),
- *    this example uses JsonHealthCheckPersistenceHandler which stores only the essential health check data:
+ *
+ * 2. USES JSON PERSISTENCE: Instead of storing full page content in binary files,
+ *    this example uses JsonHealthCheckPersistenceHandler which stores only the essential
+ *    health check data:
  *    - URI (the page URL)
  *    - HTTP status code (200, 404, 500, etc.)
  *    - Reason phrase ("OK", "Not Found", etc.)
  *    - Timestamp (when the check was performed)
  *    - Depth (at which depth this URI was discovered)
- * 
+ *
  * 3. LIGHTWEIGHT OUTPUT: The JSON file is small and easy to process programmatically, making it ideal for:
  *    - Automated health checks
  *    - CI/CD pipelines
  *    - Monitoring dashboards
  *    - Quick identification of broken pages
- * 
+ *
  * 4. FOCUS ON PAGE HEALTH: This example is specifically for checking if your own pages are healthy,
  *    not for analyzing all links on those pages. It crawls your site and reports the status of each page.
- * 
+ *
  * Use Case: You want to crawl your website to check if there are any 404 pages or error pages,
  *           but you're not interested in storing the full page content. You just want a simple
  *           report of which pages are working and which are not.
@@ -72,7 +73,8 @@ $queueManager = new InMemoryQueueManager();
 $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
 
-// Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
+// Set some sane defaults for this example. We only visit the first level.
+// We stop at 10 queued resources
 $spider->getDiscovererSet()->maxDepth = 1;
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
@@ -96,7 +98,8 @@ $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $all
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
-// We add an eventlistener to the crawler that implements a politeness policy. We wait 100ms between every request to the same domain
+// We add an eventlistener to the crawler that implements a politeness policy.
+// We wait 100ms between every request to the same domain
 $politenessPolicyEventListener = new PolitenessPolicyListener(100);
 $spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,

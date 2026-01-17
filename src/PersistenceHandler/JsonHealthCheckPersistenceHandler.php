@@ -96,7 +96,7 @@ class JsonHealthCheckPersistenceHandler implements PersistenceHandlerInterface
     }
 
     /**
-     * @return Resource
+     * @return mixed Array element or false
      */
     public function current(): mixed
     {
