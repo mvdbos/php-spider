@@ -91,6 +91,30 @@ There a few requirements for a Pull Request to be accepted:
 
 > Note: To run PHPUnit with coverage, and to check that coverage == 100%, you can run `bin/coverage-enforce`.
 
+### Local Testing with GitHub Actions
+
+You can run the full CI pipeline locally using [nektos/act](https://nektosact.com/):
+
+```bash
+# Fast path: run the full workflow with PHP 8.0 (recommended)
+./bin/check
+```
+
+Or use the underlying act wrapper directly:
+
+```bash
+# Run all tests locally
+./bin/act
+
+# Run specific PHP version locally
+./bin/act --matrix php-versions:8.0
+
+# Run specific job or view available workflows
+./bin/act -l
+```
+
+For more details, see [.github/LOCAL_TESTING.md](.github/LOCAL_TESTING.md).
+
 Support
 -------
 For things like reporting bugs and requesting features it is best to create an [issue](https://github.com/mvdbos/php-spider/issues) here on GitHub. It is even better to accompany it with a Pull Request. ;-)
