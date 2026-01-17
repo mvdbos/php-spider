@@ -63,9 +63,9 @@ class SimpleXPathExpressionDiscovererTest extends DiscovererTestCase
     public function testDiscoverWithBrackets()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Please end your selector with '/a'");
+        $this->expectExceptionMessage("must end with '/a'");
 
-        // SimpleXPathExpressionDiscoverer does not support bracket notation
+        // SimpleXPathExpressionDiscoverer does not support bracket notation on anchor elements
         $discoverer = new SimpleXPathExpressionDiscoverer("//a[starts-with(@href, '/')]");
         $this->executeDiscoverer($discoverer);
     }

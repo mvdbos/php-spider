@@ -110,4 +110,34 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
         $discoverer = new XPathExpressionDiscoverer("//div[@id='content']");
         $this->executeDiscoverer($discoverer);
     }
+
+    public function testDiscoverWithAnchorFollowedByDescendant()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects descendants of anchor, not the anchor itself
+        $discoverer = new XPathExpressionDiscoverer("//a[@class='link']//span");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithAnchorText()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects text node, not the anchor element
+        $discoverer = new XPathExpressionDiscoverer("//a/text()");
+        $this->executeDiscoverer($discoverer);
+    }
+
+    public function testDiscoverWithAnchorAttribute()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("must target anchor ('a') elements");
+
+        // Should reject XPath that selects attribute, not the anchor element
+        $discoverer = new XPathExpressionDiscoverer("//a/@href");
+        $this->executeDiscoverer($discoverer);
+    }
 }

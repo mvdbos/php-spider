@@ -9,8 +9,8 @@ use VDB\Spider\Resource;
 /**
  * Simple XPath discoverer that only accepts selectors ending with '/a'.
  * 
- * For more advanced XPath expressions with predicates (square-bracket notation),
- * use XPathExpressionDiscoverer instead.
+ * For XPath expressions with predicates on anchor elements (square-bracket
+ * notation on the anchor), use XPathExpressionDiscoverer instead.
  * 
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
@@ -29,9 +29,10 @@ class SimpleXPathExpressionDiscoverer extends CrawlerDiscoverer
     public function __construct(string $selector)
     {
         if (!self::endsWith($selector, "/a")) {
-            throw new InvalidArgumentException("Please end your selector with '/a': " .
-                "selectors should look for `a` elements " .
-                "so that the Discoverer can extract their `href` attribute for further crawling.");
+            throw new InvalidArgumentException(
+                "SimpleXPathExpressionDiscoverer selectors must target anchor ('a') elements and " .
+                "must end with '/a' so that the Discoverer can extract their `href` attribute for further crawling."
+            );
         }
         parent::__construct($selector);
     }

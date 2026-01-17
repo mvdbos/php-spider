@@ -9,13 +9,14 @@ use VDB\Spider\Resource;
 /**
  * XPath discoverer that supports advanced XPath expressions including predicates (square-bracket notation).
  * 
- * This discoverer validates that the selector targets anchor elements, but allows
- * for more complex XPath expressions such as:
+ * This discoverer validates that the selector targets anchor elements as the final selected element,
+ * but allows for more complex XPath expressions such as:
  * - //a[starts-with(@href, '/')]
  * - //div[@id='content']//a
  * - //a[@class='internal']
  * 
- * For simple selectors that just end with '/a', you may also use SimpleXPathExpressionDiscoverer.
+ * For selectors where the anchor element has no predicates (for example, //div[@id='content']//a),
+ * you may also use SimpleXPathExpressionDiscoverer.
  * 
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  * @copyright 2021 Matthijs van den Bos <matthijs@vandenbos.org>
@@ -52,21 +53,23 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
     }
 
     /**
-     * Validates that the selector targets anchor elements.
+     * Validates that the selector targets anchor elements as the final selected element.
      * 
      * Accepts selectors that:
      * - End with '//a' (simple case)
-     * - End with '//a[...]' (with predicates)
-     * - Contain '//a[' (anchor with predicates anywhere in the path)
-     * - Contain '//a/' (anchor followed by more path)
+     * - End with '//a[...]' (with predicates on the anchor)
+     * 
+     * Rejects selectors where anchor is not the final element:
+     * - '//a//span' (selects span, not anchor)
+     * - '//a/text()' (selects text node, not anchor)
      * 
      * @param string $selector
      * @return bool
      */
     protected function validateSelector(string $selector): bool
     {
-        // Match patterns that indicate the selector targets anchor elements
-        // Ensures //a is present and followed by [, /, or end of string
-        return preg_match('#//a(\[|/|$)#', $selector) === 1;
+        // Match patterns that indicate the selector targets anchor elements as final element
+        // Ensures //a is present, optionally followed by predicates [...], and then end of string
+        return preg_match('#//a(\[[^\]]*\])*$#', $selector) === 1;
     }
 }
