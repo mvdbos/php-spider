@@ -2,6 +2,7 @@
 
 namespace VDB\Spider\Filter\Prefetch;
 
+use InvalidArgumentException;
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Uri\UriInterface;
 
@@ -28,12 +29,12 @@ class CachedResourceFilter implements PreFetchFilterInterface
      * @param string $spiderId The spider ID used for the cache directory
      * @param int $maxAgeSeconds Maximum age in seconds for cached resources (must be >= 0; 0 = always use cache)
      *
-     * @throws \InvalidArgumentException When $maxAgeSeconds is negative
+     * @throws InvalidArgumentException When $maxAgeSeconds is negative
      */
     public function __construct(string $basePath, string $spiderId, int $maxAgeSeconds = 0)
     {
         if ($maxAgeSeconds < 0) {
-            throw new \InvalidArgumentException('maxAgeSeconds must be greater than or equal to 0');
+            throw new InvalidArgumentException('maxAgeSeconds must be greater than or equal to 0');
         }
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->spiderId = $spiderId;

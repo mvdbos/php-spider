@@ -14,6 +14,7 @@ namespace VDB\Spider\Tests\Downloader;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
+use ReflectionClass;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
@@ -222,7 +223,7 @@ class DownloaderTest extends TestCase
         $downloader->setRequestHandler($this->downloader->getRequestHandler());
         
         // Use reflection to inject mock dispatcher
-        $reflection = new \ReflectionClass($downloader);
+        $reflection = new ReflectionClass($downloader);
         $property = $reflection->getProperty('dispatcher');
         $property->setAccessible(true);
         $property->setValue($downloader, $dispatcher);

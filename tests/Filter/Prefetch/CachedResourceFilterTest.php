@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use InvalidArgumentException;
 use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
@@ -228,7 +229,7 @@ class CachedResourceFilterTest extends TestCase
      */
     public function testConstructorThrowsExceptionForNegativeMaxAge()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('maxAgeSeconds must be greater than or equal to 0');
         new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, -1);
     }
@@ -300,4 +301,3 @@ class CachedResourceFilterTest extends TestCase
         rmdir($dir);
     }
 }
-
