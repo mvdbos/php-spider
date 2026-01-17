@@ -11,6 +11,7 @@ PHP-Spider Features
 - supports adding custom URI discovery logic, based on XPath, CSS selectors, or plain old PHP
 - comes with a useful set of URI filters, such as robots.txt and Domain limiting
 - supports custom URI filters, both prefetch (URI) and postfetch (Resource content)
+- supports caching downloaded resources with configurable max age (see [example](example/example_cache.php) and [documentation](docs/filters/CachedResourceFilter.md))
 - supports custom request handling logic
 - supports Basic, Digest and NTLM HTTP authentication. See [example](example/example_basic_auth.php).
 - comes with a useful set of persistence handlers (memory, file)
@@ -78,6 +79,35 @@ foreach ($spider->getDownloader()->getPersistenceHandler() as $resource) {
 }
 
 ```
+
+### Using Cache to Skip Already Downloaded Resources
+
+To avoid re-downloading resources that are already cached (useful for incremental crawls):
+
+```php
+use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
+use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
+
+// Use a fixed spider ID to share cache across runs
+$spiderId = 'my-spider-cache';
+$spider = new Spider('http://example.com', null, null, null, $spiderId);
+
+// Set up file persistence
+$resultsPath = __DIR__ . '/cache';
+$spider->getDownloader()->setPersistenceHandler(
+    new FileSerializedResourcePersistenceHandler($resultsPath)
+);
+
+// Add cache filter - skip resources downloaded within the last hour
+$maxAgeSeconds = 3600; // 1 hour (set to 0 to always use cache)
+$cacheFilter = new CachedResourceFilter($resultsPath, $spiderId, $maxAgeSeconds);
+$spider->getDiscovererSet()->addFilter($cacheFilter);
+
+$spider->crawl();
+```
+
+For more details, see the [CachedResourceFilter documentation](docs/filters/CachedResourceFilter.md) and [example](example/example_cache.php).
+
 Contributing
 ------------
 Contributing to PHP-Spider is as easy as Forking the repository on Github and submitting a Pull Request.
