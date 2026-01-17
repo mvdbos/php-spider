@@ -53,6 +53,22 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
     }
 
     /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::__construct
+     */
+    public function testConstruct()
+    {
+        $path = sys_get_temp_dir() . '/spider-construct-test';
+        $handler = new JsonHealthCheckPersistenceHandler($path);
+
+        // Using reflection to check the path was set
+        $reflection = new \ReflectionClass($handler);
+        $pathProperty = $reflection->getProperty('path');
+        $pathProperty->setAccessible(true);
+
+        $this->assertEquals($path, $pathProperty->getValue($handler));
+    }
+
+    /**
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::count
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
@@ -165,6 +181,19 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
 
         // Clean up
         rmdir($newTmpDir);
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
+     */
+    public function testSetSpiderIdWithExistingDirectory()
+    {
+        // Test when directory already exists
+        $handler = new JsonHealthCheckPersistenceHandler($this->tmpDir);
+        $handler->setSpiderId('existing-spider');
+
+        // Should not throw any errors
+        $this->assertDirectoryExists($this->tmpDir);
     }
 
     /**
