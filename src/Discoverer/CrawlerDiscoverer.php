@@ -44,9 +44,9 @@ abstract class CrawlerDiscoverer extends Discoverer implements DiscovererInterfa
 
         $uris = array();
         foreach ($crawler as $node) {
-            /**@var $node DOMElement */
             try {
                 $baseUri = $resource->getUri()->toString();
+                // @phan-suppress-next-line PhanUndeclaredMethod - Symfony DomCrawler returns DOMElement instances
                 $href = $node->getAttribute('href');
                 $depthFound = $resource->getUri()->getDepthFound() + 1;
 

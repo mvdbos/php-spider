@@ -41,5 +41,10 @@
         "psr-4": {
             "VDB\\Spider\\Tests\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
     }
 }
