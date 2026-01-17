@@ -208,29 +208,6 @@ class CachedResourceFilterTest extends TestCase
      * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
      * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
-    public function testMatchHandlesFiletimeFailure()
-    {
-        // This test verifies that if filemtime() fails (returns false),
-        // the filter returns false (don't skip) rather than causing a type error.
-        // In practice, filemtime() rarely fails if file_exists() returns true,
-        // but it could happen with permission issues.
-        
-        // We cannot easily simulate filemtime() failure without mocking,
-        // but we can at least document the expected behavior and verify
-        // the code handles it gracefully if it were to occur.
-        
-        // This test passes as long as the above logic doesn't throw errors
-        $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/page.html');
-        
-        // File doesn't exist, so no filemtime() call
-        $this->assertFalse($filter->match($uri));
-    }
-
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testConstructorHandlesTrailingSlashInBasePath()
     {
         // Test that constructor properly handles basePath with trailing slash
@@ -243,6 +220,17 @@ class CachedResourceFilterTest extends TestCase
 
         // Should still match even with trailing slash in constructor
         $this->assertTrue($filter->match($uri));
+    }
+
+
+    /**
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     */
+    public function testConstructorThrowsExceptionForNegativeMaxAge()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('maxAgeSeconds must be greater than or equal to 0');
+        new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, -1);
     }
 
     /**
