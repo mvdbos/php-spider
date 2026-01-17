@@ -26,10 +26,15 @@ class CachedResourceFilter implements PreFetchFilterInterface
     /**
      * @param string $basePath The base directory where spider results are stored
      * @param string $spiderId The spider ID used for the cache directory
-     * @param int $maxAgeSeconds Maximum age in seconds for cached resources (0 = always use cache)
+     * @param int $maxAgeSeconds Maximum age in seconds for cached resources (must be >= 0; 0 = always use cache)
+     *
+     * @throws \InvalidArgumentException When $maxAgeSeconds is negative
      */
     public function __construct(string $basePath, string $spiderId, int $maxAgeSeconds = 0)
     {
+        if ($maxAgeSeconds < 0) {
+            throw new \InvalidArgumentException('maxAgeSeconds must be greater than or equal to 0');
+        }
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->spiderId = $spiderId;
         $this->maxAgeSeconds = $maxAgeSeconds;
