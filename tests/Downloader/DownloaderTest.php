@@ -55,6 +55,8 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader::__construct
+     * @covers \VDB\Spider\Downloader\Downloader::getRequestHandler
      */
     public function testDefaultRequestHandler()
     {
@@ -69,6 +71,9 @@ class DownloaderTest extends TestCase
      *
      * @throws UriSyntaxException
      * @throws ErrorException
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
+     * @covers \VDB\Spider\Downloader\Downloader::dispatch
      */
     public function testDownload()
     {
@@ -81,6 +86,9 @@ class DownloaderTest extends TestCase
      *
      * @throws UriSyntaxException
      * @throws ErrorException
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
+     * @covers \VDB\Spider\Downloader\Downloader::dispatch
      */
     public function testDownloadFailed()
     {
@@ -101,6 +109,9 @@ class DownloaderTest extends TestCase
      *
      * @throws UriSyntaxException
      * @throws ErrorException
+     * @covers \VDB\Spider\Downloader\Downloader::addPostFetchFilter
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::matchesPostfetchFilter
      */
     public function testFilterNotMatches()
     {
@@ -121,6 +132,9 @@ class DownloaderTest extends TestCase
      *
      * @throws UriSyntaxException
      * @throws ErrorException
+     * @covers \VDB\Spider\Downloader\Downloader::setDownloadLimit
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::isDownLoadLimitExceeded
      */
     public function testDownloadLimit()
     {
@@ -131,6 +145,8 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader::__construct
+     * @covers \VDB\Spider\Downloader\Downloader::download
      */
     public function testFilterMatches()
     {
@@ -148,6 +164,9 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader::setDownloadLimit
+     * @covers \VDB\Spider\Downloader\Downloader::download
+     * @covers \VDB\Spider\Downloader\Downloader::isDownLoadLimitExceeded
      */
     public function testGetDownloadLimit()
     {
@@ -157,6 +176,8 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader::setPersistenceHandler
+     * @covers \VDB\Spider\Downloader\Downloader::getPersistenceHandler
      */
     public function testSetAndGetPersistenceHandler()
     {
@@ -167,6 +188,8 @@ class DownloaderTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Downloader\Downloader
+     * @covers \VDB\Spider\Downloader\Downloader::setRequestHandler
+     * @covers \VDB\Spider\Downloader\Downloader::getRequestHandler
      */
     public function testSetAndGetRequestHandler()
     {

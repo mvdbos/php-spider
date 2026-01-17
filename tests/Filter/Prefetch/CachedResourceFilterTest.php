@@ -43,8 +43,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchReturnsFalseWhenFileDoesNotExist()
     {
@@ -55,7 +55,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchReturnsTrueWhenFileExistsAndIsFresh()
     {
@@ -69,7 +70,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchReturnsFalseWhenFileIsExpired()
     {
@@ -84,7 +86,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchReturnsTrueWhenMaxAgeIsZero()
     {
@@ -100,7 +103,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchHandlesIndexFiles()
     {
@@ -114,7 +118,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchHandlesRootWithoutTrailingSlash()
     {
@@ -128,7 +133,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchHandlesDirectoryWithTrailingSlash()
     {
@@ -142,7 +148,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchHandlesSpecialCharactersInFilename()
     {
@@ -156,7 +163,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchWithDifferentSpiderIds()
     {
@@ -179,7 +187,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchAtExactMaxAge()
     {
@@ -196,7 +205,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testMatchHandlesFiletimeFailure()
     {
@@ -218,7 +228,8 @@ class CachedResourceFilterTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
+     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
      */
     public function testConstructorHandlesTrailingSlashInBasePath()
     {
