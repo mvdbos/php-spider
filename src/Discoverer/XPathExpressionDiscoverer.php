@@ -40,7 +40,7 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
         if (!$this->validateSelector($selector)) {
             throw new InvalidArgumentException(
                 "The selector must target anchor ('a') elements. " .
-                "Valid examples: '//a', '//div[@id='content']//a', '//a[starts-with(@href, '/')]'"
+                "Valid examples: '//a', '//div[@id=\"content\"]//a', '//a[starts-with(@href, \"/\")]'"
             );
         }
         parent::__construct($selector);
