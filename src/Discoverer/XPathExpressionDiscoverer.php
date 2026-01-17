@@ -55,8 +55,8 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
      * Validates that the selector targets anchor elements.
      * 
      * Accepts selectors that:
-     * - End with '/a' (simple case)
-     * - End with '/a[...]' (with predicates)
+     * - End with '//a' (simple case)
+     * - End with '//a[...]' (with predicates)
      * - Contain '//a[' (anchor with predicates anywhere in the path)
      * - Contain '//a/' (anchor followed by more path)
      * 
@@ -66,6 +66,7 @@ class XPathExpressionDiscoverer extends CrawlerDiscoverer
     protected function validateSelector(string $selector): bool
     {
         // Match patterns that indicate the selector targets anchor elements
-        return preg_match('#/a(\[|/|$)#', $selector) === 1;
+        // Ensures //a is present and followed by [, /, or end of string
+        return preg_match('#//a(\[|/|$)#', $selector) === 1;
     }
 }

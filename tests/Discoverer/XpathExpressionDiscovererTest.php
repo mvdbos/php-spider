@@ -24,7 +24,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 class XpathExpressionDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      */
     public function testDiscover()
     {
@@ -33,7 +33,7 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      */
     public function testDiscoverWithBrackets()
     {
@@ -43,7 +43,7 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      */
     public function testDiscoverWithOrPredicate()
     {
@@ -53,7 +53,7 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithPath()
@@ -73,7 +73,7 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithMultiplePredicates()

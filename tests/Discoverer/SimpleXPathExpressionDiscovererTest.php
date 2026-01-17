@@ -24,7 +24,7 @@ use VDB\Spider\Uri\DiscoveredUri;
 class SimpleXPathExpressionDiscovererTest extends DiscovererTestCase
 {
     /**
-     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer
      */
     public function testDiscover()
     {
@@ -33,7 +33,7 @@ class SimpleXPathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer<extended>
+     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithPath()
