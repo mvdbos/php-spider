@@ -54,8 +54,8 @@ The project uses `.actrc` to configure act with:
 You can create a `.actrc.local` file (gitignored) for personal overrides:
 
 ```bash
-# Copy the example and customize
-cp .actrc.local.example .actrc.local
+# Copy the main config as a starting point and customize
+cp .actrc .actrc.local
 ```
 
 **Note**: You may see warnings like `::warning::Failed to save: reserveCache failed: socket hang up`. This is harmless - refers to GitHub's cloud cache API. Your Composer packages ARE being cached locally.
