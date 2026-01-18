@@ -340,4 +340,39 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
 
         $method->invoke($handler);
     }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     */
+    public function testWriteToFileHandlesFailureByMockingFilePutContents()
+    {
+        // Test by trying to write to a path inside a regular file (not a directory)
+        // This will fail for all users including root
+        
+        $tmpDir = sys_get_temp_dir() . '/spider-file-not-dir-' . uniqid();
+        mkdir($tmpDir, 0755, true);
+        
+        $tmpFile = $tmpDir . '/file-barrier';
+        touch($tmpFile);
+        
+        // Try to use a file path as if it were a directory - this will fail for all users including root
+        $handler = new JsonHealthCheckPersistenceHandler($tmpFile);
+        
+        // This will fail because $tmpFile is a file, not a directory
+        $this->expectException(RuntimeException::class);
+        
+        try {
+            $handler->setSpiderId('test');
+        } finally {
+            // Clean up
+            if (file_exists($tmpFile)) {
+                unlink($tmpFile);
+            }
+            if (is_dir($tmpDir)) {
+                rmdir($tmpDir);
+            }
+        }
+    }
 }
