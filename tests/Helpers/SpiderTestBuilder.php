@@ -3,6 +3,7 @@
 namespace VDB\Spider\Tests\Helpers;
 
 use GuzzleHttp\Psr7\Response;
+use RuntimeException;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
@@ -87,13 +88,13 @@ class SpiderTestBuilder
 
     /**
      * Set a map of URIs to response bodies for mocked requests.
-     * 
+     *
      * Example:
      * ->withLinkMap([
      *     'http://example.com' => '<a href="/page1">Link 1</a>',
      *     'http://example.com/page1' => '<a href="/page2">Link 2</a>',
      * ])
-     * 
+     *
      * @param array<string, string|Response> $linkMap URI => body or Response
      */
     public function withLinkMap(array $linkMap): self
@@ -110,7 +111,7 @@ class SpiderTestBuilder
         // Create request handler if we have a link map
         if (!empty($this->linkMap)) {
             $this->requestHandler = $this->createMockedRequestHandler();
-            
+
             if ($this->downloader === null) {
                 $this->downloader = new Downloader(null, $this->requestHandler);
             }
@@ -134,32 +135,32 @@ class SpiderTestBuilder
     private function createMockedRequestHandler(): RequestHandlerInterface
     {
         $linkMap = $this->linkMap;
-        
-        return new class($linkMap) implements RequestHandlerInterface {
+
+        return new class ($linkMap) implements RequestHandlerInterface {
             private array $linkMap;
-            
+
             public function __construct(array $linkMap)
             {
                 $this->linkMap = $linkMap;
             }
-            
+
             public function request(DiscoveredUri $uri): Resource
             {
                 $uriString = $uri->toString();
-                
+
                 if (!array_key_exists($uriString, $this->linkMap)) {
-                    throw new \RuntimeException("URI not mocked: $uriString");
+                    throw new RuntimeException("URI not mocked: $uriString");
                 }
-                
+
                 $responseData = $this->linkMap[$uriString];
-                
+
                 // Allow either Response objects or body strings
                 if ($responseData instanceof Response) {
                     $response = $responseData;
                 } else {
                     $response = new Response(200, [], $responseData);
                 }
-                
+
                 return new Resource($uri, $response);
             }
         };
