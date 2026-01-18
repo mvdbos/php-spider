@@ -203,7 +203,7 @@ class DiscovererSet implements DiscovererSetInterface
     private function removeDuplicates(array &$discoveredUris): void
     {
         $seenUris = [];
-        
+
         foreach ($discoveredUris as $k => $uri) {
             $uriString = $uri->toString();
             if (isset($seenUris[$uriString])) {
