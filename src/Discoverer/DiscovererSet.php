@@ -30,7 +30,7 @@ class DiscovererSet implements DiscovererSetInterface
     public function __construct(array $discoverers = array())
     {
         foreach ($discoverers as $discoverer) {
-            $this->set($discoverer);
+            $this->addDiscoverer($discoverer);
         }
     }
 
@@ -93,15 +93,28 @@ class DiscovererSet implements DiscovererSetInterface
     }
 
     /**
-     * Sets a discoverer.
+     * Adds a discoverer to the set.
      *
      * @param DiscovererInterface $discoverer The discoverer instance
      * @return $this
      */
-    public function set(DiscovererInterface $discoverer): self
+    public function addDiscoverer(DiscovererInterface $discoverer): self
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
         return $this;
+    }
+
+    /**
+     * Adds a discoverer to the set.
+     * Alias for addDiscoverer() for backward compatibility.
+     *
+     * @param DiscovererInterface $discoverer The discoverer instance
+     * @return $this
+     * @deprecated Use addDiscoverer() instead
+     */
+    public function set(DiscovererInterface $discoverer): self
+    {
+        return $this->addDiscoverer($discoverer);
     }
 
     /**

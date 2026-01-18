@@ -17,10 +17,20 @@ interface DiscovererSetInterface
     public function discover(Resource $resource): array;
 
     /**
-     * Sets a discoverer.
+     * Adds a discoverer to the set.
      *
      * @param DiscovererInterface $discoverer The discoverer instance
      * @return $this
+     */
+    public function addDiscoverer(DiscovererInterface $discoverer): self;
+
+    /**
+     * Adds a discoverer to the set.
+     * Alias for addDiscoverer() for backward compatibility.
+     *
+     * @param DiscovererInterface $discoverer The discoverer instance
+     * @return $this
+     * @deprecated Use addDiscoverer() instead
      */
     public function set(DiscovererInterface $discoverer): self;
 

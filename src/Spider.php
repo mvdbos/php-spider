@@ -313,7 +313,7 @@ class Spider
      */
     public function addDiscoverer(DiscovererInterface $discoverer): self
     {
-        $this->getDiscovererSet()->set($discoverer);
+        $this->getDiscovererSet()->addDiscoverer($discoverer);
         return $this;
     }
 

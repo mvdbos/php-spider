@@ -66,7 +66,19 @@ class DiscovererSetTest extends DiscovererTestCase
     /**
      * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
-    public function testSetDiscoverer()
+    public function testAddDiscoverer()
+    {
+        $this->discovererSet = new DiscovererSet();
+        $this->discovererSet->addDiscoverer(new XPathExpressionDiscoverer("//a"));
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(2, $uris);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     */
+    public function testSetDiscovererBackwardCompatibility()
     {
         $this->discovererSet = new DiscovererSet();
         $this->discovererSet->set(new XPathExpressionDiscoverer("//a"));
@@ -225,16 +237,30 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
+     */
+    public function testAddDiscovererReturnsThis()
+    {
+        $discovererSet = new DiscovererSet();
+        $discoverer = new XPathExpressionDiscoverer("//a");
+
+        $result = $discovererSet->addDiscoverer($discoverer);
+
+        // Test method chaining
+        $this->assertSame($discovererSet, $result);
+    }
+
+    /**
      * @covers \VDB\Spider\Discoverer\DiscovererSet::set
      */
-    public function testSetReturnsThis()
+    public function testSetReturnsThisBackwardCompatibility()
     {
         $discovererSet = new DiscovererSet();
         $discoverer = new XPathExpressionDiscoverer("//a");
 
         $result = $discovererSet->set($discoverer);
 
-        // Test method chaining
+        // Test method chaining for backward compatibility
         $this->assertSame($discovererSet, $result);
     }
 
@@ -253,7 +279,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::set
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
      * @covers \VDB\Spider\Discoverer\DiscovererSet::addFilter
      * @covers \VDB\Spider\Discoverer\DiscovererSet::setMaxDepth
      */
@@ -264,7 +290,7 @@ class DiscovererSetTest extends DiscovererTestCase
         // Test fluent interface with method chaining
         $result = $discovererSet
             ->setMaxDepth(2)
-            ->set(new XPathExpressionDiscoverer("//a"))
+            ->addDiscoverer(new XPathExpressionDiscoverer("//a"))
             ->addFilter(new AllowedHostsFilter(['http://example.com']));
 
         $this->assertSame($discovererSet, $result);

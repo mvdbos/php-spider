@@ -41,7 +41,7 @@ $spider->getDownloader()->getDispatcher()->addSubscriber($statsHandler);
 
 // Set some sane defaults for this example.
 // We only visit the first level of http://dmoztools.net. We stop at 10 queued resources
-$spider->getDiscovererSet()->maxDepth = 1;
+$spider->getDiscovererSet()->setMaxDepth(1);
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
 $queueManager->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -50,7 +50,7 @@ $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
 // Here we demonstrate the new bracket notation support for more precise link selection
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]"));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(

@@ -75,7 +75,7 @@ $queueManager->getDispatcher()->addSubscriber($logHandler);
 
 // Set some sane defaults for this example. We only visit the first level.
 // We stop at 10 queued resources
-$spider->getDiscovererSet()->maxDepth = 1;
+$spider->getDiscovererSet()->setMaxDepth(1);
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
 $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
@@ -83,7 +83,7 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
 // IMPORTANT: Instead of storing full resources as binary files, we use JsonHealthCheckPersistenceHandler
 // This creates a single JSON file with health check data for all crawled pages

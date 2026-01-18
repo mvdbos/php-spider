@@ -45,7 +45,7 @@ $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
 
 // Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
-$spider->getDiscovererSet()->maxDepth = 1;
+$spider->getDiscovererSet()->setMaxDepth(1);
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
 $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIRST);
@@ -53,8 +53,8 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 $spider->setQueueManager($queueManager);
 
 // We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
-//$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
+//$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
 // Let's tell the spider to save all found resources on the filesystem
 $spider->getDownloader()->setPersistenceHandler(
