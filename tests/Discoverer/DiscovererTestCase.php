@@ -15,9 +15,9 @@ use DOMDocument;
 use DomElement;
 use ErrorException;
 use Exception;
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
@@ -94,9 +94,10 @@ abstract class DiscovererTestCase extends TestCase
     ): Resource {
         $resourceContent = self::createDocumentWithLinks($uris);
 
-        return new Resource(
-            $resourceUri,
-            new Response(200, [], $resourceContent)
-        );
+        return ResourceBuilder::create()
+            ->withUri($resourceUri->toString())
+            ->withDepth($resourceUri->getDepthFound())
+            ->withBody($resourceContent)
+            ->build();
     }
 }
