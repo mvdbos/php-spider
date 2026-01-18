@@ -95,7 +95,7 @@ class DiscovererSet
     /**
      * Sets a discoverer.
      *
-     * @param discovererInterface $discoverer The discoverer instance
+     * @param DiscovererInterface $discoverer The discoverer instance
      * @return $this
      */
     public function set(DiscovererInterface $discoverer): self
