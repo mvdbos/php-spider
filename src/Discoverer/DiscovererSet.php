@@ -96,15 +96,46 @@ class DiscovererSet
      * Sets a discoverer.
      *
      * @param discovererInterface $discoverer The discoverer instance
+     * @return $this
      */
-    public function set(DiscovererInterface $discoverer): void
+    public function set(DiscovererInterface $discoverer): self
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
+        return $this;
     }
 
-    public function addFilter(PreFetchFilterInterface $filter): void
+    /**
+     * Adds a prefetch filter.
+     *
+     * @param PreFetchFilterInterface $filter
+     * @return $this
+     */
+    public function addFilter(PreFetchFilterInterface $filter): self
     {
         $this->filters[] = $filter;
+        return $this;
+    }
+
+    /**
+     * Gets the maximum crawl depth.
+     *
+     * @return int
+     */
+    public function getMaxDepth(): int
+    {
+        return $this->maxDepth;
+    }
+
+    /**
+     * Sets the maximum crawl depth.
+     *
+     * @param int $depth Maximum crawl depth
+     * @return $this
+     */
+    public function setMaxDepth(int $depth): self
+    {
+        $this->maxDepth = $depth;
+        return $this;
     }
 
     /**

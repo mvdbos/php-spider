@@ -289,7 +289,7 @@ class Spider
      */
     public function setMaxDepth(int $depth): self
     {
-        $this->getDiscovererSet()->maxDepth = $depth;
+        $this->getDiscovererSet()->setMaxDepth($depth);
         return $this;
     }
 
