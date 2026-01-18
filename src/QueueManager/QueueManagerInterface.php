@@ -34,4 +34,14 @@ interface QueueManagerInterface
      * @return null|DiscoveredUri
      */
     public function next(): ?DiscoveredUri;
+
+    /**
+     * @param int $maxQueueSize Maximum size of the queue. 0 means infinite
+     */
+    public function setMaxQueueSize(int $maxQueueSize);
+
+    /**
+     * @return int
+     */
+    public function getMaxQueueSize(): int;
 }

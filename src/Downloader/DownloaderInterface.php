@@ -2,6 +2,7 @@
 
 namespace VDB\Spider\Downloader;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Spider\Resource;
@@ -45,4 +46,14 @@ interface DownloaderInterface
      * @return PersistenceHandlerInterface
      */
     public function getPersistenceHandler(): PersistenceHandlerInterface;
+
+    /**
+     * @param PersistenceHandlerInterface $persistenceHandler
+     */
+    public function setPersistenceHandler(PersistenceHandlerInterface $persistenceHandler);
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getDispatcher(): EventDispatcherInterface;
 }

@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Resource;
@@ -224,7 +225,7 @@ class SpiderTest extends TestCase
     public function testMaxQueueSizeExceeded()
     {
         $qm = new InMemoryQueueManager();
-        $qm->maxQueueSize = 1;
+        $qm->setMaxQueueSize(1);
         $this->spider->setQueueManager($qm);
 
         $this->spider->crawl();
@@ -438,7 +439,7 @@ class SpiderTest extends TestCase
     {
         $result = $this->spider->setMaxQueueSize(1);
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
-        $this->assertEquals(1, $this->spider->getQueueManager()->maxQueueSize);
+        $this->assertEquals(1, $this->spider->getQueueManager()->getMaxQueueSize());
 
         $this->spider->crawl();
 
@@ -490,43 +491,58 @@ class SpiderTest extends TestCase
     /**
      * @covers \VDB\Spider\Spider::setPersistenceHandler
      */
-    public function testSetPersistenceHandlerWithWrongDownloaderType()
+    public function testSetPersistenceHandlerWithMockDownloader()
     {
-        $wrongDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
-        $spider = new Spider($this->linkA, null, null, $wrongDownloader);
-        
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('setPersistenceHandler() requires a Downloader instance');
-        
         $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
-        $spider->setPersistenceHandler($handler);
+        
+        $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $mockDownloader->expects($this->once())
+            ->method('setPersistenceHandler')
+            ->with($handler);
+        
+        $spider = new Spider($this->linkA, null, null, $mockDownloader);
+        $result = $spider->setPersistenceHandler($handler);
+        
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
     /**
      * @covers \VDB\Spider\Spider::setMaxQueueSize
      */
-    public function testSetMaxQueueSizeWithWrongQueueManagerType()
+    public function testSetMaxQueueSizeWithMockQueueManager()
     {
-        $wrongQueueManager = $this->getMockBuilder('VDB\Spider\QueueManager\QueueManagerInterface')->getMock();
-        $spider = new Spider($this->linkA, null, $wrongQueueManager);
+        $mockQueueManager = $this->getMockBuilder('VDB\Spider\QueueManager\QueueManagerInterface')->getMock();
+        $mockQueueManager->expects($this->once())
+            ->method('setMaxQueueSize')
+            ->with(10);
         
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('setMaxQueueSize() requires an InMemoryQueueManager instance');
+        $spider = new Spider($this->linkA, null, $mockQueueManager);
+        $result = $spider->setMaxQueueSize(10);
         
-        $spider->setMaxQueueSize(10);
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
     /**
      * @covers \VDB\Spider\Spider::enablePolitenessPolicy
      */
-    public function testEnablePolitenessPolicyWithWrongDownloaderType()
+    public function testEnablePolitenessPolicyWithMockDownloader()
     {
-        $wrongDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
-        $spider = new Spider($this->linkA, null, null, $wrongDownloader);
+        $mockDispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $mockDispatcher->expects($this->once())
+            ->method('addListener')
+            ->with(
+                $this->equalTo(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST),
+                $this->anything()
+            );
         
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('enablePolitenessPolicy() requires a Downloader instance');
+        $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $mockDownloader->expects($this->once())
+            ->method('getDispatcher')
+            ->willReturn($mockDispatcher);
         
-        $spider->enablePolitenessPolicy(100);
+        $spider = new Spider($this->linkA, null, null, $mockDownloader);
+        $result = $spider->enablePolitenessPolicy(100);
+        
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 }

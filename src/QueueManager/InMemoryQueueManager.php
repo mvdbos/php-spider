@@ -88,4 +88,20 @@ class InMemoryQueueManager implements QueueManagerInterface
         }
         return $uri;
     }
+
+    /**
+     * @param int $maxQueueSize Maximum size of the queue. 0 means infinite
+     */
+    public function setMaxQueueSize(int $maxQueueSize): void
+    {
+        $this->maxQueueSize = $maxQueueSize;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxQueueSize(): int
+    {
+        return $this->maxQueueSize;
+    }
 }

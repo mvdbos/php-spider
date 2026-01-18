@@ -4,7 +4,6 @@ namespace VDB\Spider;
 
 use Exception;
 use InvalidArgumentException;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Discoverer\DiscovererSet;
@@ -260,21 +259,13 @@ class Spider
 
     /**
      * Convenience method to set the persistence handler.
-     * Note: This method requires the downloader to be an instance of Downloader (the concrete class).
      *
      * @param PersistenceHandlerInterface $handler
      * @return $this
      */
     public function setPersistenceHandler(PersistenceHandlerInterface $handler): self
     {
-        $downloader = $this->getDownloader();
-        if (!$downloader instanceof Downloader) {
-            throw new RuntimeException(
-                'setPersistenceHandler() requires a Downloader instance. ' .
-                'The current downloader is ' . get_class($downloader)
-            );
-        }
-        $downloader->setPersistenceHandler($handler);
+        $this->getDownloader()->setPersistenceHandler($handler);
         return $this;
     }
 
@@ -304,21 +295,13 @@ class Spider
 
     /**
      * Convenience method to set the maximum queue size.
-     * Note: This method requires the queue manager to be an instance of InMemoryQueueManager (the concrete class).
      *
      * @param int $size Maximum number of URIs to queue
      * @return $this
      */
     public function setMaxQueueSize(int $size): self
     {
-        $queueManager = $this->getQueueManager();
-        if (!$queueManager instanceof InMemoryQueueManager) {
-            throw new RuntimeException(
-                'setMaxQueueSize() requires an InMemoryQueueManager instance. ' .
-                'The current queue manager is ' . get_class($queueManager)
-            );
-        }
-        $queueManager->maxQueueSize = $size;
+        $this->getQueueManager()->setMaxQueueSize($size);
         return $this;
     }
 
@@ -349,22 +332,13 @@ class Spider
     /**
      * Convenience method to enable politeness policy.
      * Adds a listener that delays requests to the same domain.
-     * Note: This method requires the downloader to be an instance of Downloader (the concrete class).
      *
      * @param int $delayInMilliseconds Delay in milliseconds between requests to the same domain
      * @return $this
      */
     public function enablePolitenessPolicy(int $delayInMilliseconds = 100): self
     {
-        $downloader = $this->getDownloader();
-        if (!$downloader instanceof Downloader) {
-            throw new RuntimeException(
-                'enablePolitenessPolicy() requires a Downloader instance. ' .
-                'The current downloader is ' . get_class($downloader)
-            );
-        }
-        
-        $dispatcher = $downloader->getDispatcher();
+        $dispatcher = $this->getDownloader()->getDispatcher();
 
         // Ensure only a single politeness listener is registered at any time.
         // If this method is called multiple times, replace the previous listener
