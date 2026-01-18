@@ -274,7 +274,7 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 $spider = new Spider('https://example.com');
 
 // Add discoverer to find links
-$spider->getDiscovererSet()->set(
+$spider->getDiscovererSet()->addDiscoverer(
     new XPathExpressionDiscoverer("//a[@href]")
 );
 
