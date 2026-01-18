@@ -54,6 +54,6 @@ runCheck "phpcs 'src/'"        "vendor/bin/phpcs --warning-severity=0 --standard
 runCheck "phpcs 'tests/'"      "vendor/bin/phpcs --warning-severity=0 --standard=PSR2 tests/"
 runCheck "phpmd 'src/'"        "vendor/bin/phpmd src/ text phpmd.xml"
 runCheck "phpmd 'tests/'"      "vendor/bin/phpmd tests/ text phpmd-tests.xml"
-runCheck "phan"                "PHAN_DISABLE_XDEBUG_WARN=1 vendor/bin/phan  --no-progress-bar 2>/dev/null"
+runCheck "phan"                "PHAN_DISABLE_XDEBUG_WARN=1 vendor/bin/phan --allow-polyfill-parser --no-progress-bar 2>/dev/null"
 
 echo -e "\n\n\e[0;37;42mStatic analysis completed successfully.\e[0m\n"
