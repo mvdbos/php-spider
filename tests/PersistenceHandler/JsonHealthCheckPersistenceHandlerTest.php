@@ -235,6 +235,11 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
      */
     public function testWriteToFileHandlesFailure()
     {
+        // Skip test if running as root (common in Docker) since root can write to read-only files
+        if (posix_getuid() === 0) {
+            $this->markTestSkipped('Test cannot run as root user (root can write to read-only files)');
+        }
+
         // Create a directory and make the JSON file read-only to simulate write failure
         $testDir = sys_get_temp_dir() . '/spider-test-readonly-' . uniqid();
         mkdir($testDir, 0700, true);
