@@ -338,10 +338,24 @@ class Spider
      */
     public function enablePolitenessPolicy(int $delayInMilliseconds = 100): self
     {
-        $listener = new PolitenessPolicyListener($delayInMilliseconds);
-        $this->getDownloader()->getDispatcher()->addListener(
+        $dispatcher = $this->getDownloader()->getDispatcher();
+
+        // Ensure only a single politeness listener is registered at any time.
+        // If this method is called multiple times, replace the previous listener
+        // instead of stacking delays.
+        static $politenessListener = null;
+
+        if ($politenessListener !== null) {
+            $dispatcher->removeListener(
+                SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
+                array($politenessListener, 'onCrawlPreRequest')
+            );
+        }
+
+        $politenessListener = new PolitenessPolicyListener($delayInMilliseconds);
+        $dispatcher->addListener(
             SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
-            array($listener, 'onCrawlPreRequest')
+            array($politenessListener, 'onCrawlPreRequest')
         );
         return $this;
     }
