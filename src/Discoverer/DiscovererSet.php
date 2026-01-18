@@ -5,9 +5,8 @@ namespace VDB\Spider\Discoverer;
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\UriInterface;
 
-class DiscovererSet
+class DiscovererSet implements DiscovererSetInterface
 {
     /**
      * @var array<string, DiscovererInterface>
@@ -30,7 +29,7 @@ class DiscovererSet
     public function __construct(array $discoverers = array())
     {
         foreach ($discoverers as $discoverer) {
-            $this->set($discoverer);
+            $this->addDiscoverer($discoverer);
         }
     }
 
@@ -93,33 +92,80 @@ class DiscovererSet
     }
 
     /**
-     * Sets a discoverer.
+     * Adds a discoverer to the set.
      *
-     * @param discovererInterface $discoverer The discoverer instance
+     * @param DiscovererInterface $discoverer The discoverer instance
+     * @return $this
      */
-    public function set(DiscovererInterface $discoverer): void
+    public function addDiscoverer(DiscovererInterface $discoverer): self
     {
         $this->discoverers[$discoverer->getName()] = $discoverer;
-    }
-
-    public function addFilter(PreFetchFilterInterface $filter): void
-    {
-        $this->filters[] = $filter;
+        return $this;
     }
 
     /**
-     * @param UriInterface[] $discoveredUris
+     * Adds a discoverer to the set.
+     * Alias for addDiscoverer() for backward compatibility.
+     *
+     * @param DiscovererInterface $discoverer The discoverer instance
+     * @return $this
+     * @deprecated Use addDiscoverer() instead
+     */
+    public function set(DiscovererInterface $discoverer): self
+    {
+        return $this->addDiscoverer($discoverer);
+    }
+
+    /**
+     * Adds a prefetch filter.
+     *
+     * @param PreFetchFilterInterface $filter
+     * @return $this
+     */
+    public function addFilter(PreFetchFilterInterface $filter): self
+    {
+        $this->filters[] = $filter;
+        return $this;
+    }
+
+    /**
+     * Gets the maximum crawl depth.
+     *
+     * @return int
+     */
+    public function getMaxDepth(): int
+    {
+        return $this->maxDepth;
+    }
+
+    /**
+     * Sets the maximum crawl depth.
+     *
+     * @param int $depth Maximum crawl depth
+     * @return $this
+     */
+    public function setMaxDepth(int $depth): self
+    {
+        $this->maxDepth = $depth;
+        return $this;
+    }
+
+    /**
+     * Normalizes all discovered URIs.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function normalize(array &$discoveredUris): void
     {
-        /** @var DiscoveredUri[] $discoveredUris */
         foreach ($discoveredUris as $k => $uri) {
             $discoveredUris[$k] = $uri->normalize();
         }
     }
 
     /**
-     * @param UriInterface[] $discoveredUris
+     * Filters out URIs that have already been seen.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function filterAlreadySeen(array &$discoveredUris): void
     {
@@ -131,8 +177,10 @@ class DiscovererSet
     }
 
     /**
-     * Filter out any URI that matches any of the filters
-     * @param UriInterface[] $discoveredUris
+     * Applies prefetch filters to discovered URIs.
+     * Filters out any URI that matches any of the filters.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function filter(array &$discoveredUris): void
     {
@@ -140,29 +188,27 @@ class DiscovererSet
             foreach ($this->filters as $filter) {
                 if ($filter->match($uri)) {
                     unset($discoveredUris[$k]);
+                    break; // No need to check other filters once matched
                 }
             }
         }
     }
 
     /**
-     * @param UriInterface[] $discoveredUris
+     * Removes duplicate URIs from the list.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function removeDuplicates(array &$discoveredUris): void
     {
-        // make sure there are no duplicates in the list
-        $tmp = array();
-        foreach ($discoveredUris as $k => $uri) {
-            $tmp[$k] = $uri->toString();
-        }
+        $seenUris = [];
 
-        // Find duplicates in temporary array
-        $tmp = array_unique($tmp);
-
-        // Remove the duplicates from original array
         foreach ($discoveredUris as $k => $uri) {
-            if (!array_key_exists($k, $tmp)) {
+            $uriString = $uri->toString();
+            if (isset($seenUris[$uriString])) {
                 unset($discoveredUris[$k]);
+            } else {
+                $seenUris[$uriString] = true;
             }
         }
     }

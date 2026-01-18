@@ -66,7 +66,19 @@ class DiscovererSetTest extends DiscovererTestCase
     /**
      * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
-    public function testSetDiscoverer()
+    public function testAddDiscoverer()
+    {
+        $this->discovererSet = new DiscovererSet();
+        $this->discovererSet->addDiscoverer(new XPathExpressionDiscoverer("//a"));
+
+        $uris = $this->discovererSet->discover($this->spiderResource);
+        $this->assertCount(2, $uris);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
+     */
+    public function testSetDiscovererBackwardCompatibility()
     {
         $this->discovererSet = new DiscovererSet();
         $this->discovererSet->set(new XPathExpressionDiscoverer("//a"));
@@ -183,9 +195,7 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     * @throws Exception
+     * @covers \VDB\Spider\Discoverer\DiscovererSet
      */
     public function testAlreadySeenSkipped()
     {
@@ -201,5 +211,89 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $discovererSet->discover($spiderResource);
         $this->assertCount(0, $uris);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::getMaxDepth
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::setMaxDepth
+     */
+    public function testGetSetMaxDepth()
+    {
+        $discovererSet = new DiscovererSet();
+
+        // Test default value
+        $this->assertEquals(3, $discovererSet->getMaxDepth());
+
+        // Test setter and getter
+        $result = $discovererSet->setMaxDepth(5);
+        $this->assertEquals(5, $discovererSet->getMaxDepth());
+
+        // Test method chaining
+        $this->assertSame($discovererSet, $result);
+
+        // Test with zero
+        $discovererSet->setMaxDepth(0);
+        $this->assertEquals(0, $discovererSet->getMaxDepth());
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
+     */
+    public function testAddDiscovererReturnsThis()
+    {
+        $discovererSet = new DiscovererSet();
+        $discoverer = new XPathExpressionDiscoverer("//a");
+
+        $result = $discovererSet->addDiscoverer($discoverer);
+
+        // Test method chaining
+        $this->assertSame($discovererSet, $result);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::set
+     */
+    public function testSetReturnsThisBackwardCompatibility()
+    {
+        $discovererSet = new DiscovererSet();
+        $discoverer = new XPathExpressionDiscoverer("//a");
+
+        $result = $discovererSet->set($discoverer);
+
+        // Test method chaining for backward compatibility
+        $this->assertSame($discovererSet, $result);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addFilter
+     */
+    public function testAddFilterReturnsThis()
+    {
+        $discovererSet = new DiscovererSet();
+        $filter = new AllowedHostsFilter(['http://example.com']);
+
+        $result = $discovererSet->addFilter($filter);
+
+        // Test method chaining
+        $this->assertSame($discovererSet, $result);
+    }
+
+    /**
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::addFilter
+     * @covers \VDB\Spider\Discoverer\DiscovererSet::setMaxDepth
+     */
+    public function testMethodChaining()
+    {
+        $discovererSet = new DiscovererSet();
+
+        // Test fluent interface with method chaining
+        $result = $discovererSet
+            ->setMaxDepth(2)
+            ->addDiscoverer(new XPathExpressionDiscoverer("//a"))
+            ->addFilter(new AllowedHostsFilter(['http://example.com']));
+
+        $this->assertSame($discovererSet, $result);
+        $this->assertEquals(2, $discovererSet->getMaxDepth());
     }
 }

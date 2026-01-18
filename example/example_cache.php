@@ -26,10 +26,10 @@ $spider = new Spider($seed, null, null, null, $spiderId);
 $spider->getDownloader()->setDownloadLimit(5);
 
 // Set some sane defaults for this example
-$spider->getDiscovererSet()->maxDepth = 1;
+$spider->getDiscovererSet()->setMaxDepth(1);
 
 // Add URI discoverer
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]"));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a[starts-with(@href, '/') or starts-with(@href, 'http')]"));
 
 // Set up file persistence
 $resultsPath = __DIR__ . '/cache';

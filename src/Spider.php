@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Discoverer\DiscovererSet;
+use VDB\Spider\Discoverer\DiscovererSetInterface;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Event\DispatcherTrait;
@@ -26,20 +27,20 @@ class Spider
 
     private DownloaderInterface $downloader;
     private QueueManagerInterface $queueManager;
-    private DiscovererSet $discovererSet;
+    private DiscovererSetInterface $discovererSet;
     private DiscoveredUri $seed;
     private string $spiderId;
 
     /**
      * @param string $seed the URI to start crawling
-     * @param DiscovererSet|null $discovererSet
+     * @param DiscovererSetInterface|null $discovererSet
      * @param QueueManagerInterface|null $queueManager
      * @param DownloaderInterface|null $downloader
      * @param string|null $spiderId
      */
     public function __construct(
         string $seed,
-        ?DiscovererSet $discovererSet = null,
+        ?DiscovererSetInterface $discovererSet = null,
         ?QueueManagerInterface $queueManager = null,
         ?DownloaderInterface  $downloader = null,
         ?string $spiderId = null
@@ -202,18 +203,17 @@ class Spider
     }
 
     /**
-     * @return DiscovererSet
+     * @return DiscovererSetInterface
      */
-    public function getDiscovererSet(): DiscovererSet
+    public function getDiscovererSet(): DiscovererSetInterface
     {
         return $this->discovererSet;
     }
 
     /**
-     * param DiscovererSet $discovererSet
-     * @param DiscovererSet $discovererSet
+     * @param DiscovererSetInterface $discovererSet
      */
-    public function setDiscovererSet(DiscovererSet $discovererSet): void
+    public function setDiscovererSet(DiscovererSetInterface $discovererSet): void
     {
         $this->discovererSet = $discovererSet;
     }
@@ -289,7 +289,7 @@ class Spider
      */
     public function setMaxDepth(int $depth): self
     {
-        $this->getDiscovererSet()->maxDepth = $depth;
+        $this->getDiscovererSet()->setMaxDepth($depth);
         return $this;
     }
 
@@ -313,7 +313,7 @@ class Spider
      */
     public function addDiscoverer(DiscovererInterface $discoverer): self
     {
-        $this->getDiscovererSet()->set($discoverer);
+        $this->getDiscovererSet()->addDiscoverer($discoverer);
         return $this;
     }
 
