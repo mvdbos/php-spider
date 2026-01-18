@@ -99,4 +99,17 @@ class InMemoryQueueManagerTest extends TestCase
         $this->assertEquals($uri1, $qm->next());
         $this->assertEquals($uri2, $qm->next());
     }
+
+    /**
+     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager::setMaxQueueSize
+     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager::getMaxQueueSize
+     */
+    public function testSetAndGetMaxQueueSize()
+    {
+        $qm = new InMemoryQueueManager();
+        $this->assertEquals(0, $qm->getMaxQueueSize());
+        
+        $qm->setMaxQueueSize(10);
+        $this->assertEquals(10, $qm->getMaxQueueSize());
+    }
 }

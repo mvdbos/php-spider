@@ -235,6 +235,11 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
      */
     public function testWriteToFileHandlesFailure()
     {
+        // Skip test if running as root (common in Docker) since root can write to read-only files
+        if (posix_getuid() === 0) {
+            $this->markTestSkipped('Test cannot run as root user (root can write to read-only files)');
+        }
+
         // Create a directory and make the JSON file read-only to simulate write failure
         $testDir = sys_get_temp_dir() . '/spider-test-readonly-' . uniqid();
         mkdir($testDir, 0700, true);
@@ -267,6 +272,48 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
 
     /**
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     */
+    public function testWriteToFileHandlesFailureWithInvalidDirectory()
+    {
+        // Test write failure by making the directory read-only after creation
+        // This prevents writing the JSON file
+        $testDir = sys_get_temp_dir() . '/spider-test-readonly-dir-' . uniqid();
+        mkdir($testDir, 0700, true);
+
+        $handler = new JsonHealthCheckPersistenceHandler($testDir);
+        $handler->setSpiderId('test-readonly-dir');
+
+        // Make the directory read-only (no write permission)
+        chmod($testDir, 0555);
+
+        $resource = new Resource(
+            new DiscoveredUri("http://example.com/test", 0),
+            new Response(200, [], "Test Body")
+        );
+
+        // Skip if running as root (root can write to read-only directories)
+        if (posix_getuid() === 0) {
+            chmod($testDir, 0755);
+            rmdir($testDir);
+            $this->markTestSkipped('Test cannot run as root user (root can write to read-only directories)');
+        }
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to write JSON file');
+
+        try {
+            $handler->persist($resource);
+        } finally {
+            // Clean up - restore write permissions before deleting
+            chmod($testDir, 0755);
+            rmdir($testDir);
+        }
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
      */
     public function testWriteToFileWithJsonEncodingFailure()
     {
@@ -292,5 +339,47 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->expectExceptionMessage('Failed to encode results to JSON');
 
         $method->invoke($handler);
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     */
+    public function testWriteToFileHandlesFailureByMockingFilePutContents()
+    {
+        // Test by trying to write to a path inside a regular file (not a directory)
+        // This will fail for all users including root
+        
+        $tmpDir = sys_get_temp_dir() . '/spider-file-not-dir-' . uniqid();
+        mkdir($tmpDir, 0755, true);
+        
+        $tmpFile = $tmpDir . '/file-barrier';
+        touch($tmpFile);
+        
+        // Try to use a file path as if it were a directory - this will fail for all users including root
+        $handler = new JsonHealthCheckPersistenceHandler($tmpFile);
+        $handler->setSpiderId('test');
+        
+        $resource = new Resource(
+            new DiscoveredUri("http://example.com/test", 0),
+            new Response(200, [], "Test Body")
+        );
+        
+        // This will fail because $tmpFile is a file, not a directory, so we can't write inside it
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to write JSON file');
+        
+        try {
+            $handler->persist($resource);
+        } finally {
+            // Clean up
+            if (file_exists($tmpFile)) {
+                unlink($tmpFile);
+            }
+            if (is_dir($tmpDir)) {
+                rmdir($tmpDir);
+            }
+        }
     }
 }

@@ -5,12 +5,16 @@ namespace VDB\Spider;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Downloader\DownloaderInterface;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
+use VDB\Spider\EventListener\PolitenessPolicyListener;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
+use VDB\Spider\Filter\PreFetchFilterInterface;
+use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
@@ -239,5 +243,120 @@ class Spider
     public function getSpiderId(): string
     {
         return $this->spiderId;
+    }
+
+    /**
+     * Convenience method to set the download limit.
+     *
+     * @param int $limit Maximum number of resources to download
+     * @return $this
+     */
+    public function setDownloadLimit(int $limit): self
+    {
+        $this->getDownloader()->setDownloadLimit($limit);
+        return $this;
+    }
+
+    /**
+     * Convenience method to set the persistence handler.
+     *
+     * @param PersistenceHandlerInterface $handler
+     * @return $this
+     */
+    public function setPersistenceHandler(PersistenceHandlerInterface $handler): self
+    {
+        $this->getDownloader()->setPersistenceHandler($handler);
+        return $this;
+    }
+
+    /**
+     * Convenience method to set the traversal algorithm.
+     *
+     * @param int $algorithm Either QueueManagerInterface::ALGORITHM_DEPTH_FIRST or ALGORITHM_BREADTH_FIRST
+     * @return $this
+     */
+    public function setTraversalAlgorithm(int $algorithm): self
+    {
+        $this->getQueueManager()->setTraversalAlgorithm($algorithm);
+        return $this;
+    }
+
+    /**
+     * Convenience method to set the maximum crawl depth.
+     *
+     * @param int $depth Maximum depth to crawl
+     * @return $this
+     */
+    public function setMaxDepth(int $depth): self
+    {
+        $this->getDiscovererSet()->maxDepth = $depth;
+        return $this;
+    }
+
+    /**
+     * Convenience method to set the maximum queue size.
+     *
+     * @param int $size Maximum number of URIs to queue
+     * @return $this
+     */
+    public function setMaxQueueSize(int $size): self
+    {
+        $this->getQueueManager()->setMaxQueueSize($size);
+        return $this;
+    }
+
+    /**
+     * Convenience method to add a discoverer.
+     *
+     * @param DiscovererInterface $discoverer
+     * @return $this
+     */
+    public function addDiscoverer(DiscovererInterface $discoverer): self
+    {
+        $this->getDiscovererSet()->set($discoverer);
+        return $this;
+    }
+
+    /**
+     * Convenience method to add a prefetch filter.
+     *
+     * @param PreFetchFilterInterface $filter
+     * @return $this
+     */
+    public function addFilter(PreFetchFilterInterface $filter): self
+    {
+        $this->getDiscovererSet()->addFilter($filter);
+        return $this;
+    }
+
+    /**
+     * Convenience method to enable politeness policy.
+     * Adds a listener that delays requests to the same domain.
+     *
+     * @param int $delayInMilliseconds Delay in milliseconds between requests to the same domain
+     * @return $this
+     */
+    public function enablePolitenessPolicy(int $delayInMilliseconds = 100): self
+    {
+        $dispatcher = $this->getDownloader()->getDispatcher();
+
+        // Ensure only a single politeness listener is registered at any time.
+        // If this method is called multiple times, replace the previous listener
+        // instead of stacking delays.
+        static $politenessListener = null;
+
+        if ($politenessListener !== null) {
+            $dispatcher->removeListener(
+                SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
+                array($politenessListener, 'onCrawlPreRequest')
+            );
+        }
+
+        $politenessListener = new PolitenessPolicyListener($delayInMilliseconds);
+        $dispatcher->addListener(
+            SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
+            array($politenessListener, 'onCrawlPreRequest')
+        );
+        return $this;
     }
 }

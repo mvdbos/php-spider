@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Resource;
@@ -224,7 +225,7 @@ class SpiderTest extends TestCase
     public function testMaxQueueSizeExceeded()
     {
         $qm = new InMemoryQueueManager();
-        $qm->maxQueueSize = 1;
+        $qm->setMaxQueueSize(1);
         $this->spider->setQueueManager($qm);
 
         $this->spider->crawl();
@@ -362,5 +363,186 @@ class SpiderTest extends TestCase
         $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
 
         $this->spider->getDiscovererSet()->set(new XPathExpressionDiscoverer('//a'));
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setDownloadLimit
+     */
+    public function testSetDownloadLimit()
+    {
+        $result = $this->spider->setDownloadLimit(5);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+        $this->spider->getDiscovererSet()->maxDepth = 1000;
+
+        $this->spider->crawl();
+
+        $this->assertCount(5, $this->spider->getDownloader()->getPersistenceHandler(), 'Should limit downloads');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setPersistenceHandler
+     */
+    public function testSetPersistenceHandler()
+    {
+        $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
+        $result = $this->spider->setPersistenceHandler($handler);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+        $this->assertSame($handler, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setTraversalAlgorithm
+     */
+    public function testSetTraversalAlgorithm()
+    {
+        $result = $this->spider->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+        $this->spider->getDiscovererSet()->maxDepth = 1;
+
+        $this->spider->crawl();
+
+        $expected = array(
+            $this->linkA,
+            $this->linkB,
+            $this->linkC,
+            $this->linkE,
+        );
+
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setMaxDepth
+     */
+    public function testSetMaxDepth()
+    {
+        $result = $this->spider->setMaxDepth(1);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+        $this->assertEquals(1, $this->spider->getDiscovererSet()->maxDepth);
+
+        $this->spider->crawl();
+
+        $expected = array(
+            $this->linkA,
+            $this->linkE,
+            $this->linkC,
+            $this->linkB,
+        );
+
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setMaxQueueSize
+     */
+    public function testSetMaxQueueSize()
+    {
+        $result = $this->spider->setMaxQueueSize(1);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+        $this->assertEquals(1, $this->spider->getQueueManager()->getMaxQueueSize());
+
+        $this->spider->crawl();
+
+        $expected = array(
+            $this->linkA
+        );
+
+        $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::addDiscoverer
+     */
+    public function testAddDiscoverer()
+    {
+        $discoverer = new XPathExpressionDiscoverer('//div//a');
+        $result = $this->spider->addDiscoverer($discoverer);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::addFilter
+     */
+    public function testAddFilter()
+    {
+        $filter = $this->getMockBuilder('VDB\Spider\Filter\PreFetchFilterInterface')->getMock();
+        $result = $this->spider->addFilter($filter);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
+     */
+    public function testEnablePolitenessPolicy()
+    {
+        $result = $this->spider->enablePolitenessPolicy(50);
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
+     */
+    public function testEnablePolitenessPolicyWithDefaultDelay()
+    {
+        $result = $this->spider->enablePolitenessPolicy();
+        $this->assertSame($this->spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setPersistenceHandler
+     */
+    public function testSetPersistenceHandlerWithMockDownloader()
+    {
+        $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
+        
+        $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $mockDownloader->expects($this->once())
+            ->method('setPersistenceHandler')
+            ->with($handler);
+        
+        $spider = new Spider($this->linkA, null, null, $mockDownloader);
+        $result = $spider->setPersistenceHandler($handler);
+        
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setMaxQueueSize
+     */
+    public function testSetMaxQueueSizeWithMockQueueManager()
+    {
+        $mockQueueManager = $this->getMockBuilder('VDB\Spider\QueueManager\QueueManagerInterface')->getMock();
+        $mockQueueManager->expects($this->once())
+            ->method('setMaxQueueSize')
+            ->with(10);
+        
+        $spider = new Spider($this->linkA, null, $mockQueueManager);
+        $result = $spider->setMaxQueueSize(10);
+        
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
+     */
+    public function testEnablePolitenessPolicyWithMockDownloader()
+    {
+        $mockDispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $mockDispatcher->expects($this->once())
+            ->method('addListener')
+            ->with(
+                $this->equalTo(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST),
+                $this->anything()
+            );
+        
+        $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $mockDownloader->expects($this->once())
+            ->method('getDispatcher')
+            ->willReturn($mockDispatcher);
+        
+        $spider = new Spider($this->linkA, null, null, $mockDownloader);
+        $result = $spider->enablePolitenessPolicy(100);
+        
+        $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 }
