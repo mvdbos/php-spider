@@ -272,10 +272,10 @@ class Spider
     /**
      * Convenience method to set the traversal algorithm.
      *
-     * @param string $algorithm Either QueueManagerInterface::ALGORITHM_DEPTH_FIRST or ALGORITHM_BREADTH_FIRST
+     * @param int $algorithm Either QueueManagerInterface::ALGORITHM_DEPTH_FIRST or ALGORITHM_BREADTH_FIRST
      * @return $this
      */
-    public function setTraversalAlgorithm(string $algorithm): self
+    public function setTraversalAlgorithm(int $algorithm): self
     {
         $this->getQueueManager()->setTraversalAlgorithm($algorithm);
         return $this;
