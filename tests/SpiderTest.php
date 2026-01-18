@@ -78,7 +78,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSDefaultBehaviour()
     {
-        $this->spider->getDiscovererSet()->maxDepth = 10;
+        $this->spider->getDiscovererSet()->setMaxDepth(10);
 
         $this->spider->crawl();
 
@@ -110,7 +110,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSDefaultBehaviour()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getDiscovererSet()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->setMaxDepth(1000);
 
         $this->spider->crawl();
 
@@ -146,7 +146,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSMaxDepthOne()
     {
-        $this->spider->getDiscovererSet()->maxDepth = 1;
+        $this->spider->getDiscovererSet()->setMaxDepth(1);
 
         $this->spider->crawl();
 
@@ -166,7 +166,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSMaxDepthOne()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getDiscovererSet()->maxDepth = 1;
+        $this->spider->getDiscovererSet()->setMaxDepth(1);
 
         $this->spider->crawl();
 
@@ -185,7 +185,7 @@ class SpiderTest extends TestCase
      */
     public function testCrawlDFSMaxQueueSize()
     {
-        $this->spider->getDiscovererSet()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->setMaxDepth(1000);
         $this->spider->getDownloader()->setDownloadLimit(3);
 
         $this->spider->crawl();
@@ -205,7 +205,7 @@ class SpiderTest extends TestCase
     public function testCrawlBFSMaxQueueSize()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
-        $this->spider->getDiscovererSet()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->setMaxDepth(1000);
         $this->spider->getDownloader()->setDownloadLimit(3);
 
         $this->spider->crawl();
@@ -372,7 +372,7 @@ class SpiderTest extends TestCase
     {
         $result = $this->spider->setDownloadLimit(5);
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
-        $this->spider->getDiscovererSet()->maxDepth = 1000;
+        $this->spider->getDiscovererSet()->setMaxDepth(1000);
 
         $this->spider->crawl();
 
@@ -397,7 +397,7 @@ class SpiderTest extends TestCase
     {
         $result = $this->spider->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
-        $this->spider->getDiscovererSet()->maxDepth = 1;
+        $this->spider->getDiscovererSet()->setMaxDepth(1);
 
         $this->spider->crawl();
 
@@ -418,7 +418,7 @@ class SpiderTest extends TestCase
     {
         $result = $this->spider->setMaxDepth(1);
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
-        $this->assertEquals(1, $this->spider->getDiscovererSet()->maxDepth);
+        $this->assertEquals(1, $this->spider->getDiscovererSet()->getMaxDepth());
 
         $this->spider->crawl();
 

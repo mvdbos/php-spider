@@ -53,7 +53,7 @@ class InMemoryQueueManagerTest extends TestCase
     {
         $this->expectException(MaxQueueSizeExceededException::class);
         $qm = new InMemoryQueueManager();
-        $qm->maxQueueSize = 1;
+        $qm->setMaxQueueSize(1);
         $qm->addUri(new DiscoveredUri("foo", 0));
         $qm->addUri(new DiscoveredUri("bar", 0));
     }

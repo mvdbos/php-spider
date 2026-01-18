@@ -40,11 +40,11 @@ Users typically configure the spider before crawling:
 
 ```php
 // Add discoverers
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
 // Set limits
-$spider->getDiscovererSet()->maxDepth = 3;
-$spider->getQueueManager()->maxQueueSize = 1000;
+$spider->getDiscovererSet()->setMaxDepth(3);
+$spider->getQueueManager()->setMaxQueueSize(1000);
 $spider->getDownloader()->setDownloadLimit(500);
 
 // Add filters

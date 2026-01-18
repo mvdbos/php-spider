@@ -41,12 +41,12 @@ class DiscovererSetTest extends DiscovererTestCase
     public function testMaxDepth()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
-        $this->discovererSet->maxDepth = 1;
+        $this->discovererSet->setMaxDepth(1);
 
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(2, $uris);
 
-        $this->discovererSet->maxDepth = 0;
+        $this->discovererSet->setMaxDepth(0);
         $urisAtDepth0 = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(0, $urisAtDepth0);
     }

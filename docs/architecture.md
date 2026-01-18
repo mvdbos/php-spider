@@ -279,8 +279,8 @@ $spider->getDiscovererSet()->set(
 );
 
 // Configure limits
-$spider->getDiscovererSet()->maxDepth = 2;
-$spider->getQueueManager()->maxQueueSize = 100;
+$spider->getDiscovererSet()->setMaxDepth(2);
+$spider->getQueueManager()->setMaxQueueSize(100);
 $spider->getDownloader()->setDownloadLimit(50);
 
 // Start crawling
