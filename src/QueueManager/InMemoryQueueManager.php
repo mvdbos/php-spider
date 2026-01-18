@@ -17,7 +17,10 @@ class InMemoryQueueManager implements QueueManagerInterface
 {
     use DispatcherTrait;
 
-    /** @var int The maximum size of the process queue for this spider. 0 means infinite */
+    /**
+     * @var int The maximum size of the process queue for this spider. 0 means infinite
+     * @deprecated Use setMaxQueueSize() and getMaxQueueSize() methods instead. Direct property access will be removed in a future version.
+     */
     public int $maxQueueSize = 0;
 
     /** @var int the amount of times a Resource was enqueued */
@@ -65,8 +68,8 @@ class InMemoryQueueManager implements QueueManagerInterface
      */
     public function addUri(DiscoveredUri $uri): void
     {
-        if ($this->maxQueueSize != 0 && $this->currentQueueSize >= $this->maxQueueSize) {
-            throw new MaxQueueSizeExceededException('Maximum Queue Size of ' . $this->maxQueueSize . ' reached');
+        if ($this->getMaxQueueSize() != 0 && $this->currentQueueSize >= $this->getMaxQueueSize()) {
+            throw new MaxQueueSizeExceededException('Maximum Queue Size of ' . $this->getMaxQueueSize() . ' reached');
         }
 
         $this->currentQueueSize++;

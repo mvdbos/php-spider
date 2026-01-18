@@ -18,6 +18,7 @@ class DiscovererSet implements DiscovererSetInterface
 
     /**
      * @var int maximum crawl depth
+     * @deprecated Use setMaxDepth() and getMaxDepth() methods instead. Direct property access will be removed in a future version.
      */
     public int $maxDepth = 3;
 
@@ -55,7 +56,7 @@ class DiscovererSet implements DiscovererSetInterface
      */
     private function isAtMaxDepth(DiscoveredUri $uri): bool
     {
-        return $uri->getDepthFound() === $this->maxDepth;
+        return $uri->getDepthFound() === $this->getMaxDepth();
     }
 
     /**
