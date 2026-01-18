@@ -8,7 +8,7 @@
  * API keys, or tracking parameters on every request.
  * 
  * Key Concepts:
- * - Custom Guzzle client configuration with base_uri and query parameters
+ * - Custom Guzzle client configuration with query parameters
  * - Using Guzzle's 'query' option to add parameters to all requests
  * - Request handler customization
  * 
