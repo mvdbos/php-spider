@@ -486,4 +486,47 @@ class SpiderTest extends TestCase
         $result = $this->spider->enablePolitenessPolicy();
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
     }
+
+    /**
+     * @covers \VDB\Spider\Spider::setPersistenceHandler
+     */
+    public function testSetPersistenceHandlerWithWrongDownloaderType()
+    {
+        $wrongDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $spider = new Spider($this->linkA, null, null, $wrongDownloader);
+        
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('setPersistenceHandler() requires a Downloader instance');
+        
+        $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
+        $spider->setPersistenceHandler($handler);
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::setMaxQueueSize
+     */
+    public function testSetMaxQueueSizeWithWrongQueueManagerType()
+    {
+        $wrongQueueManager = $this->getMockBuilder('VDB\Spider\QueueManager\QueueManagerInterface')->getMock();
+        $spider = new Spider($this->linkA, null, $wrongQueueManager);
+        
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('setMaxQueueSize() requires an InMemoryQueueManager instance');
+        
+        $spider->setMaxQueueSize(10);
+    }
+
+    /**
+     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
+     */
+    public function testEnablePolitenessPolicyWithWrongDownloaderType()
+    {
+        $wrongDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
+        $spider = new Spider($this->linkA, null, null, $wrongDownloader);
+        
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('enablePolitenessPolicy() requires a Downloader instance');
+        
+        $spider->enablePolitenessPolicy(100);
+    }
 }
