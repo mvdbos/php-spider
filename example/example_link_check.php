@@ -15,10 +15,30 @@ use VDB\Spider\Spider;
 use Example\StatsHandler;
 
 /*
- * This example is almost identical to example_complex, with one big difference:
- * We set a custom request handler that does not throw exceptions on failed requests.
- * This way, failed requests with their status code are also persisted.
- * That means we can then use the spider as a link checker.
+ * Link Checker Example
+ * ====================
+ * 
+ * This example demonstrates how to use PHP-Spider as a link checker to find broken links.
+ * It's almost identical to example_complex, with one critical difference:
+ * 
+ * KEY DIFFERENCE:
+ * - Uses LinkCheckRequestHandler instead of the default GuzzleRequestHandler
+ * - LinkCheckRequestHandler sets 'http_errors' => false in Guzzle
+ * - This prevents exceptions on 4XX/5XX responses, allowing the spider to continue
+ * - Failed requests are still persisted with their status codes
+ * 
+ * Use Cases:
+ * - Finding 404 pages on your website
+ * - Validating external links
+ * - Checking for broken redirects (3XX issues)
+ * - Monitoring website health
+ * - Pre-deployment link validation
+ * 
+ * Default Behavior vs Link Checking:
+ * - Default: Spider stops crawling when it encounters 4XX/5XX errors
+ * - Link Checker: Spider continues crawling and captures error status codes
+ * 
+ * For health checking with lightweight JSON output, see example_health_check.php
  */
 
 require_once('example_complex_bootstrap.php');
@@ -29,11 +49,14 @@ $seed = 'https://www.dmoz-odp.org/';
 // We want to allow all subdomains of dmoz.org
 $allowSubDomains = true;
 
-// Create spider
+// Create spider instance
 $spider = new Spider($seed);
 $spider->getDownloader()->setDownloadLimit(10);
 
-// Set a custom request handler that does not throw exceptions on failed requests
+// CRITICAL: Set a custom request handler that tolerates HTTP errors
+// LinkCheckRequestHandler extends GuzzleRequestHandler but sets 'http_errors' => false
+// This allows the spider to capture 4XX and 5XX responses instead of throwing exceptions
+// Without this, the spider would stop on the first error
 $spider->getDownloader()->setRequestHandler(new \Example\LinkCheckRequestHandler());
 
 $statsHandler = new StatsHandler();
@@ -44,7 +67,9 @@ $queueManager = new InMemoryQueueManager();
 $queueManager->getDispatcher()->addSubscriber($statsHandler);
 $queueManager->getDispatcher()->addSubscriber($LogHandler);
 
-// Set some sane defaults for this example. We only visit the first level of www.dmoz.org. We stop at 10 queued resources
+// Set crawl limits
+// - setMaxDepth(1): Only check links on the seed page and one level deep
+// - setTraversalAlgorithm(BREADTH_FIRST): Check all links at depth 0 before depth 1
 $spider->getDiscovererSet()->setMaxDepth(1);
 
 // This time, we set the traversal algorithm to breadth-first. The default is depth-first
@@ -52,7 +77,8 @@ $queueManager->setTraversalAlgorithm(InMemoryQueueManager::ALGORITHM_BREADTH_FIR
 
 $spider->setQueueManager($queueManager);
 
-// We add an URI discoverer. Without it, the spider wouldn't get past the seed resource.
+// Add URI discoverer
+// Find all <a> tags on the page (more comprehensive than example_complex)
 //$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//*[@id='cat-list-content-2']/div/a"));
 $spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a"));
 
@@ -61,15 +87,17 @@ $spider->getDownloader()->setPersistenceHandler(
     new \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler(__DIR__ . '/results')
 );
 
-// Add some prefetch filters. These are executed before a resource is requested.
-// The more you have of these, the less HTTP requests and work for the processors
+// Add prefetch filters to focus the link check
+// These filters run before downloading, saving time and bandwidth
 //$spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('http')));
 $spider->getDiscovererSet()->addFilter(new AllowedSchemeFilter(array('https', 'http')));
 $spider->getDiscovererSet()->addFilter(new AllowedHostsFilter(array($seed), $allowSubDomains));
 $spider->getDiscovererSet()->addFilter(new UriWithHashFragmentFilter());
 $spider->getDiscovererSet()->addFilter(new UriWithQueryStringFilter());
 
-// We add an eventlistener to the crawler that implements a politeness policy. We wait 450ms between every request to the same domain
+// Add politeness policy
+// Wait 100ms between requests to avoid overloading the server
+// This is especially important for link checking which may make many requests
 $politenessPolicyEventListener = new PolitenessPolicyListener(100);
 $spider->getDownloader()->getDispatcher()->addListener(
     SpiderEvents::SPIDER_CRAWL_PRE_REQUEST,
@@ -102,7 +130,8 @@ $guzzleClient = $spider->getDownloader()->getRequestHandler()->getClient();
 $tapMiddleware = Middleware::tap([$timerMiddleware, 'onRequest'], [$timerMiddleware, 'onResponse']);
 $guzzleClient->getConfig('handler')->push($tapMiddleware, 'timer');
 
-// Execute the crawl
+// Execute the link check
+// The spider will now check all links and capture their status codes
 $result = $spider->crawl();
 
 // Report
@@ -122,15 +151,21 @@ echo "\n  REQUEST TIME:         " . $timerMiddleware->getTotal() . 's';
 echo "\n  POLITENESS WAIT TIME: " . $totalDelay . 's';
 echo "\n  PROCESSING TIME:      " . ($totalTime - $timerMiddleware->getTotal() - $totalDelay) . 's';
 
-// Finally we could start some processing on the downloaded resources
+// Display link check results
+// Each resource includes its HTTP status code, even for errors
 echo "\n\nDOWNLOADED RESOURCES: ";
 $downloaded = $spider->getDownloader()->getPersistenceHandler();
 
 /** @var \VDB\Spider\Resource $resource */
 foreach ($downloaded as $resource) {
+    // Extract status information
     $code = $resource->getResponse()->getStatusCode();
     $reason = $resource->getResponse()->getReasonPhrase();
+    
+    // Try to get the page title, with fallback for error pages
     $title = $resource->getCrawler()->filterXpath('//title')->text("");
+    
+    // Format content length
     $contentLength = (int)$resource->getResponse()->getHeaderLine('Content-Length');
     $contentLengthString = '';
     if ($contentLength >= 1024) {
@@ -138,7 +173,11 @@ foreach ($downloaded as $resource) {
     } else {
         $contentLengthString = str_pad("[" . $contentLength, 5, ' ', STR_PAD_LEFT) . "B]";
     }
+    
     $uri = $resource->getUri()->toString();
+    
+    // Display the result with status code
+    // This makes it easy to identify broken links (4XX/5XX codes)
     echo "\n - " . $contentLengthString . " $title ($uri) " .$code ." ". $reason;
 }
 echo "\n";
