@@ -72,7 +72,7 @@ jobs:
                 OS_NAME="Linux"
                 ;;
               Darwin)
-                OS_NAME="macOS"
+                OS_NAME="Darwin"
                 ;;
               *)
                 echo "Unsupported OS: $OS"
@@ -105,17 +105,20 @@ jobs:
             
             # Download and verify checksum
             echo "Verifying checksum for ${ACT_TARBALL}..."
-            EXPECTED_SUM="$(curl -fsSL "${CHECKSUMS_URL}" | grep "[[:space:]]${ACT_TARBALL}$" | awk '{print $1}')"
+            EXPECTED_SUM="$(curl -fsSL "${CHECKSUMS_URL}" | grep "${ACT_TARBALL}$" | awk '{print $1}')"
             if [ -z "${EXPECTED_SUM}" ]; then
               echo "Failed to find checksum for ${ACT_TARBALL} in checksums.txt" >&2
               exit 1
             fi
             
-            # Use shasum on macOS, sha256sum on Linux
+            # Use appropriate checksum command based on OS
             if command -v sha256sum &> /dev/null; then
               ACTUAL_SUM="$(sha256sum "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
-            else
+            elif command -v shasum &> /dev/null; then
               ACTUAL_SUM="$(shasum -a 256 "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
+            else
+              echo "No checksum tool available (sha256sum or shasum)" >&2
+              exit 1
             fi
             if [ "${EXPECTED_SUM}" != "${ACTUAL_SUM}" ]; then
               echo "Checksum verification failed for ${ACT_TARBALL}" >&2
