@@ -114,7 +114,7 @@ class DiscovererSet implements DiscovererSetInterface
     public function set(DiscovererInterface $discoverer): self
     {
         // Runtime deprecation notice to guide users to the canonical API
-        @trigger_error(
+        trigger_error(
             'DiscovererSet::set() is deprecated and will be removed in a future major version. Use addDiscoverer() instead.',
             E_USER_DEPRECATED
         );
