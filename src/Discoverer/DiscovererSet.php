@@ -137,6 +137,7 @@ class DiscovererSet implements DiscovererSetInterface
      * Gets the maximum crawl depth.
      *
      * @return int
+     * @suppress PhanDeprecatedProperty
      */
     public function getMaxDepth(): int
     {
@@ -148,6 +149,7 @@ class DiscovererSet implements DiscovererSetInterface
      *
      * @param int $depth Maximum crawl depth
      * @return $this
+     * @suppress PhanDeprecatedProperty
      */
     public function setMaxDepth(int $depth): self
     {

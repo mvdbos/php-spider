@@ -94,6 +94,7 @@ class InMemoryQueueManager implements QueueManagerInterface
 
     /**
      * @param int $maxQueueSize Maximum size of the queue. 0 means infinite
+     * @suppress PhanDeprecatedProperty
      */
     public function setMaxQueueSize(int $maxQueueSize): void
     {
@@ -102,6 +103,7 @@ class InMemoryQueueManager implements QueueManagerInterface
 
     /**
      * @return int
+     * @suppress PhanDeprecatedProperty
      */
     public function getMaxQueueSize(): int
     {
