@@ -43,19 +43,14 @@ $spider = new Spider('http://www.dmoz.org');
 Add a URI discoverer. Without it, the spider does nothing. In this case, we want all `<a>` nodes from a certain `<div>`
 
 ```php
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
+$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
 ```
-
-> **Note:** The `set()` method is deprecated. Use `addDiscoverer()` instead. For a modern, fluent configuration approach, see the [Fluent Configuration](#fluent-configuration) section below.
-
 Set some sane options for this example. In this case, we only get the first 10 items from the start page.
 
 ```php
-$spider->getDiscovererSet()->maxDepth = 1;
-$spider->getQueueManager()->maxQueueSize = 10;
+$spider->setMaxDepth(1);
+$spider->setMaxQueueSize(10);
 ```
-
-> **Note:** Direct property access is supported but setter methods are preferred: use `$spider->setMaxDepth(1)` and `$spider->setMaxQueueSize(10)` instead for forward-compatibility. See the [Fluent Configuration](#fluent-configuration) section below.
 
 Add a listener to collect stats from the Spider and the QueueManager.
 There are more components that dispatch events you can use.
@@ -114,10 +109,6 @@ $spider->enablePolitenessPolicy(100);
 
 $spider->crawl();
 ```
-
-Notes:
-- Prefer setters/getters over public properties (`maxDepth`, `maxQueueSize`) for forward-compatibility.
-- Use `addDiscoverer()` instead of the deprecated alias `set()`.
 
 ### Using Cache to Skip Already Downloaded Resources
 
