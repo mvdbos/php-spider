@@ -17,26 +17,28 @@
 ## Development & Testing Workflow
 
 ### Fast Iteration During Development
-- **For quick feedback on specific tests:** Use `./vendor/bin/phpunit [test-file]` directly
-- **DO NOT run static analysis** during rapid iteration - it's slow and included in `./bin/check`
+- **For quick feedback:** Use `./vendor/bin/phpunit [test-file]` to run specific tests
+- **Optional fast checks:** Run `php -l` on changed files (no dependencies, instant syntax validation)
 - **Example:** `./vendor/bin/phpunit tests/Discoverer/DiscovererSetTest.php`
-- **Optional:** Install pre-commit hook (see [.githooks/README.md](.githooks/README.md)) to run tests automatically on commit
+- **Example:** `find src/ -name "*.php" | xargs -n1 php -l`
 
-### Full Validation Before PR (MANDATORY)
-- **ALWAYS run `./bin/check` before creating or updating ANY pull request**
+### Mandatory Validation Before Commits and PRs
+- **ALWAYS run `./bin/check` before EVERY commit and before creating/updating ANY pull request**
 - This is the **single source of truth** for validation
 - Runs the complete CI workflow: lint, phpcs (PSR2), phpmd, phan, and phpunit with 100% coverage
 - Uses `./bin/act --matrix php-versions:8.0` to run GitHub Actions locally with the lowest supported PHP version
-- **DO NOT** run individual tools (phpcs, phpmd, phan) manually - `./bin/check` runs them all correctly
+- **DO NOT** commit without running `./bin/check` first
+- **DO NOT** run individual static analysis tools (phpcs, phpmd, phan) manually - `./bin/check` runs them all correctly
 
 ### Validation Commands Reference
 ```bash
-# FAST: During development iterations
+# FAST: During development iterations (multiple times)
 ./vendor/bin/phpunit                    # All tests, no coverage
 ./vendor/bin/phpunit tests/SomeTest.php # Specific test file
+php -l src/SomeFile.php                 # Syntax check (optional, no deps)
 
-# COMPREHENSIVE: Before PR (MANDATORY)
-./bin/check                             # Full CI validation (required before PR)
+# MANDATORY: Before EVERY commit and PR
+./bin/check                             # Full CI validation (required before commit/PR)
 
 # Equivalents (same as ./bin/check)
 ./bin/act --matrix php-versions:8.0     # Explicit form of ./bin/check
@@ -44,7 +46,7 @@
 
 ## Testing & Static Analysis
 - Static analysis: The full CI workflow includes lint, phpcs (PSR2), phpmd (with [phpmd.xml](phpmd.xml) and [phpmd-tests.xml](phpmd-tests.xml)), phan, and coverage enforcement. All checks are run via `./bin/check`.
-- Common workflow: `composer install`, make code changes, run `./vendor/bin/phpunit` for quick feedback on specific tests, then **run `./bin/check` to validate the entire workflow locally before pushing changes (MANDATORY before PR)**.
+- Common workflow: `composer install`, make code changes, run `./vendor/bin/phpunit` for quick feedback on specific tests, then **ALWAYS run `./bin/check` before committing (MANDATORY before every commit and PR)**.
 - When adding features: wire new events through `DispatcherTrait`, keep discovery depth/visited tracking in sync (normalize URIs), and ensure new persistence handlers implement Iterator + Countable to align with Downloader expectations.
 - Testing patterns: examples drive expected behaviors (queue, filters, stats). Add unit tests under [tests/](tests) to keep coverage at 100% and satisfy CI scripts.
 - **Code Coverage Requirements**: This project **requires 100% line coverage** for all code. This is non-negotiable and enforced by CI:
@@ -55,9 +57,9 @@
   - **Never** submit code that reduces overall project coverage below 100%, regardless of whether the uncovered code is yours or pre-existing.
   - Write comprehensive tests that cover all code paths: normal cases, edge cases, error conditions, and boundary conditions.
 
-## PR Submission Requirements (MANDATORY)
+## Commit and PR Requirements (MANDATORY)
 
-**CRITICAL: Before creating or finalizing ANY pull request, you MUST:**
+**CRITICAL: Before EVERY commit and before creating/finalizing ANY pull request, you MUST:**
 
 1. **Run the full validation suite:**
    ```bash
@@ -79,12 +81,12 @@
    - Commit your changes
    - Create or update the pull request
 
-**DO NOT create or finalize a PR with failing validations.** This is non-negotiable.
+**DO NOT commit or create/finalize a PR with failing validations.** This is non-negotiable.
 
 ### Why This Workflow?
 
 - **Fast iteration**: `./vendor/bin/phpunit` gives instant feedback during coding
-- **Complete validation**: `./bin/check` ensures all CI checks pass before PR
+- **Complete validation**: `./bin/check` ensures all CI checks pass before commit/PR
 - **Prevents CI failures**: Running `./bin/check` locally catches issues before pushing
 - **Single source of truth**: `./bin/check` runs the exact same checks as GitHub Actions CI
 - **No surprises**: If `./bin/check` passes, CI will pass
