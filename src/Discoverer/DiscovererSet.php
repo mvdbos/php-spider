@@ -7,7 +7,7 @@ use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\UriInterface;
 
-class DiscovererSet
+class DiscovererSet implements DiscovererSetInterface
 {
     /**
      * @var array<string, DiscovererInterface>
@@ -139,18 +139,21 @@ class DiscovererSet
     }
 
     /**
-     * @param UriInterface[] $discoveredUris
+     * Normalizes all discovered URIs.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function normalize(array &$discoveredUris): void
     {
-        /** @var DiscoveredUri[] $discoveredUris */
         foreach ($discoveredUris as $k => $uri) {
             $discoveredUris[$k] = $uri->normalize();
         }
     }
 
     /**
-     * @param UriInterface[] $discoveredUris
+     * Filters out URIs that have already been seen.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function filterAlreadySeen(array &$discoveredUris): void
     {
@@ -162,8 +165,10 @@ class DiscovererSet
     }
 
     /**
-     * Filter out any URI that matches any of the filters
-     * @param UriInterface[] $discoveredUris
+     * Applies prefetch filters to discovered URIs.
+     * Filters out any URI that matches any of the filters.
+     *
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function filter(array &$discoveredUris): void
     {
@@ -171,29 +176,27 @@ class DiscovererSet
             foreach ($this->filters as $filter) {
                 if ($filter->match($uri)) {
                     unset($discoveredUris[$k]);
+                    break; // No need to check other filters once matched
                 }
             }
         }
     }
 
     /**
+     * Removes duplicate URIs from the list.
+     *
      * @param UriInterface[] $discoveredUris
      */
     private function removeDuplicates(array &$discoveredUris): void
     {
-        // make sure there are no duplicates in the list
-        $tmp = array();
+        $seenUris = [];
+        
         foreach ($discoveredUris as $k => $uri) {
-            $tmp[$k] = $uri->toString();
-        }
-
-        // Find duplicates in temporary array
-        $tmp = array_unique($tmp);
-
-        // Remove the duplicates from original array
-        foreach ($discoveredUris as $k => $uri) {
-            if (!array_key_exists($k, $tmp)) {
+            $uriString = $uri->toString();
+            if (isset($seenUris[$uriString])) {
                 unset($discoveredUris[$k]);
+            } else {
+                $seenUris[$uriString] = true;
             }
         }
     }
