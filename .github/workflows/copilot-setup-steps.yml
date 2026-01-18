@@ -27,7 +27,19 @@ jobs:
 
       - name: Prepare act cache directories
         run: |
-          mkdir -p .cache/act/artifacts .cache/act/cache
+          mkdir -p .cache/act/artifacts .cache/act/cache .cache/bin
+
+      - name: Get current week for cache key
+        id: week
+        run: echo "week=$(date +%Y-W%U)" >> $GITHUB_OUTPUT
+
+      - name: Cache act binary
+        uses: actions/cache@v4
+        with:
+          path: .cache/bin
+          key: act-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.week.outputs.week }}
+          restore-keys: |
+            act-binary-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Cache act local caches
         uses: actions/cache@v4
@@ -47,5 +59,11 @@ jobs:
       - name: Install nektos/act
         run: |
           set -euo pipefail
-          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
-          ./bin/act --version
+          if [ ! -f .cache/bin/act ]; then
+            echo "Downloading act binary..."
+            curl -L https://github.com/nektos/act/releases/latest/download/act_Linux_x86_64.tar.gz | tar xz -C .cache/bin
+            chmod +x .cache/bin/act
+          else
+            echo "Using cached act binary"
+          fi
+          .cache/bin/act --version
