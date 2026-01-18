@@ -12,11 +12,9 @@
 namespace VDB\Spider\Tests\PersistenceHandler;
 
 use ErrorException;
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
-use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
 class MemoryPersistenceHandlerTest extends TestCase
@@ -41,15 +39,15 @@ class MemoryPersistenceHandlerTest extends TestCase
      */
     public function testPersist()
     {
-        $resource1 = new Resource(
-            new DiscoveredUri("http://example.com/1", 0),
-            new Response(200, [], "Test Body Contents 1")
-        );
+        $resource1 = ResourceBuilder::create()
+            ->withUri('http://example.com/1')
+            ->withBody('Test Body Contents 1')
+            ->build();
 
-        $resource2 = new Resource(
-            new DiscoveredUri("http://example.com/1", 0),
-            new Response(200, [], "Test Body Contents 2")
-        );
+        $resource2 = ResourceBuilder::create()
+            ->withUri('http://example.com/1')
+            ->withBody('Test Body Contents 2')
+            ->build();
 
         $expectedResources = [$resource1, $resource2];
 
