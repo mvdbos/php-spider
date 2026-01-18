@@ -359,12 +359,19 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         
         // Try to use a file path as if it were a directory - this will fail for all users including root
         $handler = new JsonHealthCheckPersistenceHandler($tmpFile);
+        $handler->setSpiderId('test');
         
-        // This will fail because $tmpFile is a file, not a directory
+        $resource = new Resource(
+            new DiscoveredUri("http://example.com/test", 0),
+            new Response(200, [], "Test Body")
+        );
+        
+        // This will fail because $tmpFile is a file, not a directory, so we can't write inside it
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to write JSON file');
         
         try {
-            $handler->setSpiderId('test');
+            $handler->persist($resource);
         } finally {
             // Clean up
             if (file_exists($tmpFile)) {
