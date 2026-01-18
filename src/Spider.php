@@ -271,7 +271,7 @@ class Spider
      *
      * The persistence handler determines how downloaded resources are stored. By default,
      * resources are stored in memory, but you can provide custom handlers for:
-     * - File system storage (e.g., FileSerializedResourcePersistenceHandler)
+     * - File system storage (e.g., \\VDB\\Spider\\PersistenceHandler\\FileSerializedResourcePersistenceHandler)
      * - Database storage
      * - Custom processing pipelines
      *
@@ -360,8 +360,8 @@ class Spider
      * the spider will only crawl the seed URL and stop.
      *
      * Common discoverers:
-     * - XPathExpressionDiscoverer: Extract links matching an XPath expression
-     * - CssSelectorDiscoverer: Extract links matching a CSS selector
+     * - \\VDB\\Spider\\Discoverer\\XPathExpressionDiscoverer: Extract links matching an XPath expression
+     * - \\VDB\\Spider\\Discoverer\\CssSelectorDiscoverer: Extract links matching a CSS selector
      *
      * Multiple discoverers can be added, and they will all run on each resource.
      * Discovered URIs are combined, deduplicated, and filtered before being queued.
@@ -383,10 +383,10 @@ class Spider
      * no HTTP request is made for filtered URIs.
      *
      * Common prefetch filters:
-     * - RestrictToBaseUriFilter: Only crawl URIs under the seed domain/path
-     * - AllowedHostsFilter: Restrict crawling to specific domains
-     * - UriFilter: Filter URIs by regex pattern
-     * - RobotsTxtDisallowFilter: Respect robots.txt rules
+     * - \\VDB\\Spider\\Filter\\Prefetch\\RestrictToBaseUriFilter: Only crawl URIs under the seed domain/path
+     * - \\VDB\\Spider\\Filter\\Prefetch\\AllowedHostsFilter: Restrict crawling to specific domains
+     * - \\VDB\\Spider\\Filter\\Prefetch\\UriFilter: Filter URIs by regex pattern
+     * - \\VDB\\Spider\\Filter\\Prefetch\\RobotsTxtDisallowFilter: Respect robots.txt rules
      *
      * Multiple filters can be added. A URI is excluded if ANY filter matches it.
      *
