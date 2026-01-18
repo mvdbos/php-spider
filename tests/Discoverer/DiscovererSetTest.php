@@ -81,7 +81,18 @@ class DiscovererSetTest extends DiscovererTestCase
     public function testSetDiscovererBackwardCompatibility()
     {
         $this->discovererSet = new DiscovererSet();
+        
+        // Suppress deprecation warning for this backward compatibility test
+        set_error_handler(function ($errno, $errstr) {
+            if ($errno === E_USER_DEPRECATED) {
+                return true; // Suppress the deprecation warning
+            }
+            return false; // Let other errors through
+        });
+        
         $this->discovererSet->set(new XPathExpressionDiscoverer("//a"));
+        
+        restore_error_handler();
 
         $uris = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(2, $uris);
@@ -258,7 +269,17 @@ class DiscovererSetTest extends DiscovererTestCase
         $discovererSet = new DiscovererSet();
         $discoverer = new XPathExpressionDiscoverer("//a");
 
+        // Suppress deprecation warning for this backward compatibility test
+        set_error_handler(function ($errno, $errstr) {
+            if ($errno === E_USER_DEPRECATED) {
+                return true; // Suppress the deprecation warning
+            }
+            return false; // Let other errors through
+        });
+        
         $result = $discovererSet->set($discoverer);
+        
+        restore_error_handler();
 
         // Test method chaining for backward compatibility
         $this->assertSame($discovererSet, $result);

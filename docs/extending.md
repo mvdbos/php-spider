@@ -98,7 +98,7 @@ class JsonApiDiscoverer implements DiscovererInterface
 
 **Usage:**
 ```php
-$spider->getDiscovererSet()->set(new JsonApiDiscoverer('/data/next_page'));
+$spider->getDiscovererSet()->addDiscoverer(new JsonApiDiscoverer('/data/next_page'));
 ```
 
 ### Example: Sitemap.xml Discoverer
@@ -883,8 +883,8 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 $spider = new Spider('https://example.com');
 
 // Add multiple discoverers
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//a"));
-$spider->getDiscovererSet()->set(new JsonApiDiscoverer('/links'));
+$spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer("//a"));
+$spider->getDiscovererSet()->addDiscoverer(new JsonApiDiscoverer('/links'));
 
 // Add multiple prefetch filters
 $spider->getDiscovererSet()->addFilter(new FileExtensionFilter(['jpg', 'png', 'pdf']));
