@@ -1,11 +1,10 @@
 <?php
 namespace VDB\Spider\Tests;
 
-use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
 /**
@@ -22,17 +21,13 @@ class ResourceTest extends TestCase
      */
     protected $html;
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     */
     protected function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/Fixtures/ResourceTestHTMLResource.html');
-        $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special', 'http://example.org'), 0),
-            new Response(200, [], $this->html)
-        );
+        $this->resource = ResourceBuilder::create()
+            ->withUri('http://example.org/domains/special')
+            ->withBody($this->html)
+            ->build();
     }
 
     /**
@@ -88,21 +83,20 @@ class ResourceTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Resource::getEffectiveUri
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testGetEffectiveUriWithRedirects()
     {
         // Simulate Guzzle redirect tracking headers
-        $resource = new Resource(
-            new DiscoveredUri(new Uri('http://original.com/page'), 0),
-            new Response(200, [
+        $resource = ResourceBuilder::create()
+            ->withUri('http://original.com/page')
+            ->withHeaders([
                 'X-Guzzle-Redirect-History' => [
                     'http://original.com/redirect1',
                     'http://final.com/destination'
                 ]
-            ], 'content')
-        );
+            ])
+            ->withBody('content')
+            ->build();
 
         // Should return the last URI in the redirect history
         $this->assertEquals('http://final.com/destination', $resource->getEffectiveUri());
@@ -110,36 +104,30 @@ class ResourceTest extends TestCase
 
     /**
      * @covers \VDB\Spider\Resource::getEffectiveUri
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testGetEffectiveUriWithSingleRedirect()
     {
         // Simulate a single redirect
-        $resource = new Resource(
-            new DiscoveredUri(new Uri('http://original.com/page'), 0),
-            new Response(200, [
-                'X-Guzzle-Redirect-History' => ['http://redirected.com/final']
-            ], 'content')
-        );
+        $resource = ResourceBuilder::create()
+            ->withUri('http://original.com/page')
+            ->withHeader('X-Guzzle-Redirect-History', ['http://redirected.com/final'])
+            ->withBody('content')
+            ->build();
 
         $this->assertEquals('http://redirected.com/final', $resource->getEffectiveUri());
     }
 
     /**
      * @covers \VDB\Spider\Resource::getEffectiveUri
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testGetEffectiveUriWithEmptyRedirectHistory()
     {
         // When redirect history header is empty, should return original URI
-        $resource = new Resource(
-            new DiscoveredUri(new Uri('http://original.com/page'), 0),
-            new Response(200, [
-                'X-Guzzle-Redirect-History' => []
-            ], 'content')
-        );
+        $resource = ResourceBuilder::create()
+            ->withUri('http://original.com/page')
+            ->withHeader('X-Guzzle-Redirect-History', [])
+            ->withBody('content')
+            ->build();
 
         $this->assertEquals('http://original.com/page', $resource->getEffectiveUri());
     }

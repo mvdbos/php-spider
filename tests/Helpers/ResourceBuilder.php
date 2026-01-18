@@ -66,7 +66,7 @@ class ResourceBuilder
     /**
      * Add a single HTTP response header
      */
-    public function withHeader(string $name, string $value): self
+    public function withHeader(string $name, string|array $value): self
     {
         $this->headers[$name] = $value;
         return $this;

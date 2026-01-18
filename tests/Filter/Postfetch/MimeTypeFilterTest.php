@@ -11,32 +11,26 @@
 
 namespace VDB\Spider\Tests\Filter\Postfetch;
 
-use ErrorException;
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Filter\Postfetch\MimeTypeFilter;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Uri;
 
 class MimeTypeFilterTest extends TestCase
 {
     protected Resource $spiderResource;
     protected DiscoveredUri $uri;
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     */
     protected function setUp(): void
     {
-        $this->uri = new DiscoveredUri(new Uri('http://foobar.com/image.jpg'), 0);
+        $this->spiderResource = ResourceBuilder::create()
+            ->withUri('http://foobar.com/image.jpg')
+            ->withHeader('Content-Type', 'image/jpeg')
+            ->withBody('')
+            ->build();
 
-        $this->spiderResource = new Resource(
-            $this->uri,
-            new Response(200, ['Content-Type' => 'image/jpeg'], '')
-        );
+        $this->uri = $this->spiderResource->getUri();
     }
 
     /**
