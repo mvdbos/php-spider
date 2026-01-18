@@ -105,13 +105,18 @@ jobs:
             
             # Download and verify checksum
             echo "Verifying checksum for ${ACT_TARBALL}..."
-            EXPECTED_SUM="$(curl -fsSL "${CHECKSUMS_URL}" | grep " ${ACT_TARBALL}$" | awk '{print $1}')"
+            EXPECTED_SUM="$(curl -fsSL "${CHECKSUMS_URL}" | grep "[[:space:]]${ACT_TARBALL}$" | awk '{print $1}')"
             if [ -z "${EXPECTED_SUM}" ]; then
               echo "Failed to find checksum for ${ACT_TARBALL} in checksums.txt" >&2
               exit 1
             fi
             
-            ACTUAL_SUM="$(sha256sum "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
+            # Use shasum on macOS, sha256sum on Linux
+            if command -v sha256sum &> /dev/null; then
+              ACTUAL_SUM="$(sha256sum "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
+            else
+              ACTUAL_SUM="$(shasum -a 256 "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
+            fi
             if [ "${EXPECTED_SUM}" != "${ACTUAL_SUM}" ]; then
               echo "Checksum verification failed for ${ACT_TARBALL}" >&2
               echo "Expected: ${EXPECTED_SUM}" >&2
