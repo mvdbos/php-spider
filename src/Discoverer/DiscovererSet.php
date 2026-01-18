@@ -185,7 +185,7 @@ class DiscovererSet implements DiscovererSetInterface
     /**
      * Removes duplicate URIs from the list.
      *
-     * @param UriInterface[] $discoveredUris
+     * @param DiscoveredUri[] $discoveredUris
      */
     private function removeDuplicates(array &$discoveredUris): void
     {
