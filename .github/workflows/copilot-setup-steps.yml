@@ -61,8 +61,68 @@ jobs:
           set -euo pipefail
           if [ ! -f .cache/bin/act ]; then
             echo "Downloading act binary..."
-            curl -L https://github.com/nektos/act/releases/latest/download/act_Linux_x86_64.tar.gz | tar xz -C .cache/bin
+            
+            # Pin to specific version for security and reproducibility
+            ACT_VERSION="v0.2.69"
+            
+            # Detect OS
+            OS="$(uname -s)"
+            case "$OS" in
+              Linux)
+                OS_NAME="Linux"
+                ;;
+              Darwin)
+                OS_NAME="macOS"
+                ;;
+              *)
+                echo "Unsupported OS: $OS"
+                exit 1
+                ;;
+            esac
+            
+            # Detect architecture
+            ARCH="$(uname -m)"
+            case "$ARCH" in
+              x86_64)
+                ACT_ARCH="x86_64"
+                ;;
+              aarch64|arm64)
+                ACT_ARCH="arm64"
+                ;;
+              *)
+                echo "Unsupported architecture: $ARCH"
+                exit 1
+                ;;
+            esac
+            
+            ACT_TARBALL="act_${OS_NAME}_${ACT_ARCH}.tar.gz"
+            ACT_URL="https://github.com/nektos/act/releases/download/${ACT_VERSION}/${ACT_TARBALL}"
+            CHECKSUMS_URL="https://github.com/nektos/act/releases/download/${ACT_VERSION}/checksums.txt"
+            
+            # Download act binary
+            mkdir -p .cache/bin
+            curl -fsSL -o "/tmp/${ACT_TARBALL}" "${ACT_URL}"
+            
+            # Download and verify checksum
+            echo "Verifying checksum for ${ACT_TARBALL}..."
+            EXPECTED_SUM="$(curl -fsSL "${CHECKSUMS_URL}" | grep " ${ACT_TARBALL}$" | awk '{print $1}')"
+            if [ -z "${EXPECTED_SUM}" ]; then
+              echo "Failed to find checksum for ${ACT_TARBALL} in checksums.txt" >&2
+              exit 1
+            fi
+            
+            ACTUAL_SUM="$(sha256sum "/tmp/${ACT_TARBALL}" | awk '{print $1}')"
+            if [ "${EXPECTED_SUM}" != "${ACTUAL_SUM}" ]; then
+              echo "Checksum verification failed for ${ACT_TARBALL}" >&2
+              echo "Expected: ${EXPECTED_SUM}" >&2
+              echo "Got: ${ACTUAL_SUM}" >&2
+              exit 1
+            fi
+            
+            # Extract act binary
+            tar xzf "/tmp/${ACT_TARBALL}" -C .cache/bin
             chmod +x .cache/bin/act
+            rm "/tmp/${ACT_TARBALL}"
           else
             echo "Using cached act binary"
           fi
