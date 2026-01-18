@@ -272,6 +272,48 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
 
     /**
      * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
+     */
+    public function testWriteToFileHandlesFailureWithInvalidDirectory()
+    {
+        // Test write failure by making the directory read-only after creation
+        // This prevents writing the JSON file
+        $testDir = sys_get_temp_dir() . '/spider-test-readonly-dir-' . uniqid();
+        mkdir($testDir, 0700, true);
+
+        $handler = new JsonHealthCheckPersistenceHandler($testDir);
+        $handler->setSpiderId('test-readonly-dir');
+
+        // Make the directory read-only (no write permission)
+        chmod($testDir, 0555);
+
+        $resource = new Resource(
+            new DiscoveredUri("http://example.com/test", 0),
+            new Response(200, [], "Test Body")
+        );
+
+        // Skip if running as root (root can write to read-only directories)
+        if (posix_getuid() === 0) {
+            chmod($testDir, 0755);
+            rmdir($testDir);
+            $this->markTestSkipped('Test cannot run as root user (root can write to read-only directories)');
+        }
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Failed to write JSON file');
+
+        try {
+            $handler->persist($resource);
+        } finally {
+            // Clean up - restore write permissions before deleting
+            chmod($testDir, 0755);
+            rmdir($testDir);
+        }
+    }
+
+    /**
+     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
      */
     public function testWriteToFileWithJsonEncodingFailure()
     {
