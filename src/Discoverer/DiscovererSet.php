@@ -5,7 +5,6 @@ namespace VDB\Spider\Discoverer;
 use VDB\Spider\Filter\PreFetchFilterInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\UriInterface;
 
 class DiscovererSet implements DiscovererSetInterface
 {
