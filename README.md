@@ -43,14 +43,15 @@ $spider = new Spider('http://www.dmoz.org');
 Add a URI discoverer. Without it, the spider does nothing. In this case, we want all `<a>` nodes from a certain `<div>`
 
 ```php
-$spider->getDiscovererSet()->set(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
+$spider->addDiscoverer(new XPathExpressionDiscoverer("//div[@id='catalogs']//a"));
 ```
 Set some sane options for this example. In this case, we only get the first 10 items from the start page.
 
 ```php
-$spider->getDiscovererSet()->maxDepth = 1;
-$spider->getQueueManager()->maxQueueSize = 10;
+$spider->setMaxDepth(1);
+$spider->setMaxQueueSize(10);
 ```
+
 Add a listener to collect stats from the Spider and the QueueManager.
 There are more components that dispatch events you can use.
 
@@ -78,6 +79,35 @@ foreach ($spider->getDownloader()->getPersistenceHandler() as $resource) {
     echo "\n - " . $resource->getCrawler()->filterXpath('//title')->text();
 }
 
+```
+
+### Fluent Configuration
+
+For most common settings, you can configure the spider fluently via convenience methods on `Spider` and keep related configuration in one place.
+
+```php
+use VDB\Spider\Spider;
+use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
+use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
+use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
+use VDB\Spider\QueueManager\QueueManagerInterface;
+
+$spider = new Spider('https://example.com');
+
+// Configure limits and traversal in one place
+$spider
+    ->setDownloadLimit(50)                         // Max resources to download
+    ->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST)
+    ->setMaxDepth(2)                               // Max discovery depth
+    ->setMaxQueueSize(500)                         // Max URIs in queue
+    ->setPersistenceHandler(new FileSerializedResourcePersistenceHandler(__DIR__.'/results'))
+    ->addDiscoverer(new XPathExpressionDiscoverer('//a')) // Add discoverers
+    ->addFilter(new AllowedHostsFilter(['example.com'])); // Add prefetch filters
+
+// Optional: enable politeness policy (delay between requests to same domain)
+$spider->enablePolitenessPolicy(100);
+
+$spider->crawl();
 ```
 
 ### Using Cache to Skip Already Downloaded Resources
