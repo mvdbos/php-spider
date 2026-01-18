@@ -25,6 +25,38 @@ jobs:
       - name: Checkout repository (optional)
         uses: actions/checkout@v5
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: dom, pcntl, ast
+          tools: composer
+          coverage: xdebug
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Cache vendor directory
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vendor-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+
       - name: Prepare act cache directories
         run: |
           mkdir -p .cache/act/artifacts .cache/act/cache .cache/bin
@@ -37,9 +69,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/bin
-          key: act-binary-${{ runner.os }}-${{ runner.arch }}-${{ steps.week.outputs.week }}
+          key: ${{ runner.os }}-${{ runner.arch }}-act-binary-${{ steps.week.outputs.week }}
           restore-keys: |
-            act-binary-${{ runner.os }}-${{ runner.arch }}-
+            ${{ runner.os }}-${{ runner.arch }}-act-binary-
 
       - name: Cache act local caches
         uses: actions/cache@v4
@@ -47,9 +79,9 @@ jobs:
           path: |
             .cache/act/artifacts
             .cache/act/cache
-          key: act-cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.actrc') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-act-cache-${{ hashFiles('.actrc') }}
           restore-keys: |
-            act-cache-${{ runner.os }}-${{ runner.arch }}-
+            ${{ runner.os }}-${{ runner.arch }}-act-cache-
 
       - name: Install dependencies for act
         run: |
