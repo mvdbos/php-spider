@@ -11,13 +11,11 @@
 
 namespace VDB\Spider\Tests\PersistenceHandler;
 
-use GuzzleHttp\Psr7\Response;
 use ReflectionClass;
 use RuntimeException;
 use VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler;
-use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\DiscoveredUri;
 
 class JsonHealthCheckPersistenceHandlerTest extends TestCase
 {
@@ -101,20 +99,26 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
      */
     public function testPersist()
     {
-        $resource1 = new Resource(
-            new DiscoveredUri("http://example.com/page1", 0),
-            new Response(200, [], "Test Body 1")
-        );
+        $resource1 = ResourceBuilder::create()
+            ->withUri('http://example.com/page1')
+            ->withDepth(0)
+            ->withStatusCode(200)
+            ->withBody('Test Body 1')
+            ->build();
 
-        $resource2 = new Resource(
-            new DiscoveredUri("http://example.com/page2", 1),
-            new Response(404, [], "Not Found")
-        );
+        $resource2 = ResourceBuilder::create()
+            ->withUri('http://example.com/page2')
+            ->withDepth(1)
+            ->withStatusCode(404)
+            ->withBody('Not Found')
+            ->build();
 
-        $resource3 = new Resource(
-            new DiscoveredUri("http://example.com/page3", 1),
-            new Response(500, [], "Internal Server Error")
-        );
+        $resource3 = ResourceBuilder::create()
+            ->withUri('http://example.com/page3')
+            ->withDepth(1)
+            ->withStatusCode(500)
+            ->withBody('Internal Server Error')
+            ->build();
 
         $this->handler->persist($resource1);
         $this->handler->persist($resource2);
@@ -162,15 +166,19 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
      */
     public function testIterator()
     {
-        $resource1 = new Resource(
-            new DiscoveredUri("http://example.com/page1", 0),
-            new Response(200, [], "Test Body 1")
-        );
+        $resource1 = ResourceBuilder::create()
+            ->withUri('http://example.com/page1')
+            ->withDepth(0)
+            ->withStatusCode(200)
+            ->withBody('Test Body 1')
+            ->build();
 
-        $resource2 = new Resource(
-            new DiscoveredUri("http://example.com/page2", 1),
-            new Response(404, [], "Not Found")
-        );
+        $resource2 = ResourceBuilder::create()
+            ->withUri('http://example.com/page2')
+            ->withDepth(1)
+            ->withStatusCode(404)
+            ->withBody('Not Found')
+            ->build();
 
         $this->handler->persist($resource1);
         $this->handler->persist($resource2);
@@ -247,10 +255,11 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         file_put_contents($jsonFile, '[]');
         chmod($jsonFile, 0444); // Read-only
 
-        $resource = new Resource(
-            new DiscoveredUri("http://example.com/test", 0),
-            new Response(200, [], "Test Body")
-        );
+        $resource = ResourceBuilder::create()
+            ->withUri('http://example.com/test')
+            ->withStatusCode(200)
+            ->withBody('Test Body')
+            ->build();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to write JSON file');

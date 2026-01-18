@@ -12,11 +12,9 @@
 namespace VDB\Spider\Tests\PersistenceHandler;
 
 use ErrorException;
-use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
-use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
-use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
 /**
@@ -50,10 +48,10 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
      */
     public function testPathExtension()
     {
-        $resource1 = new Resource(
-            new DiscoveredUri("http://example.com", 0),
-            new Response(200, [], "Test Body Contents 1")
-        );
+        $resource1 = ResourceBuilder::create()
+            ->withUri('http://example.com')
+            ->withBody('Test Body Contents 1')
+            ->build();
 
         $this->assertEquals('', $resource1->getUri()->getPath());
 

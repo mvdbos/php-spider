@@ -13,10 +13,10 @@ namespace VDB\Spider\Tests\Downloader;
 
 use ErrorException;
 use Exception;
-use GuzzleHttp\Psr7\Response;
 use ReflectionClass;
 use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\Resource;
+use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
@@ -38,10 +38,10 @@ class DownloaderTest extends TestCase
     public function setUp(): void
     {
         $this->html = file_get_contents(__DIR__ . '/../Fixtures/DownloaderTestHTMLResource.html');
-        $this->resource = new Resource(
-            new DiscoveredUri(new Uri('/domains/special', 'http://example.org'), 0),
-            new Response(200, [], $this->html)
-        );
+        $this->resource = ResourceBuilder::create()
+            ->withUri('http://example.org/domains/special')
+            ->withBody($this->html)
+            ->build();
 
         $this->downloader = new Downloader();
 
