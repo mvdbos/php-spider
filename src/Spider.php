@@ -248,8 +248,17 @@ class Spider
     /**
      * Convenience method to set the download limit.
      *
-     * @param int $limit Maximum number of resources to download
-     * @return $this
+     * Limits the total number of resources (web pages, documents, etc.) that will be
+     * downloaded and persisted during the crawl. Once this limit is reached, the crawler
+     * will stop downloading additional resources even if more URIs are queued.
+     *
+     * This is useful for:
+     * - Testing and development (limiting crawl scope)
+     * - Resource management (controlling memory/disk usage)
+     * - Quick sampling of a website
+     *
+     * @param int $limit Maximum number of resources to download (must be positive)
+     * @return $this Returns the Spider instance for method chaining
      */
     public function setDownloadLimit(int $limit): self
     {
@@ -260,8 +269,17 @@ class Spider
     /**
      * Convenience method to set the persistence handler.
      *
-     * @param PersistenceHandlerInterface $handler
-     * @return $this
+     * The persistence handler determines how downloaded resources are stored. By default,
+     * resources are stored in memory, but you can provide custom handlers for:
+     * - File system storage (e.g., FileSerializedResourcePersistenceHandler)
+     * - Database storage
+     * - Custom processing pipelines
+     *
+     * The handler must implement the PersistenceHandlerInterface and will receive each
+     * successfully downloaded resource for storage/processing.
+     *
+     * @param PersistenceHandlerInterface $handler The persistence handler to use for storing resources
+     * @return $this Returns the Spider instance for method chaining
      */
     public function setPersistenceHandler(PersistenceHandlerInterface $handler): self
     {
@@ -272,8 +290,17 @@ class Spider
     /**
      * Convenience method to set the traversal algorithm.
      *
-     * @param int $algorithm Either QueueManagerInterface::ALGORITHM_DEPTH_FIRST or ALGORITHM_BREADTH_FIRST
-     * @return $this
+     * Controls the order in which discovered URIs are crawled:
+     *
+     * - ALGORITHM_DEPTH_FIRST (default): Follows links deeply before moving to siblings.
+     *   Explores one branch completely before backtracking. Good for focused crawling.
+     *
+     * - ALGORITHM_BREADTH_FIRST: Crawls all links at one depth level before moving deeper.
+     *   Explores all siblings before moving to children. Good for comprehensive site maps.
+     *
+     * @param int $algorithm Either QueueManagerInterface::ALGORITHM_DEPTH_FIRST or
+     *                       QueueManagerInterface::ALGORITHM_BREADTH_FIRST
+     * @return $this Returns the Spider instance for method chaining
      */
     public function setTraversalAlgorithm(int $algorithm): self
     {
@@ -284,8 +311,18 @@ class Spider
     /**
      * Convenience method to set the maximum crawl depth.
      *
-     * @param int $depth Maximum depth to crawl
-     * @return $this
+     * Controls how many "hops" away from the seed URL the spider will follow links.
+     * The seed URL is at depth 0, links found on the seed page are at depth 1, and so on.
+     *
+     * Examples:
+     * - depth 0: Only the seed URL is crawled
+     * - depth 1: Seed URL plus all directly linked pages
+     * - depth 2: Seed URL, direct links, and their direct links
+     *
+     * Default is 3 if not set. Setting a lower depth reduces crawl scope and resource usage.
+     *
+     * @param int $depth Maximum depth to crawl (0 = seed only, 1 = seed + direct links, etc.)
+     * @return $this Returns the Spider instance for method chaining
      */
     public function setMaxDepth(int $depth): self
     {
@@ -296,8 +333,19 @@ class Spider
     /**
      * Convenience method to set the maximum queue size.
      *
-     * @param int $size Maximum number of URIs to queue
-     * @return $this
+     * Limits the total number of URIs that can be queued for crawling. When this limit
+     * is reached, the spider stops discovering and queueing new URIs, effectively capping
+     * the total scope of the crawl.
+     *
+     * This is different from setDownloadLimit():
+     * - setMaxQueueSize() limits URIs queued (may not all be downloaded)
+     * - setDownloadLimit() limits resources actually downloaded
+     *
+     * Use this to control memory usage and prevent unbounded queue growth on large sites.
+     * Set to 0 for unlimited queue size (default behavior).
+     *
+     * @param int $size Maximum number of URIs to queue (0 = unlimited)
+     * @return $this Returns the Spider instance for method chaining
      */
     public function setMaxQueueSize(int $size): self
     {
@@ -308,8 +356,18 @@ class Spider
     /**
      * Convenience method to add a discoverer.
      *
-     * @param DiscovererInterface $discoverer
-     * @return $this
+     * Discoverers extract URIs from downloaded resources. Without at least one discoverer,
+     * the spider will only crawl the seed URL and stop.
+     *
+     * Common discoverers:
+     * - XPathExpressionDiscoverer: Extract links matching an XPath expression
+     * - CssSelectorDiscoverer: Extract links matching a CSS selector
+     *
+     * Multiple discoverers can be added, and they will all run on each resource.
+     * Discovered URIs are combined, deduplicated, and filtered before being queued.
+     *
+     * @param DiscovererInterface $discoverer The discoverer to add to the discoverer set
+     * @return $this Returns the Spider instance for method chaining
      */
     public function addDiscoverer(DiscovererInterface $discoverer): self
     {
@@ -320,8 +378,20 @@ class Spider
     /**
      * Convenience method to add a prefetch filter.
      *
-     * @param PreFetchFilterInterface $filter
-     * @return $this
+     * Prefetch filters determine which discovered URIs should be excluded from crawling
+     * BEFORE they are downloaded. This is more efficient than postfetch filters since
+     * no HTTP request is made for filtered URIs.
+     *
+     * Common prefetch filters:
+     * - RestrictToBaseUriFilter: Only crawl URIs under the seed domain/path
+     * - AllowedHostsFilter: Restrict crawling to specific domains
+     * - UriFilter: Filter URIs by regex pattern
+     * - RobotsTxtDisallowFilter: Respect robots.txt rules
+     *
+     * Multiple filters can be added. A URI is excluded if ANY filter matches it.
+     *
+     * @param PreFetchFilterInterface $filter The filter to add to the discoverer set
+     * @return $this Returns the Spider instance for method chaining
      */
     public function addFilter(PreFetchFilterInterface $filter): self
     {
@@ -331,10 +401,20 @@ class Spider
 
     /**
      * Convenience method to enable politeness policy.
-     * Adds a listener that delays requests to the same domain.
      *
-     * @param int $delayInMilliseconds Delay in milliseconds between requests to the same domain
-     * @return $this
+     * Adds a delay between requests to the same domain to avoid overwhelming target servers
+     * and to be a "good citizen" of the web. This is considered a best practice for web crawling.
+     *
+     * The delay is enforced per-domain:
+     * - Requests to different domains can happen without delay
+     * - Requests to the same domain wait for the specified delay
+     *
+     * Note: Calling this method multiple times will replace the previous politeness listener
+     * with the new delay value, not stack additional delays.
+     *
+     * @param int $delayInMilliseconds Delay in milliseconds between requests to the same domain.
+     *                                 Default is 100ms. Typical values range from 100-1000ms.
+     * @return $this Returns the Spider instance for method chaining
      */
     public function enablePolitenessPolicy(int $delayInMilliseconds = 100): self
     {
