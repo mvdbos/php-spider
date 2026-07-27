@@ -17,7 +17,7 @@
         "php": ">=8.0",
         "ext-dom": "*",
         "ext-pcntl": "*",
-        "guzzlehttp/guzzle": "^6.0.0||^7.0.0",
+        "guzzlehttp/guzzle": "^8.0.1",
         "symfony/css-selector": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
         "symfony/dom-crawler": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
         "symfony/finder": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
