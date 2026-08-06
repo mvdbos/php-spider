@@ -2,12 +2,11 @@
 
 namespace VDB\Spider\Filter\Prefetch;
 
-use ErrorException;
 use InvalidArgumentException;
+use Uri\InvalidUriException;
+use Uri\Rfc3986\Uri;
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Uri;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
@@ -24,12 +23,12 @@ class RestrictToBaseUriFilter implements PreFetchFilterInterface
     {
         try {
             $this->seed = new Uri($seed);
-        } catch (ErrorException | UriSyntaxException $e) {
+        } catch (InvalidUriException $e) {
             throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
         }
     }
 
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         /*
          * if the URI does not contain the seed, it is not allowed

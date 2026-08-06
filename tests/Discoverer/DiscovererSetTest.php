@@ -13,7 +13,6 @@ namespace VDB\Spider\Tests\Discoverer;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
-use ErrorException;
 use Exception;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -22,8 +21,6 @@ use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\FileUri;
 
 #[CoversClass(\VDB\Spider\Discoverer\DiscovererSet::class)]
 #[CoversClass(\VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter::class)]
@@ -55,7 +52,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $urisAtDepth0 = $this->discovererSet->discover($this->spiderResource);
         $this->assertCount(0, $urisAtDepth0);
     }
-
 
     public function testConstructor()
     {
@@ -104,11 +100,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     * @throws Exception
-     */
     public function testRobotsTxtDisallowFilter()
     {
         $baseUri = "file://" . __DIR__;
@@ -123,7 +114,7 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $discovererSet->discover($spiderResource);
         $this->assertCount(1, $uris);
-        $this->assertNotContains((new FileUri($uriInBody2))->toString(), array_map(fn($uri): string => (new FileUri($uri->toString()))->toString(), $uris));
+        $this->assertNotContains($uriInBody2, array_map(fn($uri): string => $uri->toString(), $uris));
     }
 
     public function testPortFilter()
@@ -147,11 +138,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(2, $uris);
     }
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     * @throws Exception
-     */
     public function testInvalidUriSkipped()
     {
         $resourceUri = new DiscoveredUri('http://php-spider.org/', 0);
@@ -167,11 +153,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     * @throws Exception
-     */
     public function testDuplicatesRemoved()
     {
 

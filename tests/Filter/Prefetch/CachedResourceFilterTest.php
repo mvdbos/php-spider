@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use InvalidArgumentException;
 use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * Test for CachedResourceFilter
@@ -47,7 +47,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchReturnsFalseWhenFileDoesNotExist()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
 
         $this->assertFalse($filter->match($uri));
     }
@@ -55,7 +55,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchReturnsTrueWhenFileExistsAndIsFresh()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
         
         // Create the cached file
         $this->createCachedFile($uri, 'test content');
@@ -66,7 +66,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchReturnsFalseWhenFileIsExpired()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 10);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
         
         // Create the cached file and modify its timestamp to be older than maxAge
         $filePath = $this->createCachedFile($uri, 'test content');
@@ -78,7 +78,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchReturnsTrueWhenMaxAgeIsZero()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 0);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
         
         // Create the cached file with an old timestamp
         $filePath = $this->createCachedFile($uri, 'test content');
@@ -91,7 +91,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchHandlesIndexFiles()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/');
+        $uri = new DiscoveredUri('http://example.com/', 0);
 
         // Create the cached file (should be stored as index.html)
         $this->createCachedFile($uri, 'test content');
@@ -102,7 +102,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchHandlesRootWithoutTrailingSlash()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com');
+        $uri = new DiscoveredUri('http://example.com', 0);
 
         // Create the cached file (should be stored as index.html for empty path)
         $this->createCachedFile($uri, 'test content');
@@ -113,7 +113,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchHandlesDirectoryWithTrailingSlash()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/subdir/');
+        $uri = new DiscoveredUri('http://example.com/subdir/', 0);
         
         // Create the cached file (should be stored as index.html in subdir)
         $this->createCachedFile($uri, 'test content');
@@ -124,7 +124,7 @@ class CachedResourceFilterTest extends TestCase
     public function testMatchHandlesSpecialCharactersInFilename()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/file with spaces.html');
+        $uri = new DiscoveredUri('http://example.com/file%20with%20spaces.html', 0);
         
         // Create the cached file (filename should be URL-encoded)
         $this->createCachedFile($uri, 'test content');
@@ -140,7 +140,7 @@ class CachedResourceFilterTest extends TestCase
         $filter1 = new CachedResourceFilter($this->testCacheDir, $spiderId1, 3600);
         $filter2 = new CachedResourceFilter($this->testCacheDir, $spiderId2, 3600);
         
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
         
         // Create cached file for spider-1
         $this->createCachedFileWithSpiderId($uri, 'test content', $spiderId1);
@@ -156,7 +156,7 @@ class CachedResourceFilterTest extends TestCase
     {
         $maxAge = 10;
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, $maxAge);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
         
         // Create the cached file and set it exactly at max age
         $filePath = $this->createCachedFile($uri, 'test content');
@@ -171,7 +171,7 @@ class CachedResourceFilterTest extends TestCase
         // Test that constructor properly handles basePath with trailing slash
         $basePathWithSlash = $this->testCacheDir . DIRECTORY_SEPARATOR;
         $filter = new CachedResourceFilter($basePathWithSlash, $this->testSpiderId, 3600);
-        $uri = new Uri('http://example.com/page.html');
+        $uri = new DiscoveredUri('http://example.com/page.html', 0);
 
         // Create the cached file
         $this->createCachedFile($uri, 'test content');
@@ -192,7 +192,7 @@ class CachedResourceFilterTest extends TestCase
     /**
      * Helper method to create a cached file for testing
      */
-    private function createCachedFile(Uri $uri, string $content): string
+    private function createCachedFile(DiscoveredUri $uri, string $content): string
     {
         return $this->createCachedFileWithSpiderId($uri, $content, $this->testSpiderId);
     }
@@ -200,7 +200,7 @@ class CachedResourceFilterTest extends TestCase
     /**
      * Helper method to create a cached file with a specific spider ID
      */
-    private function createCachedFileWithSpiderId(Uri $uri, string $content, string $spiderId): string
+    private function createCachedFileWithSpiderId(DiscoveredUri $uri, string $content, string $spiderId): string
     {
         $hostname = $uri->getHost();
         $path = $uri->getPath() ?: '';

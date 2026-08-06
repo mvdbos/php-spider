@@ -16,8 +16,6 @@ use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Http;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
@@ -109,7 +107,11 @@ class SpiderTest extends TestCase
         $this->assertSameSize($expected, $actual);
 
         foreach ($actual as $index => $resource) {
-            $this->assertEquals($resource->getUri(), $expected[$index]);
+            // Compare by string representation: DiscoveredUri wraps an internal
+            // Uri\Rfc3986\Uri instance that exposes no reflectable properties,
+            // so PHPUnit's object comparator cannot meaningfully diff two
+            // distinct instances via assertEquals($a, $b).
+            $this->assertEquals($expected[$index]->toString(), $resource->getUri()->toString());
         }
     }
 
@@ -235,6 +237,13 @@ class SpiderTest extends TestCase
         new Spider('fdsfnsd:t4rgevjk lffdsn');
     }
 
+    public function testNonHttpSeedFails()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid seed');
+        new Spider('ftp://example.com');
+    }
+
 
     public function testEmptySeedFails()
     {
@@ -280,8 +289,6 @@ class SpiderTest extends TestCase
      *         | _ |
      *
      * Note: E links to F.
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     protected function setUp(): void
     {
@@ -297,13 +304,13 @@ class SpiderTest extends TestCase
         $this->hrefF = 'http://php-spider.org/F';
         $this->hrefG = 'http://php-spider.org/G';
 
-        $this->linkA = new DiscoveredUri(new Http($this->hrefA), 0);
-        $this->linkB = new DiscoveredUri(new Http($this->hrefB), 1);
-        $this->linkC = new DiscoveredUri(new Http($this->hrefC), 1);
-        $this->linkD = new DiscoveredUri(new Http($this->hrefD), 2);
-        $this->linkE = new DiscoveredUri(new Http($this->hrefE), 1);
-        $this->linkF = new DiscoveredUri(new Http($this->hrefF), 2);
-        $this->linkG = new DiscoveredUri(new Http($this->hrefG), 2);
+        $this->linkA = new DiscoveredUri($this->hrefA, 0);
+        $this->linkB = new DiscoveredUri($this->hrefB, 1);
+        $this->linkC = new DiscoveredUri($this->hrefC, 1);
+        $this->linkD = new DiscoveredUri($this->hrefD, 2);
+        $this->linkE = new DiscoveredUri($this->hrefE, 1);
+        $this->linkF = new DiscoveredUri($this->hrefF, 2);
+        $this->linkG = new DiscoveredUri($this->hrefG, 2);
 
         $htmlA = file_get_contents(__DIR__ . '/Fixtures/SpiderTestHTMLResourceA.html');
         $this->responseA = new Response(200, [], $htmlA);
@@ -443,15 +450,15 @@ class SpiderTest extends TestCase
     public function testSetPersistenceHandlerWithMockDownloader()
     {
         $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
-        
+
         $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
         $mockDownloader->expects($this->once())
             ->method('setPersistenceHandler')
             ->with($handler);
-        
+
         $spider = new Spider($this->linkA, null, null, $mockDownloader);
         $result = $spider->setPersistenceHandler($handler);
-        
+
         $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
@@ -461,10 +468,10 @@ class SpiderTest extends TestCase
         $mockQueueManager->expects($this->once())
             ->method('setMaxQueueSize')
             ->with(10);
-        
+
         $spider = new Spider($this->linkA, null, $mockQueueManager);
         $result = $spider->setMaxQueueSize(10);
-        
+
         $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
@@ -477,15 +484,15 @@ class SpiderTest extends TestCase
                 $this->equalTo(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST),
                 $this->anything()
             );
-        
+
         $mockDownloader = $this->getMockBuilder('VDB\Spider\Downloader\DownloaderInterface')->getMock();
         $mockDownloader->expects($this->once())
             ->method('getDispatcher')
             ->willReturn($mockDispatcher);
-        
+
         $spider = new Spider($this->linkA, null, null, $mockDownloader);
         $result = $spider->enablePolitenessPolicy(100);
-        
+
         $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 }

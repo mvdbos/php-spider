@@ -13,14 +13,12 @@ namespace VDB\Spider\Tests\QueueManager;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
-use ErrorException;
 use InvalidArgumentException;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 #[CoversClass(\VDB\Spider\QueueManager\InMemoryQueueManager::class)]
 #[CoversMethod(\VDB\Spider\QueueManager\InMemoryQueueManager::class, 'setMaxQueueSize')]
@@ -40,8 +38,6 @@ class InMemoryQueueManagerTest extends TestCase
     }
 
     /**
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testMaxQueueSizeExceeded()
     {
@@ -52,11 +48,6 @@ class InMemoryQueueManagerTest extends TestCase
         $qm->addUri(new DiscoveredUri("bar", 0));
     }
 
-    /**
-     * @throws ErrorException
-     * @throws UriSyntaxException
-     * @throws MaxQueueSizeExceededException
-     */
     public function testDepthFirst()
     {
         $qm = new InMemoryQueueManager();
@@ -71,11 +62,6 @@ class InMemoryQueueManagerTest extends TestCase
         $this->assertEquals($uri2, $qm->next());
     }
 
-    /**
-     * @throws ErrorException
-     * @throws UriSyntaxException
-     * @throws MaxQueueSizeExceededException
-     */
     public function testBreadthFirst()
     {
         $qm = new InMemoryQueueManager(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);

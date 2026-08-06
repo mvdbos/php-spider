@@ -26,7 +26,6 @@ Extract links from JSON API responses:
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
 
 class JsonApiDiscoverer implements DiscovererInterface
 {
@@ -67,9 +66,8 @@ class JsonApiDiscoverer implements DiscovererInterface
         
         foreach ($links as $link) {
             try {
-                $uri = new Uri($link);
-                $discoveredUris[] = new DiscoveredUri($uri, $currentDepth + 1);
-            } catch (\Exception $e) {
+                $discoveredUris[] = new DiscoveredUri($link, $currentDepth + 1);
+            } catch (\Uri\InvalidUriException $e) {
                 // Skip invalid URIs
                 continue;
             }
@@ -109,7 +107,6 @@ Parse sitemap XML files:
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
 
 class SitemapDiscoverer implements DiscovererInterface
 {
@@ -132,8 +129,7 @@ class SitemapDiscoverer implements DiscovererInterface
             $discoveredUris = [];
             
             foreach ($urls as $url) {
-                $uri = new Uri((string)$url);
-                $discoveredUris[] = new DiscoveredUri($uri, $currentDepth + 1);
+                $discoveredUris[] = new DiscoveredUri((string)$url, $currentDepth + 1);
             }
             
             return $discoveredUris;
@@ -156,7 +152,7 @@ Skip URIs with specific file extensions:
 
 ```php
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class FileExtensionFilter implements PreFetchFilterInterface
 {
@@ -171,7 +167,7 @@ class FileExtensionFilter implements PreFetchFilterInterface
         );
     }
     
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         $path = $uri->getPath();
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -196,7 +192,7 @@ Skip URIs matching specific patterns:
 
 ```php
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class UrlPatternFilter implements PreFetchFilterInterface
 {
@@ -207,7 +203,7 @@ class UrlPatternFilter implements PreFetchFilterInterface
         $this->excludePatterns = $excludePatterns;
     }
     
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         $url = $uri->toString();
         
@@ -241,7 +237,7 @@ Different max depths for different domains:
 
 ```php
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class DomainDepthFilter implements PreFetchFilterInterface
 {
@@ -254,17 +250,12 @@ class DomainDepthFilter implements PreFetchFilterInterface
         $this->defaultMaxDepth = $defaultMaxDepth;
     }
     
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         $host = $uri->getHost();
         $maxDepth = $this->domainDepths[$host] ?? $this->defaultMaxDepth;
         
-        // DiscoveredUri has depth tracking
-        if ($uri instanceof \VDB\Spider\Uri\DiscoveredUri) {
-            return $uri->getDepthFound() > $maxDepth;
-        }
-        
-        return false;
+        return $uri->getDepthFound() > $maxDepth;
     }
 }
 ```

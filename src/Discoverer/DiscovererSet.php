@@ -44,7 +44,7 @@ class DiscovererSet implements DiscovererSetInterface
      */
     private function markSeen(DiscoveredUri $uri): void
     {
-        $uriString = $uri->normalize()->toString();
+        $uriString = $uri->toString();
         if (!array_key_exists($uriString, $this->alreadySeenUris)) {
             $this->alreadySeenUris[$uriString] = $uri->getDepthFound();
         }
@@ -77,7 +77,6 @@ class DiscovererSet implements DiscovererSetInterface
             $discoveredUris = array_merge($discoveredUris, $discoverer->discover($resource));
         }
 
-        $this->normalize($discoveredUris);
         $this->removeDuplicates($discoveredUris);
         $this->filterAlreadySeen($discoveredUris);
         $this->filter($discoveredUris);
@@ -155,18 +154,6 @@ class DiscovererSet implements DiscovererSetInterface
     {
         $this->maxDepth = $depth;
         return $this;
-    }
-
-    /**
-     * Normalizes all discovered URIs.
-     *
-     * @param DiscoveredUri[] $discoveredUris
-     */
-    private function normalize(array &$discoveredUris): void
-    {
-        foreach ($discoveredUris as $k => $uri) {
-            $discoveredUris[$k] = $uri->normalize();
-        }
     }
 
     /**
