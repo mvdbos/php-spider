@@ -11,13 +11,11 @@
 
 namespace VDB\Spider\Tests\RequestHandler;
 
-use ErrorException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\RequestHandler\GuzzleRequestHandler;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  *
@@ -28,8 +26,6 @@ class GuzzleRequestHandlerTest extends TestCase
      * @covers \VDB\Spider\RequestHandler\GuzzleRequestHandler
      *
      * @throws GuzzleException
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testCustomClient()
     {

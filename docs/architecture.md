@@ -229,10 +229,10 @@ $spider->getDownloader()->addPostFetchFilter(
 
 ### DiscoveredUri (src/Uri/DiscoveredUri.php)
 
-Wrapper around `vdb/uri` that adds crawl depth tracking.
+Wrapper around the native `Uri\Rfc3986\Uri` class (`ext-uri`, PHP >= 8.5) that adds crawl depth tracking.
 
 **Key properties:**
-- `$decorated` - The underlying UriInterface implementation
+- `$decorated` - The underlying `Uri\Rfc3986\Uri` instance
 - `$depthFound` - Integer depth where this URI was discovered
 
 Depth tracking enables:
@@ -241,10 +241,11 @@ Depth tracking enables:
 - Prioritization strategies
 
 **Normalization:**
-URIs are normalized to prevent duplicate crawling of equivalent URLs:
-- Trailing slashes standardized
-- Default ports removed (80 for http, 443 for https)
-- Query parameters sorted (if not filtered out)
+`Uri\Rfc3986\Uri` normalizes URIs as part of parsing them (per RFC 3986), so no separate
+normalization step is needed to prevent duplicate crawling of equivalent URLs:
+- Scheme and host case are folded to lowercase
+- Dot segments (`.` and `..`) in the path are resolved
+- Percent-encoding is normalized (unreserved characters decoded, hex digits upper-cased)
 
 ## Resource Model
 

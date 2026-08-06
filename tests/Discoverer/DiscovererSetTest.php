@@ -11,7 +11,6 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
-use ErrorException;
 use Exception;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
@@ -20,8 +19,6 @@ use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\FileUri;
 
 /**
  *
@@ -115,8 +112,6 @@ class DiscovererSetTest extends DiscovererTestCase
      * @covers \VDB\Spider\Discoverer\DiscovererSet
      * @covers \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
      *
-     * @throws UriSyntaxException
-     * @throws ErrorException
      * @throws Exception
      */
     public function testRobotsTxtDisallowFilter()
@@ -133,7 +128,7 @@ class DiscovererSetTest extends DiscovererTestCase
 
         $uris = $discovererSet->discover($spiderResource);
         $this->assertCount(1, $uris);
-        $this->assertNotContains((new FileUri($uriInBody2))->toString(), array_map(fn($uri): string => (new FileUri($uri->toString()))->toString(), $uris));
+        $this->assertNotContains($uriInBody2, array_map(fn($uri): string => $uri->toString(), $uris));
     }
 
     /**
@@ -166,8 +161,6 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      * @throws Exception
      */
     public function testInvalidUriSkipped()
@@ -186,8 +179,6 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      * @throws Exception
      */
     public function testDuplicatesRemoved()

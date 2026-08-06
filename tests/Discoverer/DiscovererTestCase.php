@@ -13,14 +13,12 @@ namespace VDB\Spider\Tests\Discoverer;
 
 use DOMDocument;
 use DomElement;
-use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 abstract class DiscovererTestCase extends TestCase
 {
@@ -34,8 +32,6 @@ abstract class DiscovererTestCase extends TestCase
     protected string $resourceContent;
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      * @throws Exception
      */
     protected function setUp(): void

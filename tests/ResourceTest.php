@@ -5,7 +5,6 @@ use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
 
 /**
  */

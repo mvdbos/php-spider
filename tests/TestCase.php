@@ -11,13 +11,10 @@
 
 namespace VDB\Spider\Tests;
 
-use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Uri;
 
 /**
  *
@@ -34,14 +31,10 @@ class TestCase extends PHPUnitTestCase
         return new Resource($uri, $response);
     }
 
-    /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
-     */
     protected function buildResourceFromFixture($fixturePath, $uriString): Resource
     {
         return $this->getResource(
-            new DiscoveredUri(new Uri($uriString), 0),
+            new DiscoveredUri($uriString, 0),
             new Response(200, [], $this->getFixtureContent($fixturePath))
         );
     }

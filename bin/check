@@ -1,9 +1,9 @@
 #!/bin/bash
-# Quick CI validation script - runs the full workflow with PHP 8.0 only
+# Quick CI validation script - runs the full workflow with PHP 8.5 only
 # This is the minimal fast path for developers to validate before push
 # Usage: ./bin/check [extra options]
 # Examples:
-#   ./bin/check           # Run full workflow with PHP 8.0
+#   ./bin/check           # Run full workflow with PHP 8.5
 #   ./bin/check -v        # Run with verbose output
 #   ./bin/check --pull    # Force pull latest image
 
@@ -12,6 +12,6 @@ set -e
 # Ensure we're in the project root
 cd "$(dirname "$0")/.."
 
-# Always run with PHP 8.0 matrix only (no full matrix)
-echo "🚀 Running CI validation with PHP 8.0..."
-./bin/act -j build --matrix php-versions:8.0 "$@"
+# Always run with PHP 8.5 matrix only (no full matrix)
+echo "🚀 Running CI validation with PHP 8.5..."
+./bin/act -j build --matrix php-versions:8.5 "$@"

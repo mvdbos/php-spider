@@ -2,23 +2,17 @@
 
 namespace VDB\Spider\Uri;
 
-use ErrorException;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Uri;
-use VDB\Uri\UriInterface;
+use Uri\Rfc3986\Uri;
+use Uri\UriComparisonMode;
 
-class DiscoveredUri implements UriInterface
+class DiscoveredUri
 {
-    protected string|UriInterface $decorated;
+    protected Uri $decorated;
     private int $depthFound;
 
-    /**
-     * @throws ErrorException
-     * @throws UriSyntaxException
-     */
-    public function __construct(UriInterface|string $decorated, int $depthFound)
+    public function __construct(Uri|string $decorated, int $depthFound)
     {
-        if (!$decorated instanceof UriInterface) {
+        if (!$decorated instanceof Uri) {
             $decorated = new Uri($decorated);
         }
 
@@ -44,95 +38,62 @@ class DiscoveredUri implements UriInterface
         return $this->decorated->toString();
     }
 
-    /**
-     * @param UriInterface $that
-     * @param boolean $normalized whether to compare normalized versions of the URIs
-     * @return boolean
-     */
-    public function equals(UriInterface $that, $normalized = false): bool
+    public function equals(DiscoveredUri $that): bool
     {
-        return $this->decorated->equals($that, $normalized);
+        return $this->decorated->equals($that->decorated, UriComparisonMode::IncludeFragment);
     }
 
     /**
-     * @return UriInterface
+     * Resolves an (absolute or relative) URI reference against this Uri.
      */
-    public function normalize(): UriInterface
+    public function resolve(string $uri): Uri
     {
-        // This normalizes the decorated Uri in place. We don't want to return the decorated Uri, but $this.
-        $this->decorated->normalize();
-        return $this;
+        return $this->decorated->resolve($uri);
     }
 
     /**
-     * Alias of Uri::toString()
-     *
-     * @return string
+     * Alias of DiscoveredUri::toString()
      */
     public function __toString(): string
     {
-        return $this->decorated->__toString();
+        return $this->decorated->toString();
     }
 
-    /**
-     * @return string|null
-     */
     public function getHost(): ?string
     {
         return $this->decorated->getHost();
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
         return $this->decorated->getPassword();
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
-        return $this->decorated->getPath() ?: '';
+        return $this->decorated->getPath();
     }
 
-    /**
-     * @return int|null
-     */
     public function getPort(): ?int
     {
         return $this->decorated->getPort();
     }
 
-    /**
-     * @return string|null
-     */
     public function getQuery(): ?string
     {
         return $this->decorated->getQuery();
     }
 
-    /**
-     * @return string|null
-     */
     public function getScheme(): ?string
     {
         return $this->decorated->getScheme();
     }
 
-    /**
-     * @return string|null
-     */
     public function getUsername(): ?string
     {
         return $this->decorated->getUsername();
     }
 
-    /**
-     * @return string|null
-     */
     public function getFragment(): ?string
     {
         return $this->decorated->getFragment();

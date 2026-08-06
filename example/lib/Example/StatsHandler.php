@@ -37,7 +37,7 @@ namespace Example;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\SpiderEvents;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 class StatsHandler implements EventSubscriberInterface
 {
@@ -116,7 +116,7 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * Get all URIs that were added to the queue
      * 
-     * @return UriInterface[]
+     * @return DiscoveredUri[]
      */
     public function getQueued(): array
     {
@@ -126,7 +126,7 @@ class StatsHandler implements EventSubscriberInterface
     /**
      * Get all resources that were successfully persisted
      * 
-     * @return UriInterface[]
+     * @return DiscoveredUri[]
      */
     public function getPersisted(): array
     {

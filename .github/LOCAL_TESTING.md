@@ -9,21 +9,20 @@ This project is configured to run GitHub Actions locally using [nektos/act](http
 
 ## Quick Start
 
-### Fastest Path: Validate with PHP 8.0 Only
+### Fastest Path: Validate with PHP 8.5
 
 For developers making changes, use this to validate quickly before pushing:
 
 ```bash
-# Run full CI validation with PHP 8.0 (lowest supported version)
-# This is the recommended default - CI will test all versions
+# Run full CI validation with PHP 8.5 (the only supported version)
 ./bin/check
 ```
 
 ### Full act Usage
 
 ```bash
-# Run all workflows (push event) with PHP 8.0
-./bin/act --matrix php-versions:8.0
+# Run all workflows (push event) with PHP 8.5
+./bin/act --matrix php-versions:8.5
 
 # Run workflows for pull request event
 ./bin/act pull_request
@@ -35,7 +34,7 @@ For developers making changes, use this to validate quickly before pushing:
 ./bin/act -l
 
 # Run with specific PHP version matrix
-./bin/act --matrix php-versions:8.3
+./bin/act --matrix php-versions:8.5
 
 # Dry run (don't execute, just show what would run)
 ./bin/act -n
@@ -95,20 +94,15 @@ Run with verbose output:
 
 ## Matrix Testing
 
-**Recommended for CI validation**: Always test with PHP 8.0 only (lowest supported version). CI will automatically run the full matrix across all supported versions:
+**Recommended for CI validation**: PHP-Spider requires PHP >= 8.5, so there is a single supported version to test:
 
 ```bash
-# Default and recommended - validates with PHP 8.0
+# Default and recommended - validates with PHP 8.5
 ./bin/check
 
-# Explicitly with PHP 8.0 (same as check)
-./bin/act --matrix php-versions:8.0
-
-# To test a different version manually:
-./bin/act --matrix php-versions:8.3
+# Explicitly with PHP 8.5 (same as check)
+./bin/act --matrix php-versions:8.5
 ```
-
-**Note**: Do not run the full matrix locally (`--matrix php-versions:8.0,8.1,8.2,8.3`). CI handles cross-version testing automatically.
 
 ## What Gets Tested Locally
 

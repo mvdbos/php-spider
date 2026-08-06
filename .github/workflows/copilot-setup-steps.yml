@@ -28,8 +28,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
-          extensions: dom, pcntl, ast
+          php-version: '8.5'
+          extensions: dom, pcntl, ast, uri
           tools: composer
           coverage: xdebug
 

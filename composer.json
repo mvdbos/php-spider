@@ -14,15 +14,15 @@
         "source": "https://github.com/matthijsvandenbos/php-spider"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.5",
         "ext-dom": "*",
         "ext-pcntl": "*",
+        "ext-uri": "*",
         "guzzlehttp/guzzle": "^6.0||^7.0||^8.0",
         "symfony/css-selector": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
         "symfony/dom-crawler": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
         "symfony/finder": "^3.0.0||^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
         "symfony/event-dispatcher": "^4.0.0||^5.0.0||^6.0||^7.0||^8.0",
-        "vdb/uri": "^0.3.2",
         "spatie/robots-txt": "^2.0"
     },
     "require-dev": {

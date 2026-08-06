@@ -11,11 +11,9 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
-use ErrorException;
 use VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  *
@@ -24,25 +22,22 @@ class UriWithHashFragmentFilterTest extends TestCase
 {
     /**
      * @covers \VDB\Spider\Filter\Prefetch\UriWithHashFragmentFilter
-     *
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     public function testMatch()
     {
         $filter = new UriWithHashFragmentFilter();
 
-        $currentUri = 'http://php-spider.org';
-        $uri1 = new Uri('#', $currentUri);
-        $uri2 = new Uri('#foo', $currentUri);
-        $uri3 = new Uri('http://php-spider.org/foo#bar', $currentUri);
-        $uri4 = new Uri('http://php-spider.org/foo/#bar', $currentUri);
-        $uri5 = new Uri('http://php-spider.org#/foo/bar', $currentUri);
+        $currentUri = new DiscoveredUri('http://php-spider.org', 0);
+        $uri1 = new DiscoveredUri($currentUri->resolve('#'), 0);
+        $uri2 = new DiscoveredUri($currentUri->resolve('#foo'), 0);
+        $uri3 = new DiscoveredUri('http://php-spider.org/foo#bar', 0);
+        $uri4 = new DiscoveredUri('http://php-spider.org/foo/#bar', 0);
+        $uri5 = new DiscoveredUri('http://php-spider.org#/foo/bar', 0);
 
         $this->assertTrue($filter->match($uri1), '# filtered');
         $this->assertTrue($filter->match($uri2), '#foo');
         $this->assertTrue($filter->match($uri3), 'http://php-spider.org/foo#bar');
         $this->assertTrue($filter->match($uri4), 'http://php-spider.org/foo/#bar');
-        $this->asserttrue($filter->match($uri5), 'http://php-spider.org#/foo/bar');
+        $this->assertTrue($filter->match($uri5), 'http://php-spider.org#/foo/bar');
     }
 }

@@ -11,13 +11,11 @@
 
 namespace VDB\Spider\Tests\PersistenceHandler;
 
-use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  * @SuppressWarnings(PHPMD.LongClassName)
@@ -45,8 +43,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
      * @covers       \VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler
      * @covers       \VDB\Spider\PersistenceHandler\FilePersistenceHandler
      *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testPathExtension()
     {
@@ -140,8 +136,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     protected function buildPersistenceProviderRecord($fixturePath, $uriString): array
     {
@@ -168,8 +162,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     /**
      * @return array
      *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function persistenceProvider(): array
     {

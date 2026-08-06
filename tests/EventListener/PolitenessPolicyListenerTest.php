@@ -11,10 +11,10 @@
 namespace VDB\Spider\Tests\EventListener;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Uri\Rfc3986\Uri;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
 
 /**
  *
@@ -28,7 +28,7 @@ class PolitenessPolicyListenerTest extends TestCase
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);
 
-        $uri = new Uri('http://php-spider.org/', 'http://php-spider.org/');
+        $uri = new Uri('http://php-spider.org/');
         $event = new GenericEvent(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array('uri' => $uri));
 
         $politenessPolicyListener->onCrawlPreRequest($event);
@@ -47,10 +47,10 @@ class PolitenessPolicyListenerTest extends TestCase
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);
 
-        $uri = new Uri('http://php-spider.org/', 'http://php-spider.org/');
+        $uri = new Uri('http://php-spider.org/');
         $event = new GenericEvent(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array('uri' => $uri));
 
-        $uri2 = new Uri('http://example.com/', 'http://example.com/');
+        $uri2 = new Uri('http://example.com/');
         $event2 = new GenericEvent(SpiderEvents::SPIDER_CRAWL_PRE_REQUEST, array('uri' => $uri2));
 
         $politenessPolicyListener->onCrawlPreRequest($event);

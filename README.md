@@ -156,7 +156,7 @@ There a few requirements for a Pull Request to be accepted:
 You can run the full CI pipeline locally using [nektos/act](https://nektosact.com/):
 
 ```bash
-# Fast path: run the full workflow with PHP 8.0 (recommended)
+# Fast path: run the full workflow with PHP 8.5 (recommended)
 ./bin/check
 ```
 
@@ -167,7 +167,7 @@ Or use the underlying act wrapper directly:
 ./bin/act
 
 # Run specific PHP version locally
-./bin/act --matrix php-versions:8.0
+./bin/act --matrix php-versions:8.5
 
 # Run specific job or view available workflows
 ./bin/act -l

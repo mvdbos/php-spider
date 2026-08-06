@@ -13,7 +13,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Uri;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  *
@@ -27,11 +27,11 @@ class AllowedSchemeFilterTest extends TestCase
     {
         $filter = new AllowedSchemeFilter(array('http'));
 
-        $currentUri = 'http://php-spider.org';
-        $uri =  new Uri('http://php-spider.org');
-        $uri2 = new Uri('https://php-spider.org');
-        $uri3 = new Uri('#', $currentUri);
-        $uri4 = new Uri('mailto:info@example.org');
+        $currentUri = new DiscoveredUri('http://php-spider.org', 0);
+        $uri =  new DiscoveredUri('http://php-spider.org', 0);
+        $uri2 = new DiscoveredUri('https://php-spider.org', 0);
+        $uri3 = new DiscoveredUri($currentUri->resolve('#'), 0);
+        $uri4 = new DiscoveredUri('mailto:info@example.org', 0);
 
         $this->assertFalse($filter->match($uri), 'HTTP scheme filtered');
         $this->assertTrue($filter->match($uri2), 'HTTPS scheme filtered');

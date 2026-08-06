@@ -2,21 +2,20 @@
 
 namespace VDB\Spider\Filter\Prefetch;
 
-use ErrorException;
 use Exception;
 use Spatie\Robots\RobotsTxt;
+use Uri\Rfc3986\Uri;
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\Exception\UriSyntaxException;
-use VDB\Uri\FileUri;
-use VDB\Uri\Http;
-use VDB\Uri\Uri;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
  */
 class RobotsTxtDisallowFilter implements PreFetchFilterInterface
 {
+    private const FILE_SCHEMES = ['file'];
+    private const HTTP_SCHEMES = ['http', 'https'];
+
     private RobotsTxt $parser;
     private ?string $userAgent;
     private Uri $seedUri;
@@ -24,13 +23,10 @@ class RobotsTxtDisallowFilter implements PreFetchFilterInterface
     /**
      * @param string $seedUrl The robots.txt file will be loaded from this domain.
      * @param string|null $userAgent
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function __construct(string $seedUrl, ?string $userAgent = null)
     {
         $this->seedUri = new Uri($seedUrl);
-        $this->seedUri->normalize();
         $this->userAgent = $userAgent;
         $this->parser = new RobotsTxt(self::fetchRobotsTxt(self::extractRobotsTxtUri($seedUrl)));
     }
@@ -55,29 +51,26 @@ class RobotsTxtDisallowFilter implements PreFetchFilterInterface
      *
      * @param string $seedUrl
      * @return string
-     *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     private static function extractRobotsTxtUri(string $seedUrl): string
     {
         $uri = new Uri($seedUrl);
-        if (in_array($uri->getScheme(), FileUri::$allowedSchemes)) {
-            return (new FileUri($seedUrl . '/robots.txt'))->toString();
-        } elseif (in_array($uri->getScheme(), Http::$allowedSchemes)) {
-            return $uri->toBaseUri()->toString() . '/robots.txt';
+        if (in_array($uri->getScheme(), self::FILE_SCHEMES, true)) {
+            return (new Uri($seedUrl . '/robots.txt'))->toString();
+        } elseif (in_array($uri->getScheme(), self::HTTP_SCHEMES, true)) {
+            return $uri->withPath('/robots.txt')->withQuery(null)->withFragment(null)->toString();
         } else {
             throw new ExtractRobotsTxtException(
                 "Seed URL scheme must be one of " .
-                implode(', ', array_merge(FileUri::$allowedSchemes, Http::$allowedSchemes))
+                implode(', ', array_merge(self::FILE_SCHEMES, self::HTTP_SCHEMES))
             );
         }
     }
 
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         // Make the uri relative to $this->seedUri, so it will match with the rules in the robots.txt
-        $relativeUri = str_replace($this->seedUri->toString(), '', $uri->normalize()->toString());
+        $relativeUri = str_replace($this->seedUri->toString(), '', $uri->toString());
         return !$this->parser->allows($relativeUri, $this->userAgent);
     }
 }

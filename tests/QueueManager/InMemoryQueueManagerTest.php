@@ -11,14 +11,12 @@
 
 namespace VDB\Spider\Tests\QueueManager;
 
-use ErrorException;
 use InvalidArgumentException;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  *
@@ -46,8 +44,6 @@ class InMemoryQueueManagerTest extends TestCase
     /**
      * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
      *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testMaxQueueSizeExceeded()
     {
@@ -61,8 +57,6 @@ class InMemoryQueueManagerTest extends TestCase
     /**
      * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
      *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      * @throws MaxQueueSizeExceededException
      */
     public function testDepthFirst()
@@ -82,8 +76,6 @@ class InMemoryQueueManagerTest extends TestCase
     /**
      * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
      *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      * @throws MaxQueueSizeExceededException
      */
     public function testBreadthFirst()

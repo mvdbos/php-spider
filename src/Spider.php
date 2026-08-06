@@ -2,9 +2,10 @@
 
 namespace VDB\Spider;
 
-use Exception;
 use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Uri\InvalidUriException;
+use Uri\Rfc3986\Uri;
 use VDB\Spider\Discoverer\DiscovererInterface;
 use VDB\Spider\Discoverer\DiscovererSet;
 use VDB\Spider\Discoverer\DiscovererSetInterface;
@@ -19,7 +20,6 @@ use VDB\Spider\PersistenceHandler\PersistenceHandlerInterface;
 use VDB\Spider\QueueManager\InMemoryQueueManager;
 use VDB\Spider\QueueManager\QueueManagerInterface;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Http;
 
 class Spider
 {
@@ -72,11 +72,14 @@ class Spider
             throw new InvalidArgumentException("Empty seed");
         }
         try {
-            $seed = new Http($uri);
-            $this->seed = new DiscoveredUri($seed->normalize(), 0);
-        } catch (Exception $e) {
+            $seed = new Uri($uri);
+        } catch (InvalidUriException $e) {
             throw new InvalidArgumentException("Invalid seed: " . $e->getMessage());
         }
+        if (!in_array($seed->getScheme(), ['http', 'https'], true)) {
+            throw new InvalidArgumentException("Invalid seed: seed must use the http or https scheme");
+        }
+        $this->seed = new DiscoveredUri($seed, 0);
     }
 
     private function setSpiderId(?string $spiderId): void
