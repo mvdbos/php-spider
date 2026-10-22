@@ -67,6 +67,29 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         }
     }
 
+    /**
+     * The count is cached after the first call (which scans the directory) and kept in
+     * sync by subsequent persists, so the crawl loop does not rescan the directory tree
+     * on every download limit check.
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
+     */
+    public function testCountIsCachedAndKeptInSyncByPersist()
+    {
+        $this->assertEquals(0, $this->handler->count());
+
+        $this->handler->persist(
+            new Resource(new DiscoveredUri("http://example.com/page1", 0), new Response(200, [], "Body 1"))
+        );
+        $this->assertEquals(1, $this->handler->count());
+
+        $this->handler->persist(
+            new Resource(new DiscoveredUri("http://example.com/page2", 0), new Response(200, [], "Body 2"))
+        );
+        $this->assertEquals(2, $this->handler->count());
+    }
+
     #[DataProvider('persistenceProvider')]
     public function testPersist(string $uriString)
     {

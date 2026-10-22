@@ -109,6 +109,9 @@ class SpiderTest extends TestCase
         $this->assertSameSize($expected, $actual);
 
         foreach ($actual as $index => $resource) {
+            // crawled URIs are normalized during discovery; normalize the expected URIs
+            // as well so they are in the same (memoized) state before comparing
+            $expected[$index]->normalize();
             $this->assertEquals($resource->getUri(), $expected[$index]);
         }
     }

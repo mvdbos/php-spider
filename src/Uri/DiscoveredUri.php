@@ -11,6 +11,7 @@ class DiscoveredUri implements UriInterface
 {
     protected string|UriInterface $decorated;
     private int $depthFound;
+    private bool $normalized = false;
 
     /**
      * @throws ErrorException
@@ -60,7 +61,12 @@ class DiscoveredUri implements UriInterface
     public function normalize(): UriInterface
     {
         // This normalizes the decorated Uri in place. We don't want to return the decorated Uri, but $this.
-        $this->decorated->normalize();
+        // Normalization is idempotent, so we remember that we normalized and skip the (relatively
+        // expensive) repeated normalization of the decorated Uri on subsequent calls.
+        if (!$this->normalized) {
+            $this->decorated->normalize();
+            $this->normalized = true;
+        }
         return $this;
     }
 

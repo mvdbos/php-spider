@@ -74,22 +74,22 @@ class DiscovererSet implements DiscovererSetInterface
         $discoveredUris = [];
 
         foreach ($this->discoverers as $discoverer) {
-            $discoveredUris = array_merge($discoveredUris, $discoverer->discover($resource));
+            foreach ($discoverer->discover($resource) as $uri) {
+                $discoveredUris[] = $uri;
+            }
         }
 
-        $this->normalize($discoveredUris);
-        $this->removeDuplicates($discoveredUris);
-        $this->filterAlreadySeen($discoveredUris);
-        $this->filter($discoveredUris);
+        $uniqueUris = $this->normalizeAndDeduplicate($discoveredUris);
+        $this->filter($uniqueUris);
+
+        // the URIs that survived filtering are keyed by their normalized string,
+        // so we can mark them as seen without recomputing the normalized string
+        foreach ($uniqueUris as $uriString => $uri) {
+            $this->alreadySeenUris[$uriString] = $uri->getDepthFound();
+        }
 
         // reset the indexes of the discovered URIs after filtering
-        $discoveredUris = array_values($discoveredUris);
-
-        foreach ($discoveredUris as $uri) {
-            $this->markSeen($uri);
-        }
-
-        return $discoveredUris;
+        return array_values($uniqueUris);
     }
 
     /**
@@ -158,36 +158,36 @@ class DiscovererSet implements DiscovererSetInterface
     }
 
     /**
-     * Normalizes all discovered URIs.
+     * Normalizes all discovered URIs and removes duplicates: both duplicates within the
+     * given list and URIs that have already been seen before.
+     *
+     * Normalizing, stringifying and de-duplicating happens in a single pass, keyed by the
+     * normalized URI string, so each URI is only normalized and stringified once.
      *
      * @param DiscoveredUri[] $discoveredUris
+     * @return array<string, DiscoveredUri> the unique URIs, keyed by their normalized string
      */
-    private function normalize(array &$discoveredUris): void
+    private function normalizeAndDeduplicate(array $discoveredUris): array
     {
-        foreach ($discoveredUris as $k => $uri) {
-            $discoveredUris[$k] = $uri->normalize();
-        }
-    }
+        $uniqueUris = [];
 
-    /**
-     * Filters out URIs that have already been seen.
-     *
-     * @param DiscoveredUri[] $discoveredUris
-     */
-    private function filterAlreadySeen(array &$discoveredUris): void
-    {
-        foreach ($discoveredUris as $k => $uri) {
-            if (array_key_exists($uri->toString(), $this->alreadySeenUris)) {
-                unset($discoveredUris[$k]);
+        foreach ($discoveredUris as $uri) {
+            $uri->normalize();
+            $uriString = $uri->toString();
+            if (array_key_exists($uriString, $this->alreadySeenUris) || array_key_exists($uriString, $uniqueUris)) {
+                continue;
             }
+            $uniqueUris[$uriString] = $uri;
         }
+
+        return $uniqueUris;
     }
 
     /**
      * Applies prefetch filters to discovered URIs.
      * Filters out any URI that matches any of the filters.
      *
-     * @param DiscoveredUri[] $discoveredUris
+     * @param array<string, DiscoveredUri> $discoveredUris
      */
     private function filter(array &$discoveredUris): void
     {
@@ -197,25 +197,6 @@ class DiscovererSet implements DiscovererSetInterface
                     unset($discoveredUris[$k]);
                     break; // No need to check other filters once matched
                 }
-            }
-        }
-    }
-
-    /**
-     * Removes duplicate URIs from the list.
-     *
-     * @param DiscoveredUri[] $discoveredUris
-     */
-    private function removeDuplicates(array &$discoveredUris): void
-    {
-        $seenUris = [];
-
-        foreach ($discoveredUris as $k => $uri) {
-            $uriString = $uri->toString();
-            if (isset($seenUris[$uriString])) {
-                unset($discoveredUris[$k]);
-            } else {
-                $seenUris[$uriString] = true;
             }
         }
     }
