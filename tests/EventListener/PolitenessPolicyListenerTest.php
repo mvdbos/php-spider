@@ -10,20 +10,16 @@
 
 namespace VDB\Spider\Tests\EventListener;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\SpiderEvents;
 use VDB\Spider\EventListener\PolitenessPolicyListener;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\EventListener\PolitenessPolicyListener::class)]
 class PolitenessPolicyListenerTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\EventListener\PolitenessPolicyListener
-     */
     public function testOnCrawlPreRequestSameDomain()
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);
@@ -40,9 +36,6 @@ class PolitenessPolicyListenerTest extends TestCase
         $this->assertGreaterThanOrEqual(0.5, $interval, 'Actual delay');
     }
 
-    /**
-     * @covers \VDB\Spider\EventListener\PolitenessPolicyListener
-     */
     public function testOnCrawlPreRequestDifferentDomain()
     {
         $politenessPolicyListener = new PolitenessPolicyListener(500);

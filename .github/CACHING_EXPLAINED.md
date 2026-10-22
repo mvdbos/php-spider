@@ -10,7 +10,7 @@ GitHub Actions uses a cloud-based cache (`actions/cache@v5`), which isn't availa
 **Solution**: Use Docker volume mounts for local caching.
 
 ### Problem 2: Different PHP Versions Have Incompatible Vendor Directories
-If you share the vendor directory between PHP 8.0 and PHP 8.3 runs, you get:
+If you share the vendor directory between PHP 8.2 and PHP 8.3 runs, you get:
 ```
 Your lock file does not contain a compatible set of packages. Please run composer update.
 ```
@@ -76,11 +76,11 @@ Benefits:
 
 ### Run with Different PHP Version
 ```bash
-./bin/act --matrix php-versions:8.0
+./bin/act --matrix php-versions:8.2
 ```
 - Uses cached Docker image: **instant**
 - Reuses Composer packages: **~30 sec**
-- Installs vendor for PHP 8.0: **~2 min**
+- Installs vendor for PHP 8.2: **~2 min**
 - Runs tests: **~2 min**
 **Total: ~5 minutes** (no conflicts!)
 

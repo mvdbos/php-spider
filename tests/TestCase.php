@@ -19,9 +19,6 @@ use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
-/**
- *
- */
 class TestCase extends PHPUnitTestCase
 {
     /**

@@ -2,6 +2,8 @@
 
 namespace VDB\Spider\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Psr7\Response;
@@ -22,6 +24,15 @@ use VDB\Uri\Http;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
+#[CoversClass(\VDB\Spider\Spider::class)]
+#[CoversMethod(\VDB\Spider\Spider::class, 'setDownloadLimit')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'setPersistenceHandler')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'setTraversalAlgorithm')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'setMaxDepth')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'setMaxQueueSize')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'addDiscoverer')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'addFilter')]
+#[CoversMethod(\VDB\Spider\Spider::class, 'enablePolitenessPolicy')]
 class SpiderTest extends TestCase
 {
     protected Spider $spider;
@@ -72,8 +83,6 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Spider
-     *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      */
     public function testCrawlDFSDefaultBehaviour()
@@ -104,9 +113,6 @@ class SpiderTest extends TestCase
         }
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testCrawlBFSDefaultBehaviour()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -128,8 +134,6 @@ class SpiderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Spider
-     *
      * Behaviour as explained here: https://en.wikipedia.org/wiki/Depth-first_search#Example
      *
      * Given the following structure:
@@ -142,7 +146,6 @@ class SpiderTest extends TestCase
      *         | _ |
      *
      * We expect the following result: A, E, C, B
-     *
      */
     public function testCrawlDFSMaxDepthOne()
     {
@@ -160,9 +163,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testCrawlBFSMaxDepthOne()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -180,9 +180,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testCrawlDFSMaxQueueSize()
     {
         $this->spider->getDiscovererSet()->setMaxDepth(1000);
@@ -199,9 +196,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testCrawlBFSMaxQueueSize()
     {
         $this->spider->getQueueManager()->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -219,9 +213,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testMaxQueueSizeExceeded()
     {
         $qm = new InMemoryQueueManager();
@@ -237,9 +228,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testInvalidSeedFails()
     {
         $this->expectException(InvalidArgumentException::class);
@@ -248,9 +236,6 @@ class SpiderTest extends TestCase
     }
 
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testEmptySeedFails()
     {
         $this->expectException(InvalidArgumentException::class);
@@ -258,9 +243,6 @@ class SpiderTest extends TestCase
         new Spider('');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testSpiderId()
     {
         $spider = new Spider(
@@ -273,9 +255,6 @@ class SpiderTest extends TestCase
         $this->assertEquals('MyID', $spider->getSpiderId());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider
-     */
     public function testCrawlFailedRequest()
     {
         $this->requestHandler
@@ -358,16 +337,13 @@ class SpiderTest extends TestCase
         $this->requestHandler
             ->expects($this->any())
             ->method('request')
-            ->will($this->returnCallback(array($this, 'doTestRequest')));
+            ->willReturnCallback(array($this, 'doTestRequest'));
 
         $this->spider->getDownloader()->setRequestHandler($this->requestHandler);
 
         $this->spider->getDiscovererSet()->addDiscoverer(new XPathExpressionDiscoverer('//a'));
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setDownloadLimit
-     */
     public function testSetDownloadLimit()
     {
         $result = $this->spider->setDownloadLimit(5);
@@ -379,9 +355,6 @@ class SpiderTest extends TestCase
         $this->assertCount(5, $this->spider->getDownloader()->getPersistenceHandler(), 'Should limit downloads');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setPersistenceHandler
-     */
     public function testSetPersistenceHandler()
     {
         $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
@@ -390,9 +363,6 @@ class SpiderTest extends TestCase
         $this->assertSame($handler, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setTraversalAlgorithm
-     */
     public function testSetTraversalAlgorithm()
     {
         $result = $this->spider->setTraversalAlgorithm(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -411,9 +381,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setMaxDepth
-     */
     public function testSetMaxDepth()
     {
         $result = $this->spider->setMaxDepth(1);
@@ -432,9 +399,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setMaxQueueSize
-     */
     public function testSetMaxQueueSize()
     {
         $result = $this->spider->setMaxQueueSize(1);
@@ -450,9 +414,6 @@ class SpiderTest extends TestCase
         $this->compareUriArray($expected, $this->spider->getDownloader()->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::addDiscoverer
-     */
     public function testAddDiscoverer()
     {
         $discoverer = new XPathExpressionDiscoverer('//div//a');
@@ -460,9 +421,6 @@ class SpiderTest extends TestCase
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::addFilter
-     */
     public function testAddFilter()
     {
         $filter = $this->getMockBuilder('VDB\Spider\Filter\PreFetchFilterInterface')->getMock();
@@ -470,27 +428,18 @@ class SpiderTest extends TestCase
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
-     */
     public function testEnablePolitenessPolicy()
     {
         $result = $this->spider->enablePolitenessPolicy(50);
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
-     */
     public function testEnablePolitenessPolicyWithDefaultDelay()
     {
         $result = $this->spider->enablePolitenessPolicy();
         $this->assertSame($this->spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setPersistenceHandler
-     */
     public function testSetPersistenceHandlerWithMockDownloader()
     {
         $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
@@ -506,9 +455,6 @@ class SpiderTest extends TestCase
         $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::setMaxQueueSize
-     */
     public function testSetMaxQueueSizeWithMockQueueManager()
     {
         $mockQueueManager = $this->getMockBuilder('VDB\Spider\QueueManager\QueueManagerInterface')->getMock();
@@ -522,9 +468,6 @@ class SpiderTest extends TestCase
         $this->assertSame($spider, $result, 'Should return $this for chaining');
     }
 
-    /**
-     * @covers \VDB\Spider\Spider::enablePolitenessPolicy
-     */
     public function testEnablePolitenessPolicyWithMockDownloader()
     {
         $mockDispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();

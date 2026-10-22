@@ -11,22 +11,23 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use VDB\Spider\Discoverer\Discoverer;
+use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Discoverer\Discoverer::class)]
 class DiscovererTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Discoverer\Discoverer
-     */
     public function testGetName()
     {
-        $stub = $this->getMockBuilder('VDB\\Spider\\Discoverer\\Discoverer')
-            ->setMockClassName('MockDiscoverer')
-            ->getMockForAbstractClass();
+        $stub = new class extends Discoverer {
+            public function discover(Resource $resource): array
+            {
+                return [];
+            }
+        };
 
-        $this->assertEquals('MockDiscoverer', $stub->getName());
+        $this->assertEquals(get_class($stub), $stub->getName());
     }
 }

@@ -22,7 +22,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface
      */
     public function __construct(?Client $client = null)
     {
-        $this->setClient($client ?: new Client());
+        $this->setClient($client ?: new Client([]) /* explicit config avoids a Phan 5 crash on Guzzle 8 docblock types */);
     }
 
 

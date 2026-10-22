@@ -11,6 +11,8 @@
 
 namespace VDB\Spider\Tests\QueueManager;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use ErrorException;
 use InvalidArgumentException;
 use VDB\Spider\Exception\MaxQueueSizeExceededException;
@@ -20,23 +22,17 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\QueueManager\InMemoryQueueManager::class)]
+#[CoversMethod(\VDB\Spider\QueueManager\InMemoryQueueManager::class, 'setMaxQueueSize')]
+#[CoversMethod(\VDB\Spider\QueueManager\InMemoryQueueManager::class, 'getMaxQueueSize')]
 class InMemoryQueueManagerTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
-     */
     public function testInvalidTraversalAlgo()
     {
         $this->expectException(InvalidArgumentException::class);
         new InMemoryQueueManager(53242);
     }
 
-    /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
-     */
     public function testSetTraversalAlgo()
     {
         $qm = new InMemoryQueueManager(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
@@ -44,8 +40,6 @@ class InMemoryQueueManagerTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */
@@ -59,8 +53,6 @@ class InMemoryQueueManagerTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      * @throws MaxQueueSizeExceededException
@@ -80,8 +72,6 @@ class InMemoryQueueManagerTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      * @throws MaxQueueSizeExceededException
@@ -100,10 +90,6 @@ class InMemoryQueueManagerTest extends TestCase
         $this->assertEquals($uri2, $qm->next());
     }
 
-    /**
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager::setMaxQueueSize
-     * @covers \VDB\Spider\QueueManager\InMemoryQueueManager::getMaxQueueSize
-     */
     public function testSetAndGetMaxQueueSize()
     {
         $qm = new InMemoryQueueManager();

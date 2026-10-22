@@ -1,14 +1,16 @@
 <?php
 namespace VDB\Spider\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
-/**
- */
+#[CoversClass(\VDB\Spider\Resource::class)]
+#[CoversMethod(\VDB\Spider\Resource::class, 'getEffectiveUri')]
 class ResourceTest extends TestCase
 {
     /**
@@ -30,35 +32,23 @@ class ResourceTest extends TestCase
             ->build();
     }
 
-    /**
-     * @covers \VDB\Spider\Resource
-     */
     public function testGetCrawler()
     {
         $this->assertInstanceOf('Symfony\\Component\\DomCrawler\\Crawler', $this->resource->getCrawler());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource
-     */
     public function testGetUri()
     {
         $this->assertInstanceOf('VDB\\Spider\\Uri\\DiscoveredUri', $this->resource->getUri());
         $this->assertEquals('http://example.org/domains/special', $this->resource->getUri()->toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource
-     */
     public function testGetResponse()
     {
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $this->resource->getResponse());
         $this->assertEquals($this->html, $this->resource->getResponse()->getBody()->__toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource
-     */
     public function testSerialization()
     {
         $serialized = serialize($this->resource);
@@ -72,18 +62,12 @@ class ResourceTest extends TestCase
         $this->assertEquals($this->resource->getCrawler()->html(), $deserialized->getCrawler()->html());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource::getEffectiveUri
-     */
     public function testGetEffectiveUriWithoutRedirects()
     {
         // When no redirects occurred, should return the original URI
         $this->assertEquals('http://example.org/domains/special', $this->resource->getEffectiveUri());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource::getEffectiveUri
-     */
     public function testGetEffectiveUriWithRedirects()
     {
         // Simulate Guzzle redirect tracking headers
@@ -102,9 +86,6 @@ class ResourceTest extends TestCase
         $this->assertEquals('http://final.com/destination', $resource->getEffectiveUri());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource::getEffectiveUri
-     */
     public function testGetEffectiveUriWithSingleRedirect()
     {
         // Simulate a single redirect
@@ -117,9 +98,6 @@ class ResourceTest extends TestCase
         $this->assertEquals('http://redirected.com/final', $resource->getEffectiveUri());
     }
 
-    /**
-     * @covers \VDB\Spider\Resource::getEffectiveUri
-     */
     public function testGetEffectiveUriWithEmptyRedirectHistory()
     {
         // When redirect history header is empty, should return original URI

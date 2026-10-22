@@ -11,28 +11,22 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter::class)]
 class RestrictToBaseUriFilterTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
-     */
     public function testInvalidUri()
     {
         $this->expectException(\InvalidArgumentException::class);
         new RestrictToBaseUriFilter('1gdf://fdsfds');
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter
-     * @dataProvider matchURIProvider
-     */
+    #[DataProvider('matchURIProvider')]
     public function testMatch($href, $expected)
     {
         $filter = new RestrictToBaseUriFilter('http://php-spider.org');
@@ -42,7 +36,7 @@ class RestrictToBaseUriFilterTest extends TestCase
         $this->assertEquals($expected, $filter->match($uri));
     }
 
-    public function matchURIProvider(): array
+    public static function matchURIProvider(): array
     {
         return array(
             array('http://example.org', true),

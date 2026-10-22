@@ -11,20 +11,17 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use ErrorException;
 use VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter::class)]
 class UriWithQueryStringFilterTest extends TestCase
 {
     /**
-     * @covers \VDB\Spider\Filter\Prefetch\UriWithQueryStringFilter
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */

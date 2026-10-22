@@ -10,19 +10,16 @@
 
 namespace VDB\Spider\Tests\Uri;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use ErrorException;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Uri\DiscoveredUri::class)]
 class DiscoveredUriTest extends TestCase
 {
     /**
-     * @covers \VDB\Spider\Uri\DiscoveredUri
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */
