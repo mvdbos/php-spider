@@ -4,6 +4,7 @@ namespace VDB\Spider\Filter\Prefetch;
 
 use InvalidArgumentException;
 use VDB\Spider\Filter\PreFetchFilterInterface;
+use VDB\Spider\PersistenceHandler\FilePersistenceLayout;
 use VDB\Uri\UriInterface;
 
 /**
@@ -49,26 +50,13 @@ class CachedResourceFilter implements PreFetchFilterInterface
      */
     public function match(UriInterface $uri): bool
     {
-        // Build the file path for the URI
-        $hostname = $uri->getHost();
-        $path = $uri->getPath();
-
-        // Complete path with default filename if needed
-        if ($path == '') {
-            $path = "/" . $this->defaultFilename;
-        } elseif (substr($path, -1, 1) === '/') {
-            $path .= $this->defaultFilename;
-        }
-
-        // Build the directory structure: {basePath}/{spiderId}/{hostname}{dirname}
-        $directory = $this->basePath . DIRECTORY_SEPARATOR .
-                    $this->spiderId . DIRECTORY_SEPARATOR .
-                    $hostname . dirname($path);
-
-        // The filename is URL-encoded
-        $filename = urlencode(basename($path));
-
-        $filePath = $directory . DIRECTORY_SEPARATOR . $filename;
+        $filePath = FilePersistenceLayout::getResourceFilePath(
+            $this->basePath,
+            $this->spiderId,
+            $uri->getHost(),
+            $uri->getPath(),
+            $this->defaultFilename
+        );
 
         if (!file_exists($filePath)) {
             return false;
