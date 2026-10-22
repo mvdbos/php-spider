@@ -26,6 +26,7 @@ use VDB\Uri\Exception\UriSyntaxException;
  */
 #[CoversClass(\VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler::class)]
 #[CoversClass(\VDB\Spider\PersistenceHandler\FilePersistenceHandler::class)]
+#[CoversClass(\VDB\Spider\PersistenceHandler\FilePersistenceLayout::class)]
 class FileSerializedResourcePersistenceHandlerTest extends TestCase
 {
     /**
@@ -65,6 +66,65 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         foreach ($this->handler as $path => $resource) {
             $this->assertStringEndsWith('/index.html', $path);
         }
+    }
+
+    public function testPersistsEncodedFilenameUsingExistingLayout()
+    {
+        $resource = new Resource(
+            new DiscoveredUri('http://example.com/nested/a%20b.html', 0),
+            new Response(200, [], 'Test Body Contents')
+        );
+        $this->handler->persist($resource);
+
+        $expectedFilePath = $this->persistenceRootPath . 'example.com/nested/a%2520b.html';
+        $this->assertFileExists($expectedFilePath);
+    }
+
+    public function testPreservesProtectedNamingOverrides()
+    {
+        $handler = new class($this->persistenceRootPath) extends FileSerializedResourcePersistenceHandler {
+            protected function getFileSystemFilename(Resource $resource): string
+            {
+                return 'custom-name.html';
+            }
+
+            protected function getFileSystemPath(Resource $resource): string
+            {
+                return 'custom-directory';
+            }
+        };
+        $handler->setSpiderId('custom-layout-test');
+        $handler->persist(
+            new Resource(
+                new DiscoveredUri('http://example.com/original.html', 0),
+                new Response(200, [], 'Test Body Contents')
+            )
+        );
+
+        $expectedFilePath = $this->persistenceRootPath . 'custom-layout-test' . DIRECTORY_SEPARATOR
+            . 'custom-directory' . DIRECTORY_SEPARATOR . 'custom-name.html';
+        $this->assertFileExists($expectedFilePath);
+    }
+
+    public function testPreservesCompletePathOverride()
+    {
+        $handler = new class($this->persistenceRootPath) extends FileSerializedResourcePersistenceHandler {
+            protected function completePath(?string $path): string
+            {
+                return '/custom-layout.html';
+            }
+        };
+        $handler->setSpiderId('custom-complete-path-test');
+        $handler->persist(
+            new Resource(
+                new DiscoveredUri('http://example.com/original.html', 0),
+                new Response(200, [], 'Test Body Contents')
+            )
+        );
+
+        $expectedFilePath = $this->persistenceRootPath . 'custom-complete-path-test'
+            . DIRECTORY_SEPARATOR . 'example.com' . DIRECTORY_SEPARATOR . 'custom-layout.html';
+        $this->assertFileExists($expectedFilePath);
     }
 
     /**

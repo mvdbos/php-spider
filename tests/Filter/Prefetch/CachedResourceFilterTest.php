@@ -14,6 +14,7 @@ namespace VDB\Spider\Tests\Filter\Prefetch;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
@@ -26,6 +27,7 @@ use VDB\Uri\Uri;
  */
 #[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, '__construct')]
 #[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, 'match')]
+#[CoversClass(\VDB\Spider\PersistenceHandler\FilePersistenceLayout::class)]
 class CachedResourceFilterTest extends TestCase
 {
     private string $testCacheDir;
