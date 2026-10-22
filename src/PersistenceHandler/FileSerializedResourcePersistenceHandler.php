@@ -20,6 +20,7 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
         }
         $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
+        $this->markPersisted();
     }
 
     /**

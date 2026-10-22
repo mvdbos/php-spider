@@ -28,4 +28,24 @@ class DiscoveredUriTest extends TestCase
         $uri = new DiscoveredUri('http://example.org', 12);
         $this->assertEquals(12, $uri->getDepthFound());
     }
+
+    /**
+     * Normalization is idempotent and memoized: a second call returns the same
+     * instance and leaves the string form of the Uri untouched.
+     *
+     * @throws ErrorException
+     * @throws UriSyntaxException
+     */
+    public function testNormalizeIsIdempotent()
+    {
+        $uri = new DiscoveredUri('HTTP://EXAMPLE.ORG/a/../b/./c', 0);
+
+        $this->assertSame($uri, $uri->normalize());
+        $normalizedString = $uri->toString();
+        $this->assertEquals('http://example.org/b/c', $normalizedString);
+
+        // calling normalize() again should be a no-op
+        $this->assertSame($uri, $uri->normalize());
+        $this->assertEquals($normalizedString, $uri->toString());
+    }
 }

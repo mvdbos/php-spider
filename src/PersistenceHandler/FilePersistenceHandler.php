@@ -28,6 +28,13 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected ?Finder $finder = null;
 
+    /**
+     * @var int|null Cached number of persisted resources. Null means "not counted yet".
+     * Counting through the Finder walks the whole directory tree, which would be
+     * quadratic when the download limit is checked on every iteration of the crawl loop.
+     */
+    private ?int $resourceCount = null;
+
     /** @var string The filename that will be appended for resources that end with a slash */
     protected string $defaultFilename = 'index.html';
 
@@ -57,7 +64,21 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     public function count(): int
     {
-        return $this->getFinder()->count();
+        if ($this->resourceCount === null) {
+            $this->resourceCount = $this->getFinder()->count();
+        }
+        return $this->resourceCount;
+    }
+
+    /**
+     * Keeps the cached count in sync with persist().
+     * Implementations of persist() should call this after a resource has been persisted.
+     */
+    protected function markPersisted(): void
+    {
+        if ($this->resourceCount !== null) {
+            $this->resourceCount++;
+        }
     }
 
     /**

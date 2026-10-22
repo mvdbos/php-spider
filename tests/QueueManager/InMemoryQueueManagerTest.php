@@ -98,4 +98,16 @@ class InMemoryQueueManagerTest extends TestCase
         $qm->setMaxQueueSize(10);
         $this->assertEquals(10, $qm->getMaxQueueSize());
     }
+
+    /**
+     * An exhausted queue returns null for both traversal algorithms.
+     */
+    public function testNextOnEmptyQueue(): void
+    {
+        $depthFirst = new InMemoryQueueManager();
+        $this->assertNull($depthFirst->next());
+
+        $breadthFirst = new InMemoryQueueManager(QueueManagerInterface::ALGORITHM_BREADTH_FIRST);
+        $this->assertNull($breadthFirst->next());
+    }
 }

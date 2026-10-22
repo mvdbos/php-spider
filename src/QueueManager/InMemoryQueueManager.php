@@ -7,6 +7,7 @@
 namespace VDB\Spider\QueueManager;
 
 use InvalidArgumentException;
+use SplDoublyLinkedList;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use VDB\Spider\Event\DispatcherTrait;
 use VDB\Spider\Event\SpiderEvents;
@@ -26,8 +27,15 @@ class InMemoryQueueManager implements QueueManagerInterface
     /** @var int the amount of times a Resource was enqueued */
     private int $currentQueueSize = 0;
 
-    /** @var DiscoveredUri[] the list of URIs to process */
-    private array $traversalQueue = array();
+    /**
+     * The list of URIs to process.
+     * A doubly linked list is used because both traversal algorithms need O(1) removals:
+     * array_pop() for depth-first, but array_shift() on a plain array is O(n), which makes
+     * breadth-first crawling quadratic on large queues.
+     *
+     * @var SplDoublyLinkedList<DiscoveredUri>
+     */
+    private SplDoublyLinkedList $traversalQueue;
 
     /** @var int The traversal algorithm to use. Choose from the class constants
      */
@@ -39,6 +47,7 @@ class InMemoryQueueManager implements QueueManagerInterface
      */
     public function __construct(int $traversalAlgorithm = self::ALGORITHM_DEPTH_FIRST)
     {
+        $this->traversalQueue = new SplDoublyLinkedList();
         $this->setTraversalAlgorithm($traversalAlgorithm);
     }
 
@@ -73,7 +82,7 @@ class InMemoryQueueManager implements QueueManagerInterface
         }
 
         $this->currentQueueSize++;
-        $this->traversalQueue[] = $uri;
+        $this->traversalQueue->push($uri);
 
         $this->getDispatcher()->dispatch(
             new GenericEvent($this, array('uri' => $uri)),
@@ -83,13 +92,15 @@ class InMemoryQueueManager implements QueueManagerInterface
 
     public function next(): ?DiscoveredUri
     {
-        $uri = null;
-        if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
-            $uri = array_pop($this->traversalQueue);
-        } elseif ($this->traversalAlgorithm === static::ALGORITHM_BREADTH_FIRST) {
-            $uri = array_shift($this->traversalQueue);
+        if ($this->traversalQueue->isEmpty()) {
+            return null;
         }
-        return $uri;
+
+        if ($this->traversalAlgorithm === static::ALGORITHM_DEPTH_FIRST) {
+            return $this->traversalQueue->pop();
+        }
+
+        return $this->traversalQueue->shift();
     }
 
     /**
