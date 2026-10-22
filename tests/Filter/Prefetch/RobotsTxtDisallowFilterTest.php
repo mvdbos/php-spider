@@ -17,8 +17,7 @@ use VDB\Spider\Filter\Prefetch\ExtractRobotsTxtException;
 use VDB\Spider\Filter\Prefetch\FetchRobotsTxtException;
 use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
 use VDB\Spider\Tests\TestCase;
-use VDB\Uri\Http;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 #[CoversClass(\VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter::class)]
 class RobotsTxtDisallowFilterTest extends TestCase
@@ -37,16 +36,15 @@ class RobotsTxtDisallowFilterTest extends TestCase
         new RobotsTxtDisallowFilter($unsupported);
     }
 
-
     #[DataProvider('userAgentMatchURIProvider')]
-    public function testUserAgentMatch(UriInterface $href, bool $expected)
+    public function testUserAgentMatch(DiscoveredUri $href, bool $expected)
     {
         $robotsTxtFilter = new RobotsTxtDisallowFilter(seedUrl: "file://" . __DIR__, userAgent: 'PHP-Spider');
         $this->assertEquals($expected, $robotsTxtFilter->match($href));
     }
 
     #[DataProvider('noUserAgentMatchURIProvider')]
-    public function testNoUserAgentMatch(UriInterface $href, bool $expected)
+    public function testNoUserAgentMatch(DiscoveredUri $href, bool $expected)
     {
         $robotsTxtFilter = new RobotsTxtDisallowFilter(seedUrl: "file://" . __DIR__);
         $this->assertEquals($expected, $robotsTxtFilter->match($href));
@@ -55,18 +53,18 @@ class RobotsTxtDisallowFilterTest extends TestCase
     public static function noUserAgentMatchURIProvider(): array
     {
         return array(
-            array(new Http('http://example.com'), false),
-            array(new Http('http://example.com/foo'), true),
-            array(new Http('http://example.com/bar'), false),
+            array(new DiscoveredUri('http://example.com', 0), false),
+            array(new DiscoveredUri('http://example.com/foo', 0), true),
+            array(new DiscoveredUri('http://example.com/bar', 0), false),
         );
     }
 
     public static function userAgentMatchURIProvider(): array
     {
         return array(
-            array(new Http('http://example.com'), false),
-            array(new Http('http://example.com/foo'), false),
-            array(new Http('http://example.com/bar'), true),
+            array(new DiscoveredUri('http://example.com', 0), false),
+            array(new DiscoveredUri('http://example.com/foo', 0), false),
+            array(new DiscoveredUri('http://example.com/bar', 0), true),
         );
     }
 }

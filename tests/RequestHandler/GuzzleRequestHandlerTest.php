@@ -12,22 +12,15 @@
 namespace VDB\Spider\Tests\RequestHandler;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use ErrorException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\RequestHandler\GuzzleRequestHandler;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 #[CoversClass(\VDB\Spider\RequestHandler\GuzzleRequestHandler::class)]
 class GuzzleRequestHandlerTest extends TestCase
 {
-    /**
-     * @throws GuzzleException
-     * @throws ErrorException
-     * @throws UriSyntaxException
-     */
     public function testCustomClient()
     {
         $uri = 'http://example.com';

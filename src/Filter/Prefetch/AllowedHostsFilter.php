@@ -3,7 +3,7 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
@@ -36,9 +36,14 @@ class AllowedHostsFilter implements PreFetchFilterInterface
         }
     }
 
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         $currentHostname = $uri->getHost();
+
+        if ($currentHostname === null) {
+            // No host to compare against, so the uri cannot be restricted to an allowed host.
+            return true;
+        }
 
         if ($this->allowSubDomains) {
             // only use hostname.tld for comparison

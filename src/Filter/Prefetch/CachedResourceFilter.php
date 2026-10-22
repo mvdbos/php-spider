@@ -4,7 +4,7 @@ namespace VDB\Spider\Filter\Prefetch;
 
 use InvalidArgumentException;
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * Filter to skip downloading resources that are already cached and younger than max age.
@@ -44,10 +44,10 @@ class CachedResourceFilter implements PreFetchFilterInterface
     /**
      * Returns true if the URI should be filtered out (already cached and fresh).
      *
-     * @param UriInterface $uri
+     * @param DiscoveredUri $uri
      * @return bool
      */
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         // Build the file path for the URI
         $hostname = $uri->getHost();

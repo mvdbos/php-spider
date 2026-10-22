@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd $(git rev-parse --show-toplevel)
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
 echo -e "\nPHPCBF"
 ./vendor/bin/phpcbf --standard=PSR2 tests/ src/

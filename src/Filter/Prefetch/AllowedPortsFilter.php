@@ -3,7 +3,7 @@
 namespace VDB\Spider\Filter\Prefetch;
 
 use VDB\Spider\Filter\PreFetchFilterInterface;
-use VDB\Uri\UriInterface;
+use VDB\Spider\Uri\DiscoveredUri;
 
 /**
  * @author Matthijs van den Bos <matthijs@vandenbos.org>
@@ -24,7 +24,7 @@ class AllowedPortsFilter implements PreFetchFilterInterface
         $this->allowedPorts = $allowedPorts;
     }
 
-    public function match(UriInterface $uri): bool
+    public function match(DiscoveredUri $uri): bool
     {
         return !in_array($uri->getPort(), $this->allowedPorts);
     }

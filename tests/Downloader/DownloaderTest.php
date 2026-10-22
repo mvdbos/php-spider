@@ -20,7 +20,6 @@ use VDB\Spider\Resource;
 use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
 
 #[CoversClass(\VDB\Spider\Downloader\Downloader::class)]
 #[CoversMethod(\VDB\Spider\Downloader\Downloader::class, '__construct')]
@@ -69,18 +68,14 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     public function testDownload()
     {
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $this->downloader->download(new DiscoveredUri('http://foobar.org', 0));
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     public function testDownloadFailed()
     {
@@ -91,14 +86,12 @@ class DownloaderTest extends TestCase
             ->will($this->throwException(new Exception));
         $this->downloader->setRequestHandler($requestHandler);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $this->downloader->download(new DiscoveredUri('http://foobar.org', 0));
 
         $this->assertFalse($resource);
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     public function testFilterNotMatches()
     {
@@ -109,14 +102,12 @@ class DownloaderTest extends TestCase
             ->willReturn(false);
         $this->downloader->addPostFetchFilter($filterNeverMatch);
 
-        $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $this->downloader->download(new DiscoveredUri('http://foobar.org', 0));
 
         $this->assertInstanceOf('VDB\\Spider\\Resource', $resource);
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     public function testDownloadLimit()
     {
@@ -134,7 +125,7 @@ class DownloaderTest extends TestCase
             ->willReturn(true);
         $downloader = new Downloader(null, null, [$filterAlwaysMatch]);
 
-        $resource = $downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $downloader->download(new DiscoveredUri('http://foobar.org', 0));
 
         $this->assertFalse($resource);
     }
@@ -183,7 +174,7 @@ class DownloaderTest extends TestCase
         
         $downloader->addPostFetchFilter($filterAlwaysMatch);
 
-        $resource = $downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
+        $resource = $downloader->download(new DiscoveredUri('http://foobar.org', 0));
 
         $this->assertFalse($resource);
     }

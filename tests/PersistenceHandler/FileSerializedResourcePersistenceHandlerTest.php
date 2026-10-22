@@ -13,13 +13,11 @@ namespace VDB\Spider\Tests\PersistenceHandler;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Exception\UriSyntaxException;
 
 /**
  * @SuppressWarnings(PHPMD.LongClassName)
@@ -35,7 +33,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
     protected ?string $persistenceRootPath = null;
 
-
     public function setUp(): void
     {
         $this->persistenceRootPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'spider-UT' . DIRECTORY_SEPARATOR;
@@ -46,8 +43,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public function testPathExtension()
     {
@@ -127,8 +122,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @throws UriSyntaxException
-     * @throws ErrorException
      */
     protected function buildPersistenceProviderRecord($fixturePath, $uriString): array
     {
@@ -154,9 +147,6 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
 
     /**
      * @return array
-     *
-     * @throws ErrorException
-     * @throws UriSyntaxException
      */
     public static function persistenceProvider(): array
     {

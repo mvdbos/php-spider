@@ -5,7 +5,6 @@ namespace VDB\Spider\Tests\Helpers;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
-use VDB\Uri\Uri;
 
 /**
  * Test builder for creating Resource objects with sensible defaults.
@@ -125,7 +124,7 @@ class ResourceBuilder
      */
     public function build(): Resource
     {
-        $discoveredUri = new DiscoveredUri(new Uri($this->uri), $this->depth);
+        $discoveredUri = new DiscoveredUri($this->uri, $this->depth);
         $headers = array_filter(
             $this->headers,
             static fn ($value) => !is_array($value) || $value !== []
@@ -139,6 +138,6 @@ class ResourceBuilder
      */
     public function buildUri(): DiscoveredUri
     {
-        return new DiscoveredUri(new Uri($this->uri), $this->depth);
+        return new DiscoveredUri($this->uri, $this->depth);
     }
 }
