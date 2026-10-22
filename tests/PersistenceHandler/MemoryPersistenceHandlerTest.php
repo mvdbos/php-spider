@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\PersistenceHandler;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use ErrorException;
 use GuzzleHttp\Psr7\Response;
 use VDB\Spider\PersistenceHandler\MemoryPersistenceHandler;
@@ -19,6 +20,8 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
+#[CoversClass(\VDB\Spider\PersistenceHandler\MemoryPersistenceHandler::class)]
+#[CoversClass(\VDB\Spider\PersistenceHandler\FilePersistenceHandler::class)]
 class MemoryPersistenceHandlerTest extends TestCase
 {
     /**
@@ -33,9 +36,6 @@ class MemoryPersistenceHandlerTest extends TestCase
     }
 
     /**
-     * @covers       \VDB\Spider\PersistenceHandler\MemoryPersistenceHandler
-     * @covers       \VDB\Spider\PersistenceHandler\FilePersistenceHandler
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */

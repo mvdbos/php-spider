@@ -11,12 +11,14 @@
 
 namespace VDB\Spider\Tests\Filter\Postfetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Postfetch\MimeTypeFilter;
 use VDB\Spider\Resource;
 use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 
+#[CoversClass(\VDB\Spider\Filter\Postfetch\MimeTypeFilter::class)]
 class MimeTypeFilterTest extends TestCase
 {
     protected Resource $spiderResource;
@@ -33,9 +35,6 @@ class MimeTypeFilterTest extends TestCase
         $this->uri = $this->spiderResource->getUri();
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\MimeTypeFilter
-     */
     public function testMimeTypeFilter()
     {
         $filter = new MimeTypeFilter('text/html');

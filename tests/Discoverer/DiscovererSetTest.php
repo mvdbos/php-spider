@@ -11,6 +11,8 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use ErrorException;
 use Exception;
 use VDB\Spider\Discoverer\DiscovererSet;
@@ -23,9 +25,15 @@ use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\FileUri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Discoverer\DiscovererSet::class)]
+#[CoversClass(\VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter::class)]
+#[CoversClass(\VDB\Spider\Filter\Prefetch\AllowedPortsFilter::class)]
+#[CoversClass(\VDB\Spider\Filter\Prefetch\AllowedHostsFilter::class)]
+#[CoversMethod(\VDB\Spider\Discoverer\DiscovererSet::class, 'getMaxDepth')]
+#[CoversMethod(\VDB\Spider\Discoverer\DiscovererSet::class, 'setMaxDepth')]
+#[CoversMethod(\VDB\Spider\Discoverer\DiscovererSet::class, 'addDiscoverer')]
+#[CoversMethod(\VDB\Spider\Discoverer\DiscovererSet::class, 'set')]
+#[CoversMethod(\VDB\Spider\Discoverer\DiscovererSet::class, 'addFilter')]
 class DiscovererSetTest extends DiscovererTestCase
 {
     private DiscovererSet $discovererSet;
@@ -35,9 +43,6 @@ class DiscovererSetTest extends DiscovererTestCase
         parent::setUp();
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testMaxDepth()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
@@ -52,9 +57,6 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testConstructor()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
@@ -63,9 +65,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(2, $uris);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testAddDiscoverer()
     {
         $this->discovererSet = new DiscovererSet();
@@ -75,9 +74,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(2, $uris);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testSetDiscovererBackwardCompatibility()
     {
         $this->discovererSet = new DiscovererSet();
@@ -98,9 +94,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(2, $uris);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testUriFilter()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
@@ -112,9 +105,6 @@ class DiscovererSetTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     * @covers \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
-     *
      * @throws UriSyntaxException
      * @throws ErrorException
      * @throws Exception
@@ -136,10 +126,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertNotContains((new FileUri($uriInBody2))->toString(), array_map(fn($uri): string => (new FileUri($uri->toString()))->toString(), $uris));
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedPortsFilter
-     */
     public function testPortFilter()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
@@ -151,10 +137,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertEquals($this->uriInBody2, $uris[0]->toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
-     */
     public function testHostFilter()
     {
         $this->discovererSet = new DiscovererSet([new XPathExpressionDiscoverer("//a")]);
@@ -205,9 +187,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(1, $uris);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet
-     */
     public function testAlreadySeenSkipped()
     {
         $resourceUri = new DiscoveredUri('http://php-spider.org:8080/internal/', 0);
@@ -224,10 +203,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertCount(0, $uris);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::getMaxDepth
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::setMaxDepth
-     */
     public function testGetSetMaxDepth()
     {
         $discovererSet = new DiscovererSet();
@@ -247,9 +222,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertEquals(0, $discovererSet->getMaxDepth());
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
-     */
     public function testAddDiscovererReturnsThis()
     {
         $discovererSet = new DiscovererSet();
@@ -261,9 +233,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertSame($discovererSet, $result);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::set
-     */
     public function testSetReturnsThisBackwardCompatibility()
     {
         $discovererSet = new DiscovererSet();
@@ -285,9 +254,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertSame($discovererSet, $result);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::addFilter
-     */
     public function testAddFilterReturnsThis()
     {
         $discovererSet = new DiscovererSet();
@@ -299,11 +265,6 @@ class DiscovererSetTest extends DiscovererTestCase
         $this->assertSame($discovererSet, $result);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::addDiscoverer
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::addFilter
-     * @covers \VDB\Spider\Discoverer\DiscovererSet::setMaxDepth
-     */
     public function testMethodChaining()
     {
         $discovererSet = new DiscovererSet();

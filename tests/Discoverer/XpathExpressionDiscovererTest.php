@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
@@ -18,23 +19,15 @@ use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Discoverer\XPathExpressionDiscoverer::class)]
 class XpathExpressionDiscovererTest extends DiscovererTestCase
 {
-    /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
-     */
     public function testDiscover()
     {
         $discoverer = new XPathExpressionDiscoverer("//a");
         $this->executeDiscoverer($discoverer);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
-     */
     public function testDiscoverWithBrackets()
     {
         // Test that bracket notation is now supported
@@ -42,9 +35,6 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
         $this->executeDiscoverer($discoverer);
     }
 
-    /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
-     */
     public function testDiscoverWithOrPredicate()
     {
         // Test XPath with or condition
@@ -53,7 +43,6 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithPath()
@@ -73,7 +62,6 @@ class XpathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\XPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithMultiplePredicates()

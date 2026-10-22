@@ -11,15 +11,14 @@
 
 namespace VDB\Spider\Tests\Filter\Postfetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Postfetch\ExternalRedirectFilter;
 use VDB\Spider\Tests\Helpers\ResourceBuilder;
 use VDB\Spider\Tests\TestCase;
 
+#[CoversClass(\VDB\Spider\Filter\Postfetch\ExternalRedirectFilter::class)]
 class ExternalRedirectFilterTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testNoRedirect()
     {
         // No redirect - should not be filtered
@@ -32,9 +31,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectToSameHost()
     {
         // Redirect to same host - should not be filtered
@@ -48,9 +44,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectToExternalHost()
     {
         // Redirect to external host - should be filtered
@@ -64,9 +57,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertTrue($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectToSubdomainNotAllowed()
     {
         // Redirect to subdomain - should be filtered when allowSubDomains is false
@@ -80,9 +70,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertTrue($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectToSubdomainAllowed()
     {
         // Redirect to subdomain - should not be filtered when allowSubDomains is true
@@ -96,9 +83,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectFromSubdomainToMainDomain()
     {
         // Redirect from subdomain to main domain - allowed with allowSubDomains
@@ -112,9 +96,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testMultipleRedirectsToExternalHost()
     {
         // Multiple redirects ending at external host - should be filtered
@@ -132,9 +113,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertTrue($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testMultipleRedirectsToSameHost()
     {
         // Multiple redirects staying on same host - should not be filtered
@@ -152,9 +130,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testCaseInsensitiveHostComparison()
     {
         // Host comparison should be case-insensitive
@@ -168,9 +143,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testExternalRedirectWithSubdomainsEnabled()
     {
         // External redirect should still be filtered even with allowSubDomains enabled
@@ -184,9 +156,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertTrue($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testRedirectToInvalidUrlWithNoHost()
     {
         // Redirect to URL without a host should not be filtered (can't determine host)
@@ -200,9 +169,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testOriginalUriWithNoHost()
     {
         // When original URI has no host, should not be filtered (can't determine host)
@@ -216,9 +182,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertFalse($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testLocalhostWithSubdomainsEnabled()
     {
         // Test with single-label hosts like 'localhost' when allowSubDomains is enabled
@@ -233,9 +196,6 @@ class ExternalRedirectFilterTest extends TestCase
         $this->assertTrue($filter->match($resource));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Postfetch\ExternalRedirectFilter
-     */
     public function testSameLocalhostWithSubdomainsEnabled()
     {
         // Same single-label host should not be filtered (handled by exact match check)

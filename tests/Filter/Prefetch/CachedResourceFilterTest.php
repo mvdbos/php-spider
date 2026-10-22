@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
 use InvalidArgumentException;
 use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
 use VDB\Spider\Tests\TestCase;
@@ -18,9 +19,9 @@ use VDB\Uri\Uri;
 
 /**
  * Test for CachedResourceFilter
- *
- * @coversDefaultClass \VDB\Spider\Filter\Prefetch\CachedResourceFilter
  */
+#[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, '__construct')]
+#[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, 'match')]
 class CachedResourceFilterTest extends TestCase
 {
     private string $testCacheDir;
@@ -43,10 +44,6 @@ class CachedResourceFilterTest extends TestCase
         }
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchReturnsFalseWhenFileDoesNotExist()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -55,10 +52,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertFalse($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchReturnsTrueWhenFileExistsAndIsFresh()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -70,10 +63,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchReturnsFalseWhenFileIsExpired()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 10);
@@ -86,10 +75,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertFalse($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchReturnsTrueWhenMaxAgeIsZero()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 0);
@@ -103,10 +88,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchHandlesIndexFiles()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -118,10 +99,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchHandlesRootWithoutTrailingSlash()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -133,10 +110,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchHandlesDirectoryWithTrailingSlash()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -148,10 +121,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchHandlesSpecialCharactersInFilename()
     {
         $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
@@ -163,10 +132,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertTrue($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchWithDifferentSpiderIds()
     {
         $spiderId1 = 'spider-1';
@@ -187,10 +152,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertFalse($filter2->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testMatchAtExactMaxAge()
     {
         $maxAge = 10;
@@ -205,10 +166,6 @@ class CachedResourceFilterTest extends TestCase
         $this->assertFalse($filter->match($uri));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::match
-     */
     public function testConstructorHandlesTrailingSlashInBasePath()
     {
         // Test that constructor properly handles basePath with trailing slash
@@ -224,9 +181,6 @@ class CachedResourceFilterTest extends TestCase
     }
 
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\CachedResourceFilter::__construct
-     */
     public function testConstructorThrowsExceptionForNegativeMaxAge()
     {
         $this->expectException(InvalidArgumentException::class);

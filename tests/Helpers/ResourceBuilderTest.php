@@ -2,16 +2,15 @@
 
 namespace VDB\Spider\Tests\Helpers;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Tests\TestCase;
 
 /**
  * Tests for the ResourceBuilder test helper
  */
+#[CoversClass(\VDB\Spider\Tests\Helpers\ResourceBuilder::class)]
 class ResourceBuilderTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testBasicResourceCreation()
     {
         $resource = ResourceBuilder::create()->build();
@@ -21,9 +20,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertStringContainsString('Test', $resource->getResponse()->getBody()->__toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithUri()
     {
         $resource = ResourceBuilder::create()
@@ -33,9 +29,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals('http://test.com/page', $resource->getUri()->toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithDepth()
     {
         $resource = ResourceBuilder::create()
@@ -45,9 +38,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals(5, $resource->getUri()->getDepthFound());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithStatusCode()
     {
         $resource = ResourceBuilder::create()
@@ -57,9 +47,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals(404, $resource->getResponse()->getStatusCode());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithHeaders()
     {
         $resource = ResourceBuilder::create()
@@ -70,9 +57,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals('value', $resource->getResponse()->getHeaderLine('X-Custom'));
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithHeader()
     {
         $resource = ResourceBuilder::create()
@@ -82,9 +66,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals('test-value', $resource->getResponse()->getHeaderLine('X-Test'));
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithBody()
     {
         $body = '<html><body>Custom content</body></html>';
@@ -95,9 +76,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals($body, $resource->getResponse()->getBody()->__toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithHtmlContent()
     {
         $resource = ResourceBuilder::create()
@@ -109,9 +87,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertStringContainsString('<p>Page content</p>', $body);
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithLinks()
     {
         $resource = ResourceBuilder::create()
@@ -129,9 +104,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals('/page1', $links->eq(0)->attr('href'));
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testWithJsonBody()
     {
         $data = ['key' => 'value', 'array' => [1, 2, 3]];
@@ -143,9 +115,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals(json_encode($data), $resource->getResponse()->getBody()->__toString());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testBuildUri()
     {
         $uri = ResourceBuilder::create()
@@ -157,9 +126,6 @@ class ResourceBuilderTest extends TestCase
         $this->assertEquals(3, $uri->getDepthFound());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\ResourceBuilder
-     */
     public function testFluentInterface()
     {
         $resource = ResourceBuilder::create()

@@ -11,18 +11,14 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Prefetch\AllowedSchemeFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\AllowedSchemeFilter::class)]
 class AllowedSchemeFilterTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedSchemeFilter
-     */
     public function testMatch()
     {
         $filter = new AllowedSchemeFilter(array('http'));

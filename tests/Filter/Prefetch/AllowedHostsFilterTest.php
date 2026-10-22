@@ -11,18 +11,14 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Prefetch\AllowedHostsFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\AllowedHostsFilter::class)]
 class AllowedHostsFilterTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
-     */
     public function testMatchFullHostname()
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'));
@@ -36,9 +32,6 @@ class AllowedHostsFilterTest extends TestCase
         $this->assertFalse($filter->match($uri3));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
-     */
     public function testMatchSubdomain()
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org'), true);
@@ -54,9 +47,6 @@ class AllowedHostsFilterTest extends TestCase
         $this->assertFalse($filter->match($uri4));
     }
 
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedHostsFilter
-     */
     public function testMatchMultipleDomainsAllowed()
     {
         $filter = new AllowedHostsFilter(array('http://blog.php-spider.org', 'http://example.com'), true);

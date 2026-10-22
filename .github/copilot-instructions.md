@@ -12,7 +12,7 @@
 - Events and extensibility: events declared in [src/Event/SpiderEvents.php](src/Event/SpiderEvents.php); dispatcher shared via [DispatcherTrait](src/Event/DispatcherTrait.php). Typical listeners: pre-request throttling ([src/EventListener/PolitenessPolicyListener.php](src/EventListener/PolitenessPolicyListener.php) hooks `spider.crawl.pre_request`) and stats collection example in [example/lib/Example/StatsHandler.php](example/lib/Example/StatsHandler.php).
 - HTTP handling: default Guzzle handler throws on 4XX/5XX; to keep crawling on errors, supply a custom `RequestHandlerInterface` (see link-checker example referenced in [README](README.md)). Signals (SIGTERM/SIGINT/etc.) trigger `spider.crawl.user.stopped` when running in CLI.
 - Key tuning knobs: `DiscovererSet::$maxDepth`, `QueueManager::$maxQueueSize`, `Downloader::setDownloadLimit()`, traversal algorithm, request delay via politeness listener, robots.txt user-agent.
-- Coding standards: PSR-0/1/2; codebase targets PHP >= 8.0. Autoload via PSR-4 `VDB\Spider\` from `src/`.
+- Coding standards: PSR-0/1/2; codebase targets PHP >= 8.2. Autoload via PSR-4 `VDB\Spider\` from `src/`.
 
 ## Development & Testing Workflow
 
@@ -26,7 +26,7 @@
 - **ALWAYS run `./bin/check` before EVERY commit and before creating/updating ANY pull request**
 - This is the **single source of truth** for validation
 - Runs the complete CI workflow: lint, phpcs (PSR2), phpmd, phan, and phpunit with 100% coverage
-- Uses `./bin/act --matrix php-versions:8.0` to run GitHub Actions locally with the lowest supported PHP version
+- Uses `./bin/act --matrix php-versions:8.2` to run GitHub Actions locally with the lowest supported PHP version
 - **DO NOT** commit without running `./bin/check` first
 - **DO NOT** run individual static analysis tools (phpcs, phpmd, phan) manually - `./bin/check` runs them all correctly
 
@@ -41,7 +41,7 @@ php -l src/SomeFile.php                 # Syntax check (optional, no deps)
 ./bin/check                             # Full CI validation (required before commit/PR)
 
 # Equivalents (same as ./bin/check)
-./bin/act --matrix php-versions:8.0     # Explicit form of ./bin/check
+./bin/act --matrix php-versions:8.2     # Explicit form of ./bin/check
 ```
 
 ## Testing & Static Analysis
@@ -70,7 +70,7 @@ php -l src/SomeFile.php                 # Syntax check (optional, no deps)
    - Linting (PSR-1/2 compliance)
    - phpcs, phpmd, phan static analysis
    - phpunit with 100% code coverage
-   - All tests on PHP 8.0
+   - All tests on PHP 8.2
 
 3. **If any check fails:**
    - Fix all issues

@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\Discoverer;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
@@ -18,14 +19,9 @@ use VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer;
 use VDB\Spider\Resource;
 use VDB\Spider\Uri\DiscoveredUri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer::class)]
 class SimpleXPathExpressionDiscovererTest extends DiscovererTestCase
 {
-    /**
-     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer
-     */
     public function testDiscover()
     {
         $discoverer = new SimpleXPathExpressionDiscoverer("//a");
@@ -33,7 +29,6 @@ class SimpleXPathExpressionDiscovererTest extends DiscovererTestCase
     }
 
     /**
-     * @covers \VDB\Spider\Discoverer\SimpleXPathExpressionDiscoverer
      * @throws Exception
      */
     public function testDiscoverWithPath()

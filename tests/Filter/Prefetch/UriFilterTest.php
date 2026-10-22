@@ -11,6 +11,8 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ErrorException;
 use VDB\Spider\Filter\Prefetch\RestrictToBaseUriFilter;
 use VDB\Spider\Filter\Prefetch\UriFilter;
@@ -18,9 +20,7 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Exception\UriSyntaxException;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\UriFilter::class)]
 class UriFilterTest extends TestCase
 {
     /**
@@ -28,12 +28,10 @@ class UriFilterTest extends TestCase
      * @param string $href
      * @param bool $expected
      *
-     * @covers       \VDB\Spider\Filter\Prefetch\UriFilter
-     * @dataProvider matchURIProvider
-     *
      * @throws ErrorException
      * @throws UriSyntaxException
      */
+    #[DataProvider('matchURIProvider')]
     public function testMatch(array $regexes, string $href, bool $expected)
     {
         $filter = new UriFilter($regexes);
@@ -41,7 +39,7 @@ class UriFilterTest extends TestCase
         $this->assertEquals($expected, $filter->match($uri));
     }
 
-    public function matchURIProvider(): array
+    public static function matchURIProvider(): array
     {
         return array(
             array(['/^.*\.com$/'], 'http://example.com', true),

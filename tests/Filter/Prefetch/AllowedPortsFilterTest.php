@@ -11,18 +11,14 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Prefetch\AllowedPortsFilter;
 use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\AllowedPortsFilter::class)]
 class AllowedPortsFilterTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Filter\Prefetch\AllowedPortsFilter
-     */
     public function testMatchPort()
     {
         $filter = new AllowedPortsFilter(array(8080));

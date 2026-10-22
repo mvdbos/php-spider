@@ -11,6 +11,8 @@
 
 namespace VDB\Spider\Tests\Downloader;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use Exception;
 use ReflectionClass;
 use VDB\Spider\Downloader\Downloader;
@@ -20,9 +22,19 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Downloader\Downloader::class)]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, '__construct')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'getRequestHandler')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'download')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'fetchResource')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'dispatch')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'addPostFetchFilter')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'matchesPostfetchFilter')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'setDownloadLimit')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'isDownLoadLimitExceeded')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'setPersistenceHandler')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'getPersistenceHandler')]
+#[CoversMethod(\VDB\Spider\Downloader\Downloader::class, 'setRequestHandler')]
 class DownloaderTest extends TestCase
 {
     private Downloader $downloader;
@@ -43,16 +55,11 @@ class DownloaderTest extends TestCase
         $requestHandler
             ->expects($this->any())
             ->method('request')
-            ->will($this->returnValue($this->resource));
+            ->willReturn($this->resource);
 
         $this->downloader->setRequestHandler($requestHandler);
     }
 
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     * @covers \VDB\Spider\Downloader\Downloader::__construct
-     * @covers \VDB\Spider\Downloader\Downloader::getRequestHandler
-     */
     public function testDefaultRequestHandler()
     {
         $this->assertInstanceOf(
@@ -62,13 +69,8 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     *
      * @throws UriSyntaxException
      * @throws ErrorException
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
-     * @covers \VDB\Spider\Downloader\Downloader::dispatch
      */
     public function testDownload()
     {
@@ -77,13 +79,8 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     *
      * @throws UriSyntaxException
      * @throws ErrorException
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
-     * @covers \VDB\Spider\Downloader\Downloader::dispatch
      */
     public function testDownloadFailed()
     {
@@ -100,13 +97,8 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     *
      * @throws UriSyntaxException
      * @throws ErrorException
-     * @covers \VDB\Spider\Downloader\Downloader::addPostFetchFilter
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::matchesPostfetchFilter
      */
     public function testFilterNotMatches()
     {
@@ -114,7 +106,7 @@ class DownloaderTest extends TestCase
         $filterNeverMatch
             ->expects($this->any())
             ->method('match')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->downloader->addPostFetchFilter($filterNeverMatch);
 
         $resource = $this->downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
@@ -123,13 +115,8 @@ class DownloaderTest extends TestCase
     }
 
     /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     *
      * @throws UriSyntaxException
      * @throws ErrorException
-     * @covers \VDB\Spider\Downloader\Downloader::setDownloadLimit
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::isDownLoadLimitExceeded
      */
     public function testDownloadLimit()
     {
@@ -138,18 +125,13 @@ class DownloaderTest extends TestCase
         $this->assertTrue($this->downloader->isDownLoadLimitExceeded());
     }
 
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     * @covers \VDB\Spider\Downloader\Downloader::__construct
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     */
     public function testFilterMatches()
     {
         $filterAlwaysMatch = $this->getMockBuilder('VDB\Spider\Filter\PostFetchFilterInterface')->getMock();
         $filterAlwaysMatch
             ->expects($this->any())
             ->method('match')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $downloader = new Downloader(null, null, [$filterAlwaysMatch]);
 
         $resource = $downloader->download(new DiscoveredUri(new Uri('http://foobar.org'), 0));
@@ -157,23 +139,12 @@ class DownloaderTest extends TestCase
         $this->assertFalse($resource);
     }
 
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     * @covers \VDB\Spider\Downloader\Downloader::setDownloadLimit
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::isDownLoadLimitExceeded
-     */
     public function testGetDownloadLimit()
     {
         $this->downloader->setDownloadLimit(10);
         $this->assertEquals(10, $this->downloader->getDownloadLimit());
     }
 
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     * @covers \VDB\Spider\Downloader\Downloader::setPersistenceHandler
-     * @covers \VDB\Spider\Downloader\Downloader::getPersistenceHandler
-     */
     public function testSetAndGetPersistenceHandler()
     {
         $handler = $this->getMockBuilder('VDB\Spider\PersistenceHandler\PersistenceHandlerInterface')->getMock();
@@ -181,23 +152,12 @@ class DownloaderTest extends TestCase
         $this->assertSame($handler, $this->downloader->getPersistenceHandler());
     }
 
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader
-     * @covers \VDB\Spider\Downloader\Downloader::setRequestHandler
-     * @covers \VDB\Spider\Downloader\Downloader::getRequestHandler
-     */
     public function testSetAndGetRequestHandler()
     {
         $handler = $this->getMockBuilder('VDB\Spider\RequestHandler\RequestHandlerInterface')->getMock();
         $this->downloader->setRequestHandler($handler);
         $this->assertSame($handler, $this->downloader->getRequestHandler());
     }
-    /**
-     * @covers \VDB\Spider\Downloader\Downloader::download
-     * @covers \VDB\Spider\Downloader\Downloader::matchesPostfetchFilter
-     * @covers \VDB\Spider\Downloader\Downloader::dispatch
-     * @covers \VDB\Spider\Downloader\Downloader::fetchResource
-     */
     public function testFilterMatchesWithDispatchEvent()
     {
         // Test that when a postfetch filter matches, it dispatches the event and returns false
@@ -205,7 +165,7 @@ class DownloaderTest extends TestCase
         $filterAlwaysMatch
             ->expects($this->once())
             ->method('match')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         
         // Create a mock event dispatcher to verify the event is dispatched
         $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
@@ -219,7 +179,6 @@ class DownloaderTest extends TestCase
         // Use reflection to inject mock dispatcher
         $reflection = new ReflectionClass($downloader);
         $property = $reflection->getProperty('dispatcher');
-        $property->setAccessible(true);
         $property->setValue($downloader, $dispatcher);
         
         $downloader->addPostFetchFilter($filterAlwaysMatch);

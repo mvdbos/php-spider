@@ -41,10 +41,16 @@ class RobotsTxtDisallowFilter implements PreFetchFilterInterface
      */
     private static function fetchRobotsTxt(string $robotsUri): string
     {
+        set_error_handler(static function (int $severity, string $message): bool {
+            throw new ErrorException($message, 0, $severity);
+        });
+
         try {
             $robotsTxt = file_get_contents($robotsUri);
         } catch (Exception $e) {
             throw new FetchRobotsTxtException("Could not fetch $robotsUri: " . $e->getMessage());
+        } finally {
+            restore_error_handler();
         }
 
         return $robotsTxt;

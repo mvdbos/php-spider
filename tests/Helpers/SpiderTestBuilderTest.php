@@ -2,17 +2,16 @@
 
 namespace VDB\Spider\Tests\Helpers;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Tests\TestCase;
 
 /**
  * Tests for the SpiderTestBuilder test helper
  */
+#[CoversClass(\VDB\Spider\Tests\Helpers\SpiderTestBuilder::class)]
 class SpiderTestBuilderTest extends TestCase
 {
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\SpiderTestBuilder
-     */
     public function testBasicSpiderCreation()
     {
         $spider = SpiderTestBuilder::create()
@@ -21,9 +20,6 @@ class SpiderTestBuilderTest extends TestCase
         $this->assertInstanceOf('VDB\Spider\Spider', $spider);
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\SpiderTestBuilder
-     */
     public function testWithSeed()
     {
         $spider = SpiderTestBuilder::create()
@@ -33,9 +29,6 @@ class SpiderTestBuilderTest extends TestCase
         $this->assertInstanceOf('VDB\Spider\Spider', $spider);
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\SpiderTestBuilder
-     */
     public function testWithLinkMap()
     {
         $spider = SpiderTestBuilder::create()
@@ -54,9 +47,6 @@ class SpiderTestBuilderTest extends TestCase
         $this->assertInstanceOf('VDB\Spider\RequestHandler\RequestHandlerInterface', $requestHandler);
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\SpiderTestBuilder
-     */
     public function testWithSpiderId()
     {
         $spider = SpiderTestBuilder::create()
@@ -66,9 +56,6 @@ class SpiderTestBuilderTest extends TestCase
         $this->assertEquals('test-spider-id', $spider->getSpiderId());
     }
 
-    /**
-     * @covers \VDB\Spider\Tests\Helpers\SpiderTestBuilder
-     */
     public function testFluentInterface()
     {
         $spider = SpiderTestBuilder::create()

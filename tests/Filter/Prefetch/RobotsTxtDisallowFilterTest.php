@@ -11,6 +11,8 @@
 
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VDB\Spider\Filter\Prefetch\ExtractRobotsTxtException;
 use VDB\Spider\Filter\Prefetch\FetchRobotsTxtException;
 use VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter;
@@ -18,14 +20,9 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Uri\Http;
 use VDB\Uri\UriInterface;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter::class)]
 class RobotsTxtDisallowFilterTest extends TestCase
 {
-    /**
-     * @covers       \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
-     */
     public function testNoRobotsTxt()
     {
         $bogusDomain = "http://bar/baz";
@@ -33,9 +30,6 @@ class RobotsTxtDisallowFilterTest extends TestCase
         new RobotsTxtDisallowFilter($bogusDomain);
     }
 
-    /**
-     * @covers       \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
-     */
     public function testUnsupportedUrlScheme()
     {
         $unsupported = "ftp://example.com";
@@ -44,27 +38,21 @@ class RobotsTxtDisallowFilterTest extends TestCase
     }
 
 
-    /**
-     * @covers       \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
-     * @dataProvider userAgentMatchURIProvider
-     */
+    #[DataProvider('userAgentMatchURIProvider')]
     public function testUserAgentMatch(UriInterface $href, bool $expected)
     {
         $robotsTxtFilter = new RobotsTxtDisallowFilter(seedUrl: "file://" . __DIR__, userAgent: 'PHP-Spider');
         $this->assertEquals($expected, $robotsTxtFilter->match($href));
     }
 
-    /**
-     * @covers       \VDB\Spider\Filter\Prefetch\RobotsTxtDisallowFilter
-     * @dataProvider noUserAgentMatchURIProvider
-     */
+    #[DataProvider('noUserAgentMatchURIProvider')]
     public function testNoUserAgentMatch(UriInterface $href, bool $expected)
     {
         $robotsTxtFilter = new RobotsTxtDisallowFilter(seedUrl: "file://" . __DIR__);
         $this->assertEquals($expected, $robotsTxtFilter->match($href));
     }
 
-    public function noUserAgentMatchURIProvider(): array
+    public static function noUserAgentMatchURIProvider(): array
     {
         return array(
             array(new Http('http://example.com'), false),
@@ -73,7 +61,7 @@ class RobotsTxtDisallowFilterTest extends TestCase
         );
     }
 
-    public function userAgentMatchURIProvider(): array
+    public static function userAgentMatchURIProvider(): array
     {
         return array(
             array(new Http('http://example.com'), false),

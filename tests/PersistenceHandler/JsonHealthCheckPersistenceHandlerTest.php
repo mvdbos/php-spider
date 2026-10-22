@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\PersistenceHandler;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
 use GuzzleHttp\Psr7\Response;
 use ReflectionClass;
 use RuntimeException;
@@ -19,6 +20,17 @@ use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, '__construct')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'getJsonFilePath')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'setSpiderId')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'persist')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'count')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'writeToFile')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'current')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'next')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'key')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'valid')]
+#[CoversMethod(\VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::class, 'rewind')]
 class JsonHealthCheckPersistenceHandlerTest extends TestCase
 {
     /**
@@ -54,9 +66,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         }
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::__construct
-     */
     public function testConstruct()
     {
         $path = sys_get_temp_dir() . '/spider-construct-test';
@@ -65,16 +74,10 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         // Using reflection to check the path was set
         $reflection = new ReflectionClass($handler);
         $pathProperty = $reflection->getProperty('path');
-        $pathProperty->setAccessible(true);
 
         $this->assertEquals($path, $pathProperty->getValue($handler));
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::__construct
-     */
     public function testGetJsonFilePath()
     {
         $path = sys_get_temp_dir() . '/spider-path-test';
@@ -84,7 +87,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         // Use reflection to call protected method
         $reflection = new ReflectionClass($handler);
         $method = $reflection->getMethod('getJsonFilePath');
-        $method->setAccessible(true);
 
         $result = $method->invoke($handler);
         $expected = $path . DIRECTORY_SEPARATOR . 'test-id_health_check.json';
@@ -92,13 +94,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::count
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
-     */
     public function testPersist()
     {
         $resource1 = new Resource(
@@ -153,13 +148,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertEquals(1, $data[2]['depth']);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::current
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::next
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::key
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::valid
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::rewind
-     */
     public function testIterator()
     {
         $resource1 = new Resource(
@@ -187,9 +175,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertEquals(404, $results[1]['status_code']);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
-     */
     public function testSetSpiderIdCreatesDirectory()
     {
         $newTmpDir = sys_get_temp_dir() . '/spider-test-new-' . uniqid();
@@ -207,9 +192,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         rmdir($newTmpDir);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::setSpiderId
-     */
     public function testSetSpiderIdWithExistingDirectory()
     {
         // Test when directory already exists
@@ -220,19 +202,11 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertDirectoryExists($this->tmpDir);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::count
-     */
     public function testCountEmpty()
     {
         $this->assertEquals(0, $this->handler->count());
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
-     */
     public function testWriteToFileHandlesFailure()
     {
         // Skip test if running as root (common in Docker) since root can write to read-only files
@@ -270,11 +244,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         }
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
-     */
     public function testWriteToFileHandlesFailureWithInvalidDirectory()
     {
         // Test write failure by making the directory read-only after creation
@@ -312,9 +281,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         }
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
-     */
     public function testWriteToFileWithJsonEncodingFailure()
     {
         // Create a handler and use reflection to inject invalid data that will fail JSON encoding
@@ -324,7 +290,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         // Use reflection to inject data with invalid UTF-8 that will cause json_encode to fail
         $reflection = new ReflectionClass($handler);
         $resultsProperty = $reflection->getProperty('results');
-        $resultsProperty->setAccessible(true);
         
         // Inject invalid UTF-8 data
         $resultsProperty->setValue($handler, [
@@ -333,7 +298,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
 
         // Use reflection to call writeToFile
         $method = $reflection->getMethod('writeToFile');
-        $method->setAccessible(true);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to encode results to JSON');
@@ -341,11 +305,6 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $method->invoke($handler);
     }
 
-    /**
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::writeToFile
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::persist
-     * @covers \VDB\Spider\PersistenceHandler\JsonHealthCheckPersistenceHandler::getJsonFilePath
-     */
     public function testWriteToFileHandlesFailureByMockingFilePutContents()
     {
         // Test by trying to write to a path inside a regular file (not a directory)

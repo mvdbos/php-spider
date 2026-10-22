@@ -11,6 +11,7 @@
 
 namespace VDB\Spider\Tests\RequestHandler;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use ErrorException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
@@ -19,14 +20,10 @@ use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Exception\UriSyntaxException;
 
-/**
- *
- */
+#[CoversClass(\VDB\Spider\RequestHandler\GuzzleRequestHandler::class)]
 class GuzzleRequestHandlerTest extends TestCase
 {
     /**
-     * @covers \VDB\Spider\RequestHandler\GuzzleRequestHandler
-     *
      * @throws GuzzleException
      * @throws ErrorException
      * @throws UriSyntaxException
@@ -40,7 +37,7 @@ class GuzzleRequestHandlerTest extends TestCase
             ->expects($this->once())
             ->method('get')
             ->with($uri)
-            ->will($this->returnValue($expectedResponse));
+            ->willReturn($expectedResponse);
 
         $handler = new GuzzleRequestHandler($client);
         $actualResponse = $handler->request(new DiscoveredUri($uri, 0))->getResponse();
