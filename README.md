@@ -30,6 +30,8 @@ The easiest way to install PHP-Spider is with [composer](https://getcomposer.org
 $ composer require vdb/php-spider
 ```
 
+PHP-Spider supports PHP 8.0 up to and including PHP 8.5 (all versions are tested in CI). The `ext-dom` and `ext-pcntl` extensions are required.
+
 Usage
 -----
 This is a very simple example. This code can be found in [example/example_simple.php](example/example_simple.php). For a more complete example with some logging, caching and filters, see [example/example_complex.php](example/example_complex.php). That file contains a more real-world example.
