@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout repository (optional)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -39,7 +39,7 @@ jobs:
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -58,7 +58,7 @@ jobs:
         run: echo "week=$(date +%Y-W%U)" >> $GITHUB_OUTPUT
 
       - name: Cache act binary
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .cache/bin
           key: ${{ runner.os }}-${{ runner.arch }}-act-binary-${{ steps.week.outputs.week }}
@@ -66,7 +66,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-act-binary-
 
       - name: Cache act local caches
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             .cache/act/artifacts
