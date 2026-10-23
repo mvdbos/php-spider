@@ -15,10 +15,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ErrorException;
 use GuzzleHttp\Psr7\Response;
+use VDB\Spider\Downloader\Downloader;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
+use VDB\Spider\Spider;
 use VDB\Spider\Tests\TestCase;
 use VDB\Spider\Uri\DiscoveredUri;
+use VDB\Spider\RequestHandler\RequestHandlerInterface;
 use VDB\Uri\Exception\UriSyntaxException;
 
 /**
@@ -88,6 +91,72 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
             new Resource(new DiscoveredUri("http://example.com/page2", 0), new Response(200, [], "Body 2"))
         );
         $this->assertEquals(2, $this->handler->count());
+    }
+
+    public function testOverwritingFileDoesNotIncreaseStoredEntryCount(): void
+    {
+        $this->assertSame(0, $this->handler->count());
+
+        $uri = 'http://example.com/same.html';
+        $this->handler->persist(new Resource(new DiscoveredUri($uri, 0), new Response(200, [], 'First')));
+        $this->assertSame(1, $this->handler->count());
+
+        // Query and scheme do not participate in this handler's existing file identity.
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('https://example.com/same.html?revision=2', 0), new Response(200, [], 'Replacement'))
+        );
+        $this->assertSame(1, $this->handler->count());
+    }
+
+    public function testCountingAfterRepeatedWritesCountsStoredFiles(): void
+    {
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/same.html', 0), new Response(200, [], 'First'))
+        );
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/same.html', 0), new Response(200, [], 'Replacement'))
+        );
+
+        $this->assertSame(1, $this->handler->count());
+    }
+
+    public function testCountIncludesFilesAlreadyInSelectedNamespace(): void
+    {
+        $existingFile = $this->persistenceRootPath . 'example.com/existing.html';
+        mkdir(dirname($existingFile), 0777, true);
+        file_put_contents($existingFile, 'Existing');
+
+        $this->assertSame(1, $this->handler->count());
+    }
+
+    public function testRewindingAfterCompletedWritesIteratesCurrentFiles(): void
+    {
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/first.html', 0), new Response(200, [], 'First'))
+        );
+        $this->assertCount(1, iterator_to_array($this->handler));
+
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/second.html', 0), new Response(200, [], 'Second'))
+        );
+
+        $this->assertCount(2, iterator_to_array($this->handler));
+    }
+
+    public function testExistingFileAtDownloadLimitStopsSpiderBeforeFetching(): void
+    {
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/page.html', 0), new Response(200, [], 'Cached'))
+        );
+
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler->expects($this->never())->method('request');
+        $downloader = new Downloader($this->handler, $requestHandler, [], 1);
+        $spider = new Spider('http://example.com/page.html', null, null, $downloader, 'spider-UT');
+
+        $spider->crawl();
+
+        $this->assertSame(1, $this->handler->count());
     }
 
     #[DataProvider('persistenceProvider')]

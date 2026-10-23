@@ -207,6 +207,21 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertEquals(0, $this->handler->count());
     }
 
+    public function testExistingOutputFileDoesNotContributeToInMemoryCount(): void
+    {
+        $jsonFile = $this->tmpDir . '/test-spider_health_check.json';
+        file_put_contents($jsonFile, '[{"uri":"http://example.com/previous"}]');
+
+        $this->assertSame(0, $this->handler->count());
+
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/current', 0), new Response(200, [], 'Current'))
+        );
+
+        $this->assertSame(1, $this->handler->count());
+        $this->assertCount(1, json_decode(file_get_contents($jsonFile), true));
+    }
+
     public function testWriteToFileHandlesFailure()
     {
         // Skip test if running as root (common in Docker) since root can write to read-only files

@@ -18,9 +18,13 @@ class FileSerializedResourcePersistenceHandler extends FilePersistenceHandler im
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
-        $file = new SplFileObject($path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource), 'w');
+        $filePath = $path . DIRECTORY_SEPARATOR . $this->getFileSystemFilename($resource);
+        $isNewFile = !file_exists($filePath);
+        $file = new SplFileObject($filePath, 'w');
         $this->totalSizePersisted += $file->fwrite(serialize($resource));
-        $this->markPersisted();
+        if ($isNewFile) {
+            $this->markPersisted();
+        }
     }
 
     /**
