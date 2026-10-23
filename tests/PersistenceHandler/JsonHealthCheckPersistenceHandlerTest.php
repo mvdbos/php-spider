@@ -222,6 +222,25 @@ class JsonHealthCheckPersistenceHandlerTest extends TestCase
         $this->assertCount(1, json_decode(file_get_contents($jsonFile), true));
     }
 
+    public function testChangingSpiderIdKeepsInMemoryResultsAndChangesOutputFile(): void
+    {
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/first', 0), new Response(200, [], 'First'))
+        );
+
+        $this->handler->setSpiderId('another-spider');
+        $this->assertSame(1, $this->handler->count());
+        $this->handler->persist(
+            new Resource(new DiscoveredUri('http://example.com/second', 0), new Response(200, [], 'Second'))
+        );
+
+        $this->assertSame(2, $this->handler->count());
+        $firstOutput = json_decode(file_get_contents($this->tmpDir . '/test-spider_health_check.json'), true);
+        $secondOutput = json_decode(file_get_contents($this->tmpDir . '/another-spider_health_check.json'), true);
+        $this->assertCount(1, $firstOutput);
+        $this->assertCount(2, $secondOutput);
+    }
+
     public function testWriteToFileHandlesFailure()
     {
         // Skip test if running as root (common in Docker) since root can write to read-only files

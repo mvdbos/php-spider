@@ -15,7 +15,10 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ErrorException;
 use GuzzleHttp\Psr7\Response;
+use VDB\Spider\Discoverer\DiscovererSet;
+use VDB\Spider\Discoverer\XPathExpressionDiscoverer;
 use VDB\Spider\Downloader\Downloader;
+use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
 use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
 use VDB\Spider\Resource;
 use VDB\Spider\Spider;
@@ -129,6 +132,44 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         $this->assertSame(1, $this->handler->count());
     }
 
+    public function testSwitchingSpiderIdsResetsCountAndIteratorNamespace(): void
+    {
+        $otherSpiderId = 'spider-UT-other-' . uniqid();
+        $otherSpiderPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $otherSpiderId;
+
+        try {
+            $this->handler->persist(
+                new Resource(new DiscoveredUri('http://example.com/first.html', 0), new Response(200, [], 'First'))
+            );
+            $this->assertSame(1, $this->handler->count());
+            $this->assertCount(1, iterator_to_array($this->handler));
+
+            $this->handler->setSpiderId('spider-UT');
+            $this->assertSame(1, $this->handler->count());
+            $this->assertCount(1, iterator_to_array($this->handler));
+
+            $this->handler->setSpiderId($otherSpiderId);
+
+            $this->assertSame(0, $this->handler->count());
+            $this->assertCount(0, iterator_to_array($this->handler));
+
+            $this->handler->persist(
+                new Resource(new DiscoveredUri('http://example.com/second.html', 0), new Response(200, [], 'Second'))
+            );
+            $this->assertSame(1, $this->handler->count());
+            $this->assertCount(1, iterator_to_array($this->handler));
+
+            $this->handler->setSpiderId('spider-UT');
+
+            $this->assertSame(1, $this->handler->count());
+            $this->assertCount(1, iterator_to_array($this->handler));
+            $this->assertFileExists($this->persistenceRootPath . 'example.com/first.html');
+            $this->assertFileExists($otherSpiderPath . '/example.com/second.html');
+        } finally {
+            exec('rm -rf ' . escapeshellarg($otherSpiderPath));
+        }
+    }
+
     public function testRewindingAfterCompletedWritesIteratesCurrentFiles(): void
     {
         $this->handler->persist(
@@ -157,6 +198,64 @@ class FileSerializedResourcePersistenceHandlerTest extends TestCase
         $spider->crawl();
 
         $this->assertSame(1, $this->handler->count());
+    }
+
+    public function testIndependentCrawlsShareCachedDiscoveredResourcesWithFreshHandlers(): void
+    {
+        $spiderId = 'spider-UT';
+        $seedUri = 'http://example.com/start.html';
+        $cachedUri = 'http://example.com/cached.html';
+        $seedResource = new Resource(
+            new DiscoveredUri($seedUri, 0),
+            new Response(200, ['Content-Type' => 'text/html'], '<a href="' . $cachedUri . '">cached</a>')
+        );
+        $cachedResource = new Resource(
+            new DiscoveredUri($cachedUri, 1),
+            new Response(200, ['Content-Type' => 'text/html'], 'cached')
+        );
+
+        try {
+            $firstPersistence = new FileSerializedResourcePersistenceHandler(sys_get_temp_dir());
+            $firstRequests = $this->createMock(RequestHandlerInterface::class);
+            $firstRequests->expects($this->exactly(2))
+                ->method('request')
+                ->willReturnCallback(static function (DiscoveredUri $uri) use ($seedUri, $seedResource, $cachedResource): Resource {
+                    return $uri->toString() === $seedUri ? $seedResource : $cachedResource;
+                });
+            $firstSpider = new Spider(
+                $seedUri,
+                new DiscovererSet([new XPathExpressionDiscoverer('//a')]),
+                null,
+                new Downloader($firstPersistence, $firstRequests),
+                $spiderId
+            );
+            $firstSpider->crawl();
+            $this->assertSame(2, $firstPersistence->count());
+
+            $secondPersistence = new FileSerializedResourcePersistenceHandler(sys_get_temp_dir());
+            $secondRequests = $this->createMock(RequestHandlerInterface::class);
+            $secondRequests->expects($this->once())
+                ->method('request')
+                ->with($this->callback(static fn (DiscoveredUri $uri): bool => $uri->toString() === $seedUri))
+                ->willReturn($seedResource);
+            $secondDiscoverers = new DiscovererSet([new XPathExpressionDiscoverer('//a')]);
+            $secondDiscoverers->addFilter(new CachedResourceFilter(sys_get_temp_dir(), $spiderId));
+            $secondSpider = new Spider(
+                $seedUri,
+                $secondDiscoverers,
+                null,
+                new Downloader($secondPersistence, $secondRequests),
+                $spiderId
+            );
+
+            $secondSpider->crawl();
+
+            $this->assertSame(2, $secondPersistence->count());
+            $this->assertFileExists($this->persistenceRootPath . 'example.com/start.html');
+            $this->assertFileExists($this->persistenceRootPath . 'example.com/cached.html');
+        } finally {
+            exec('rm -rf ' . escapeshellarg($this->persistenceRootPath));
+        }
     }
 
     #[DataProvider('persistenceProvider')]
