@@ -29,7 +29,7 @@
         "phpunit/phpunit": "^11.0",
         "squizlabs/php_codesniffer": "^4.0.0",
         "phan/phan": "^6.0",
-        "phpmd/phpmd": "^2.0.0",
+        "phpmd/phpmd": "^3.0.0",
         "friendsofphp/php-cs-fixer": "^3.69.0"
     },
     "autoload": {
