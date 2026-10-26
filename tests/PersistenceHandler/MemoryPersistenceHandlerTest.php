@@ -58,6 +58,9 @@ class MemoryPersistenceHandlerTest extends TestCase
 
         $this->assertEquals(2, $this->handler->count());
 
+        $this->handler->setSpiderId('another-spider');
+        $this->assertSame(2, $this->handler->count());
+
         // Check the contents through iterator access and directly
         foreach ($this->handler as $path => $resource) {
             $this->assertEquals(

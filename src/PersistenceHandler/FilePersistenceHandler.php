@@ -24,7 +24,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected int $totalSizePersisted = 0;
 
-    protected Iterator $iterator;
+    protected ?Iterator $iterator = null;
 
     protected ?Finder $finder = null;
 
@@ -50,6 +50,9 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
     public function setSpiderId(string $spiderId): void
     {
         $this->spiderId = $spiderId;
+        $this->resourceCount = null;
+        $this->finder = null;
+        $this->iterator = null;
 
         // create the path
         if (!file_exists($this->getResultPath())) {
@@ -114,7 +117,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function getIterator(): Iterator
     {
-        if (!isset($this->iterator)) {
+        if ($this->iterator === null) {
             $this->iterator = $this->getFinder()->getIterator();
         }
         return $this->iterator;

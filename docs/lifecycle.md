@@ -427,6 +427,24 @@ echo "Total crawled: " . $spider->getDownloader()->getPersistenceHandler()->coun
 
 ---
 
+## Persistence and Crawl-State Lifetimes
+
+The following are the supported persistence and lifetime contracts. File-handler corrections and regression tests are tracked in [issues #169–#171](https://github.com/mvdbos/php-spider/issues/169).
+
+Persistence handlers share a minimal interface for selecting a spider ID, persisting resources, counting retained entries, and iterating results. Their storage and lifetime semantics differ:
+
+- **FileSerializedResourcePersistenceHandler:** resources are stored under the selected spider-ID directory. `count()` reflects files in that directory, including files from earlier runs. Overwriting a URI's existing storage path does not add a retained entry. After switching spider IDs, count and iteration refer to the newly selected directory; changing IDs does not delete either directory. A fresh iteration or rewind after completed writes observes the selected directory's current files.
+- **MemoryPersistenceHandler:** resources are appended in memory; spider ID is ignored. Count reports retained in-memory resources, including repeated resources.
+- **JsonHealthCheckPersistenceHandler:** results are retained in memory and appended; count reports that in-memory collection. Changing spider ID changes the output filename, but does not reset the handler's in-memory results or count. Existing JSON output is not loaded into the in-memory collection.
+
+The download limit uses `PersistenceHandlerInterface::count()`. For file persistence, resources already present in the selected directory therefore count toward the limit before the current crawl fetches anything. Other backends count according to their documented retained-entry behavior.
+
+Use a fresh `Spider`, queue, and `DiscovererSet` for each independent crawl. To share a file cache between runs, create a fresh spider and file persistence handler for each run and use the same spider ID. Repeating `crawl()` on a single `Spider` is unsupported; crawl queue and discovery state are not reset between calls. No automatic reset operation is provided.
+
+A file handler may be switched between spider IDs after use. Subsequent count, writes, and new iteration/rewind operate on the selected namespace. These guarantees cover completed writes and explicit iteration restart, not mutation during active iteration, concurrent writers, or external filesystem changes.
+
+These contracts preserve backend differences; they do not imply common cross-backend storage or reset semantics.
+
 ## Event Timeline
 
 Here's a complete event timeline for a typical crawl:
