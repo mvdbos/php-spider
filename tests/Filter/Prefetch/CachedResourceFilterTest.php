@@ -12,9 +12,14 @@
 namespace VDB\Spider\Tests\Filter\Prefetch;
 
 use PHPUnit\Framework\Attributes\CoversMethod;
+use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use VDB\Spider\Filter\Prefetch\CachedResourceFilter;
+use VDB\Spider\PersistenceHandler\FileSerializedResourcePersistenceHandler;
+use VDB\Spider\Resource;
 use VDB\Spider\Tests\TestCase;
+use VDB\Spider\Uri\DiscoveredUri;
 use VDB\Uri\Uri;
 
 /**
@@ -22,6 +27,7 @@ use VDB\Uri\Uri;
  */
 #[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, '__construct')]
 #[CoversMethod(\VDB\Spider\Filter\Prefetch\CachedResourceFilter::class, 'match')]
+#[CoversClass(\VDB\Spider\PersistenceHandler\FilePersistenceLayout::class)]
 class CachedResourceFilterTest extends TestCase
 {
     private string $testCacheDir;
@@ -58,7 +64,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
         
         // Create the cached file
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/page.html', 'test content');
         
         $this->assertTrue($filter->match($uri));
     }
@@ -69,7 +75,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
         
         // Create the cached file and modify its timestamp to be older than maxAge
-        $filePath = $this->createCachedFile($uri, 'test content');
+        $filePath = $this->createCachedFile('example.com/page.html', 'test content');
         touch($filePath, time() - 20); // Make it 20 seconds old
         
         $this->assertFalse($filter->match($uri));
@@ -81,7 +87,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
         
         // Create the cached file with an old timestamp
-        $filePath = $this->createCachedFile($uri, 'test content');
+        $filePath = $this->createCachedFile('example.com/page.html', 'test content');
         touch($filePath, time() - 86400); // Make it 1 day old
         
         // With maxAge = 0, it should always match if file exists
@@ -94,7 +100,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/');
 
         // Create the cached file (should be stored as index.html)
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/index.html', 'test content');
 
         $this->assertTrue($filter->match($uri));
     }
@@ -105,7 +111,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com');
 
         // Create the cached file (should be stored as index.html for empty path)
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/index.html', 'test content');
 
         $this->assertTrue($filter->match($uri));
     }
@@ -116,7 +122,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/subdir/');
         
         // Create the cached file (should be stored as index.html in subdir)
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/subdir/index.html', 'test content');
         
         $this->assertTrue($filter->match($uri));
     }
@@ -127,7 +133,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/file with spaces.html');
         
         // Create the cached file (filename should be URL-encoded)
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/file+with+spaces.html', 'test content');
         
         $this->assertTrue($filter->match($uri));
     }
@@ -143,7 +149,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
         
         // Create cached file for spider-1
-        $this->createCachedFileWithSpiderId($uri, 'test content', $spiderId1);
+        $this->createCachedFileWithSpiderId('example.com/page.html', 'test content', $spiderId1);
         
         // Filter with spider-1 should match
         $this->assertTrue($filter1->match($uri));
@@ -159,7 +165,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
         
         // Create the cached file and set it exactly at max age
-        $filePath = $this->createCachedFile($uri, 'test content');
+        $filePath = $this->createCachedFile('example.com/page.html', 'test content');
         touch($filePath, time() - $maxAge);
         
         // At exactly max age, it should be considered expired (age < maxAge is false)
@@ -174,7 +180,7 @@ class CachedResourceFilterTest extends TestCase
         $uri = new Uri('http://example.com/page.html');
 
         // Create the cached file
-        $this->createCachedFile($uri, 'test content');
+        $this->createCachedFile('example.com/page.html', 'test content');
 
         // Should still match even with trailing slash in constructor
         $this->assertTrue($filter->match($uri));
@@ -188,47 +194,58 @@ class CachedResourceFilterTest extends TestCase
         new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, -1);
     }
 
-    
-    /**
-     * Helper method to create a cached file for testing
-     */
-    private function createCachedFile(Uri $uri, string $content): string
+    public function testMatchHandlesAlreadyEncodedFilename()
     {
-        return $this->createCachedFileWithSpiderId($uri, $content, $this->testSpiderId);
+        $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
+        $uri = new Uri('http://example.com/a%20b.html');
+
+        $this->createCachedFile('example.com/a%2520b.html', 'test content');
+
+        $this->assertTrue($filter->match($uri));
+    }
+
+    public function testPersistedResourceCanBeFoundByCacheFilter()
+    {
+        $handler = new FileSerializedResourcePersistenceHandler($this->testCacheDir);
+        $handler->setSpiderId($this->testSpiderId);
+        $handler->persist(
+            new Resource(
+                new DiscoveredUri('http://example.com/nested/page name.html', 0),
+                new Response(200, [], 'test content')
+            )
+        );
+
+        $expectedFilePath = $this->testCacheDir . DIRECTORY_SEPARATOR
+            . $this->testSpiderId . DIRECTORY_SEPARATOR
+            . 'example.com/nested/page+name.html';
+        $this->assertFileExists($expectedFilePath);
+
+        $filter = new CachedResourceFilter($this->testCacheDir, $this->testSpiderId, 3600);
+        $this->assertTrue($filter->match(new Uri('http://example.com/nested/page name.html')));
     }
 
     /**
-     * Helper method to create a cached file with a specific spider ID
+     * Creates a cache fixture at an independently specified expected path.
      */
-    private function createCachedFileWithSpiderId(Uri $uri, string $content, string $spiderId): string
+    private function createCachedFile(string $relativePath, string $content): string
     {
-        $hostname = $uri->getHost();
-        $path = $uri->getPath() ?: '';
-        
-        // Complete path with default filename if needed
-        if ($path === '') {
-            $path = "/index.html";
-        } elseif (substr($path, -1, 1) === '/') {
-            $path .= "index.html";
-        }
-        
-        // Build the directory structure
-        $directory = $this->testCacheDir . DIRECTORY_SEPARATOR .
-                    $spiderId . DIRECTORY_SEPARATOR .
-                    $hostname . dirname($path);
-        
-        // Create directory if it doesn't exist
+        return $this->createCachedFileWithSpiderId($relativePath, $content, $this->testSpiderId);
+    }
+
+    /**
+     * Creates a cache fixture at an independently specified expected path.
+     */
+    private function createCachedFileWithSpiderId(string $relativePath, string $content, string $spiderId): string
+    {
+        $filePath = $this->testCacheDir . DIRECTORY_SEPARATOR . $spiderId
+            . DIRECTORY_SEPARATOR . $relativePath;
+        $directory = dirname($filePath);
         if (!is_dir($directory)) {
             mkdir($directory, 0777, true);
         }
-        
-        // The filename is URL-encoded
-        $filename = urlencode(basename($path));
-        $filePath = $directory . DIRECTORY_SEPARATOR . $filename;
-        
-        // Write the content
+
         file_put_contents($filePath, $content);
-        
+
         return $filePath;
     }
 

@@ -62,7 +62,7 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected function getResultPath(): string
     {
-        return $this->path . DIRECTORY_SEPARATOR . $this->spiderId . DIRECTORY_SEPARATOR;
+        return FilePersistenceLayout::getResultPath($this->path, $this->spiderId);
     }
 
     public function count(): int
@@ -153,9 +153,9 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
 
     protected function getFileSystemFilename(Resource $resource): string
     {
-        $fullPath = $this->completePath($resource->getUri()->getPath());
-
-        return urlencode(basename($fullPath));
+        return FilePersistenceLayout::getFileSystemFilenameFromCompletePath(
+            $this->completePath($resource->getUri()->getPath())
+        );
     }
 
     /**
@@ -166,20 +166,14 @@ abstract class FilePersistenceHandler implements PersistenceHandlerInterface
      */
     protected function completePath(?string $path): string
     {
-        if ($path == '') {
-            $path = "/" . $this->defaultFilename;
-        } elseif (substr($path, -1, 1) === '/') {
-            $path .= $this->defaultFilename;
-        }
-
-        return $path;
+        return FilePersistenceLayout::completePath($path, $this->defaultFilename);
     }
 
     protected function getFileSystemPath(Resource $resource): string
     {
-        $hostname = $resource->getUri()->getHost();
-        $fullPath = $this->completePath($resource->getUri()->getPath());
-
-        return $hostname . dirname($fullPath);
+        return FilePersistenceLayout::getFileSystemPathFromCompletePath(
+            $resource->getUri()->getHost(),
+            $this->completePath($resource->getUri()->getPath())
+        );
     }
 }
